@@ -17,7 +17,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
     
-    /* GAYA KHAS CETAKAN (A4 OPR & LAPORAN TARIKH) */
     @media print {
       body * { visibility: hidden; }
       .print-area, .print-area * { visibility: visible; }
@@ -47,7 +46,7 @@
           <h1 class="text-lg font-black tracking-tight flex items-center gap-2">
             e-pantau PdPr SMKKA
           </h1>
-          <p class="text-xs text-indigo-300">SMK Kamarul Ariffin, Labis, Johor • Siri 6/2026</p>
+          <p class="text-xs text-indigo-300">SMK Kamarul Ariffin, Labis, Johor • Rujukan Tunggal Siri 6/2026</p>
         </div>
       </div>
       
@@ -77,7 +76,7 @@
 
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6 flex-1 w-full no-print">
 
-    <!-- KPI STATISTIK RINGKAS -->
+    <!-- KPI STATISTIK -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
@@ -108,7 +107,7 @@
       </div>
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
-          <p class="text-xs font-medium text-slate-500">Jumlah Murid Terlibat</p>
+          <p class="text-xs font-medium text-slate-500">Jumlah Murid</p>
           <h3 id="statStudents" class="text-2xl font-bold text-indigo-600">0</h3>
         </div>
         <div class="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg">
@@ -121,19 +120,18 @@
     <div id="viewGuru" class="space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- BORANG PENGISIAN PDPR & JANA OPR -->
         <div class="lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
             <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
               <i class="fa-solid fa-feather text-indigo-600"></i> Borang Laporan PdPR
             </h2>
-            <span class="text-[11px] px-2.5 py-0.5 bg-indigo-50 text-indigo-700 font-semibold rounded-full">Jana OPR</span>
+            <span class="text-[11px] px-2.5 py-0.5 bg-indigo-50 text-indigo-700 font-semibold rounded-full">Auto-Jadual Siri 6</span>
           </div>
 
           <form id="pdprForm" onsubmit="submitGuruRecord(event)" class="space-y-3.5 text-xs">
             <div>
               <label class="block font-semibold text-slate-700 mb-1">Nama Guru</label>
-              <select id="guruSelect" onchange="onTeacherOrDateChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-slate-50 text-xs">
+              <select id="guruSelect" onchange="onTeacherOrDateChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-slate-50 text-xs font-semibold">
                 <option value="">-- Pilih Guru --</option>
               </select>
             </div>
@@ -149,34 +147,35 @@
               </div>
             </div>
 
-            <!-- SLOT JADUAL WAKTU AUTO -->
+            <!-- SLOT JADUAL WAKTU TEPAT SIRI 6 -->
             <div class="p-3 bg-indigo-50/70 rounded-xl border border-indigo-100 space-y-2">
               <div class="flex justify-between items-center">
                 <label class="block font-bold text-indigo-950 text-xs flex items-center gap-1.5">
-                  <i class="fa-solid fa-calendar-check text-indigo-600"></i> Slot Jadual Mengajar Siri 6
+                  <i class="fa-solid fa-calendar-check text-indigo-600"></i> Slot Waktu Mengajar Rasmi
                 </label>
                 <span id="slotCountBadge" class="text-[10px] font-bold text-indigo-700 bg-white px-2 py-0.5 rounded-full border border-indigo-200">0 Slot</span>
               </div>
               <select id="jadualSlotSelect" onchange="onSlotSelected()" class="w-full p-2.5 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-indigo-950 text-xs">
                 <option value="">-- Pilih Slot Mengajar Hari Ini --</option>
               </select>
+              <p class="text-[10px] text-slate-500 italic">*Setiap petak bernilai 30 minit. Petak bergabung dikira 1 jam atau 1 jam 30 minit.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Masa Mengajar</label>
-                <input type="text" id="masaInput" placeholder="cth: 08:30 - 09:30" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-medium">
+                <input type="text" id="masaInput" placeholder="cth: 08:30 - 09:30" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-bold text-indigo-950">
               </div>
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Kelas</label>
-                <input type="text" id="kelasInput" placeholder="cth: 2S1/2S2" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-medium">
+                <input type="text" id="kelasInput" placeholder="cth: 2S1/2S2" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-bold text-indigo-950">
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Mata Pelajaran</label>
-                <input type="text" id="subjekInput" placeholder="cth: ASK/RBT" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-medium">
+                <input type="text" id="subjekInput" placeholder="cth: ASK/RBT" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-bold text-indigo-950">
               </div>
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Platform PdPR</label>
@@ -273,7 +272,7 @@
                 <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                   <i class="fa-solid fa-table-list text-indigo-600"></i> Senarai Rekod PdPR Terkini
                 </h2>
-                <p class="text-xs text-slate-400">Klik "Cetak OPR" untuk mencetak laporan satu halaman bergambar</p>
+                <p class="text-xs text-slate-400">Klik butang Cetak OPR untuk menghasilkan laporan satu halaman bergambar</p>
               </div>
               <input type="text" id="searchGuruInput" oninput="filterGuruTable()" placeholder="Cari guru / subjek..." class="p-2 border border-slate-300 rounded-xl text-xs w-full md:w-56 focus:ring-2 focus:ring-indigo-500">
             </div>
@@ -357,7 +356,6 @@
           </button>
         </div>
 
-        <!-- Borang Penapis Tarikh -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Tarikh Mula</label>
@@ -382,7 +380,6 @@
           </div>
         </div>
 
-        <!-- Ringkasan Statistik Laporan Terpilih -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
           <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
             <p class="text-[11px] text-indigo-600 font-semibold">Jumlah Sesi</p>
@@ -406,7 +403,6 @@
           </div>
         </div>
 
-        <!-- Jadual Hasil Tapisan Tarikh -->
         <div class="overflow-x-auto max-h-[420px] rounded-xl border border-slate-200">
           <table class="w-full text-left text-xs text-slate-700">
             <thead class="bg-indigo-950 text-white uppercase font-semibold sticky top-0 z-10">
@@ -438,7 +434,7 @@
             <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
               <i class="fa-solid fa-user-shield text-amber-600"></i> Panel Kawalan Admin e-pantau PdPr SMKKA
             </h2>
-            <p class="text-xs text-slate-500">Konfigurasi senarai pentadbir, tetapan nama guru, dan kemas kini jadual mengajar Siri 6.</p>
+            <p class="text-xs text-slate-500">Urus jadual rasmi Siri 6, betulkan nama guru, dan konfigurasikan pentadbir pengesah.</p>
           </div>
           <button onclick="logoutAdmin()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow flex items-center gap-1.5 transition">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar Mod Admin
@@ -449,7 +445,7 @@
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
           <div class="flex justify-between items-center">
             <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <i class="fa-solid fa-id-card-clip text-indigo-600"></i> Senarai Pentadbir Sekolah (Untuk Pengesahan)
+              <i class="fa-solid fa-id-card-clip text-indigo-600"></i> Senarai Pentadbir Pengesah
             </h3>
             <button onclick="openAddPentadbirModal()" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg shadow transition flex items-center gap-1">
               <i class="fa-solid fa-plus"></i> Tambah Pentadbir
@@ -470,11 +466,11 @@
           </div>
         </div>
 
-        <!-- 2. PENGURUSAN GURU & JADUAL WAKTU (DENGAN FUNGSI EDIT NAMA GURU) -->
+        <!-- 2. PENGURUSAN GURU & JADUAL SIRI 6 -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
           <div class="flex flex-wrap justify-between items-center gap-2">
             <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <i class="fa-solid fa-calendar-days text-indigo-600"></i> Pengurusan Guru & Jadual Waktu Mengajar
+              <i class="fa-solid fa-calendar-days text-indigo-600"></i> Pengurusan Guru & Jadual Waktu Siri 6
             </h3>
             <div class="flex items-center gap-2">
               <button onclick="openAddTeacherModal()" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow transition flex items-center gap-1">
@@ -486,12 +482,10 @@
             </div>
           </div>
 
-          <!-- Pemilihan Guru & Butang Pembetulan Nama -->
           <div class="bg-white p-3.5 rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
             <div class="md:col-span-6">
               <label class="block font-bold text-slate-700 text-xs mb-1">Pilih Guru untuk Disemak / Diedit</label>
               <select id="adminTeacherSelect" onchange="renderAdminTeacherSlots()" class="w-full p-2 border border-slate-300 rounded-xl bg-slate-50 text-xs font-semibold">
-                <!-- Disuntik secara dinamik -->
               </select>
             </div>
             <div class="md:col-span-3">
@@ -588,7 +582,6 @@
           <textarea id="catatanPentadbirInput" rows="2" placeholder="Ulasan bimbingan atau refleksi pemantau..." class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white"></textarea>
         </div>
 
-        <!-- PAD TANDATANGAN DIGITAL (SCRIBBLE CANVAS) -->
         <div class="space-y-1.5">
           <div class="flex justify-between items-center">
             <label class="block font-bold text-slate-700 text-xs flex items-center gap-1.5">
@@ -614,7 +607,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL PRATONTON & CETAKAN OPR (ONE PAGE REPORT A4) ================= -->
+  <!-- ================= MODAL PRATONTON & CETAKAN OPR ================= -->
   <div id="oprPrintModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
     <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[96vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 print-area">
       
@@ -789,7 +782,6 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    // DATA PENTADBIR
     const DEFAULT_PENTADBIR = [
       { id: 1, nama: "Cikgu Hadi bin Adman", jawatan: "Pengetua" },
       { id: 2, nama: "GPK Pentadbiran", jawatan: "Guru Penolong Kanan Pentadbiran" },
@@ -801,7 +793,7 @@
       { id: 8, nama: "GKMP Teknik & Vokasional", jawatan: "Guru Kanan Teknik & Vokasional" }
     ];
 
-    // JADUAL GURU SIRI 6 (DIKEMASKINI DENGAN TEPAT MENGIKUT BLOK MASA SEBENAR)
+    // PANGKALAN DATA JADUAL GURU SIRI 6 (100% TEPAT MENGIKUT PDF SIRI 6 RUJUKAN TUNGGAL)
     const JADUAL_SIRI_6_TEPAT = {
       "Pengetua (Cikgu Hadi bin Adman)": [
         { hari: "Isnin", masa: "10:30 - 11:30", subjek: "PSV", kelas: "3S2" },
@@ -810,60 +802,61 @@
       ],
       "Masnon bin Amat": [
         { hari: "Isnin", masa: "11:30 - 12:30", subjek: "MM", kelas: "3S2" },
-        { hari: "Isnin", masa: "13:30 - 14:30", subjek: "MM", kelas: "5S3" },
-        { hari: "Rabu", masa: "08:30 - 09:00", subjek: "MM", kelas: "3S2" },
+        { hari: "Isnin", masa: "13:00 - 14:30", subjek: "MM", kelas: "5S3" },
+        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "MM", kelas: "3S2" },
         { hari: "Rabu", masa: "09:30 - 10:00", subjek: "MM", kelas: "3S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "MM", kelas: "5S3" },
+        { hari: "Rabu", masa: "11:00 - 12:30", subjek: "MM", kelas: "5S3" },
         { hari: "Khamis", masa: "08:30 - 09:30", subjek: "MM", kelas: "5S3" },
         { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "MM", kelas: "5S3" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "MM", kelas: "3S2" }
+        { hari: "Jumaat", masa: "10:30 - 11:00", subjek: "MM", kelas: "3S2" }
       ],
       "Oskasmazila binti Osman": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "MM", kelas: "1S1" },
-        { hari: "Isnin", masa: "13:30 - 14:30", subjek: "MM", kelas: "1S2" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "MM", kelas: "1S2" },
-        { hari: "Rabu", masa: "09:30 - 10:30", subjek: "MM", kelas: "1S1" },
+        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "MM", kelas: "1S1" },
+        { hari: "Isnin", masa: "13:00 - 14:00", subjek: "MM", kelas: "1S2" },
+        { hari: "Selasa", masa: "09:30 - 10:00", subjek: "MM", kelas: "1S2" },
+        { hari: "Rabu", masa: "09:30 - 10:00", subjek: "MM", kelas: "1S1" },
         { hari: "Rabu", masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "MM", kelas: "1S1" },
+        { hari: "Khamis", masa: "09:00 - 10:00", subjek: "MM", kelas: "1S1" },
         { hari: "Khamis", masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2" },
         { hari: "Khamis", masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "MM", kelas: "1S1" },
-        { hari: "Jumaat", masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2" }
+        { hari: "Jumaat", masa: "10:30 - 11:00", subjek: "MM", kelas: "1S1" },
+        { hari: "Jumaat", masa: "11:30 - 12:00", subjek: "MM", kelas: "1S2" }
       ],
       "Zainal bin Zabir": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2" },
+        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "ASK/RBT", kelas: "2S1/2S2" },
         { hari: "Isnin", masa: "12:00 - 13:00", subjek: "ASK/RBT", kelas: "1S1/1S2" },
         { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
         { hari: "Rabu", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2" },
         { hari: "Rabu", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
+        { hari: "Rabu", masa: "11:30 - 13:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
         { hari: "Khamis", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
         { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "ASK/RBT", kelas: "2S1/2S2" }
       ],
       "Mohd Nizam bin Subani": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "MM", kelas: "3S1" },
-        { hari: "Isnin", masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1" },
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "PK", kelas: "4S1/4S2/4S3" },
+        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "MM", kelas: "3S1" },
+        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "MM", kelas: "2S1" },
+        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "PK", kelas: "4S1/4S2/4S3" },
         { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Selasa", masa: "09:30 - 10:00", subjek: "PJ", kelas: "4S1/4S2/4S3" },
+        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "PJ", kelas: "4S1/4S2/4S3" },
         { hari: "Selasa", masa: "12:30 - 13:30", subjek: "MM", kelas: "2S1" },
         { hari: "Rabu", masa: "08:30 - 09:30", subjek: "MM", kelas: "3S1" },
         { hari: "Rabu", masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
+        { hari: "Rabu", masa: "11:30 - 13:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
         { hari: "Khamis", masa: "11:00 - 12:00", subjek: "MM", kelas: "2S1" },
         { hari: "Khamis", masa: "12:00 - 13:00", subjek: "MM", kelas: "3S1" },
         { hari: "Jumaat", masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1" },
         { hari: "Jumaat", masa: "11:00 - 12:00", subjek: "MM", kelas: "3S1" }
       ],
       "Mohd Riduwan bin Mohd Yasan": [
-        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "FIZ", kelas: "5S1" },
-        { hari: "Isnin", masa: "09:30 - 10:30", subjek: "MM", kelas: "2S2" },
-        { hari: "Isnin", masa: "13:30 - 14:30", subjek: "MT", kelas: "5S1" },
-        { hari: "Selasa", masa: "08:00 - 09:00", subjek: "FIZ", kelas: "4S1" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "FIZ", kelas: "5S1" },
-        { hari: "Selasa", masa: "13:30 - 14:30", subjek: "MT", kelas: "5S1" },
-        { hari: "Rabu", masa: "10:30 - 11:30", subjek: "MM", kelas: "2S2" },
+        { hari: "Isnin", masa: "08:00 - 09:30", subjek: "FIZ", kelas: "5S1" },
+        { hari: "Isnin", masa: "13:00 - 14:30", subjek: "MT", kelas: "5S1" },
+        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "FIZ", kelas: "4S1" },
+        { hari: "Selasa", masa: "10:30 - 12:00", subjek: "MM", kelas: "2S2" },
+        { hari: "Rabu", masa: "09:30 - 10:00", subjek: "MM", kelas: "2S2" },
+        { hari: "Khamis", masa: "08:00 - 09:30", subjek: "FIZ", kelas: "4S1" },
+        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "FIZ", kelas: "5S1" },
         { hari: "Khamis", masa: "11:00 - 12:30", subjek: "MM", kelas: "2S2" },
+        { hari: "Khamis", masa: "13:00 - 14:30", subjek: "MT", kelas: "5S1" },
         { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "FIZ", kelas: "4S1" },
         { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "MM", kelas: "2S2" }
       ],
@@ -873,7 +866,7 @@
         { hari: "Isnin", masa: "13:00 - 14:00", subjek: "BM", kelas: "4S2" },
         { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BM", kelas: "5S3" },
         { hari: "Rabu", masa: "08:30 - 09:30", subjek: "BM", kelas: "5S3" },
-        { hari: "Rabu", masa: "10:30 - 11:30", subjek: "BM", kelas: "2S1" },
+        { hari: "Rabu", masa: "11:00 - 12:00", subjek: "BM", kelas: "2S1" },
         { hari: "Rabu", masa: "12:00 - 13:00", subjek: "BM", kelas: "4S2" },
         { hari: "Khamis", masa: "08:30 - 09:30", subjek: "BM", kelas: "2S1" },
         { hari: "Khamis", masa: "09:30 - 10:30", subjek: "BM", kelas: "5S3" },
@@ -882,25 +875,24 @@
         { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "BM", kelas: "4S2" }
       ],
       "Fadzeli bin Azam": [
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "PSV", kelas: "4S3" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "GEO", kelas: "3S1" },
-        { hari: "Selasa", masa: "10:30 - 11:30", subjek: "GEO", kelas: "3S2" },
+        { hari: "Isnin", masa: "12:00 - 12:30", subjek: "PSV", kelas: "4S3" },
+        { hari: "Selasa", masa: "08:30 - 10:00", subjek: "GEO", kelas: "3S1" },
+        { hari: "Selasa", masa: "10:30 - 12:00", subjek: "GEO", kelas: "3S2" },
         { hari: "Rabu", masa: "08:30 - 09:30", subjek: "PJ", kelas: "2S2/2S1" },
         { hari: "Rabu", masa: "12:00 - 13:00", subjek: "PSV", kelas: "4S2" },
-        { hari: "Khamis", masa: "08:00 - 09:00", subjek: "PSV", kelas: "4S3" },
-        { hari: "Khamis", masa: "09:00 - 09:30", subjek: "GEO", kelas: "3S1" },
-        { hari: "Khamis", masa: "09:30 - 10:00", subjek: "GEO", kelas: "3S2" },
+        { hari: "Khamis", masa: "07:30 - 08:30", subjek: "PSV", kelas: "4S3" },
+        { hari: "Khamis", masa: "08:30 - 09:00", subjek: "GEO", kelas: "3S1" },
+        { hari: "Khamis", masa: "09:00 - 09:30", subjek: "GEO", kelas: "3S2" },
         { hari: "Khamis", masa: "10:30 - 11:30", subjek: "PSV", kelas: "4S3" },
         { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "PSV", kelas: "4S2" },
         { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "PK", kelas: "2S1/2S2" }
       ],
       "Zaimah bt Samad": [
-        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "PP", kelas: "5S3" },
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "GEO", kelas: "1S1" },
-        { hari: "Isnin", masa: "12:00 - 13:00", subjek: "OB", kelas: "5S3" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "OB", kelas: "5S3" },
-        { hari: "Selasa", masa: "10:30 - 11:30", subjek: "SEJ", kelas: "5S3" },
-        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "GEO", kelas: "1S1" },
+        { hari: "Isnin", masa: "07:30 - 08:30", subjek: "PP/OB", kelas: "5S3" },
+        { hari: "Isnin", masa: "10:30 - 12:00", subjek: "GEO", kelas: "1S1" },
+        { hari: "Selasa", masa: "10:00 - 11:00", subjek: "OB", kelas: "5S3" },
+        { hari: "Selasa", masa: "11:00 - 12:00", subjek: "SEJ", kelas: "5S3" },
+        { hari: "Selasa", masa: "13:00 - 13:30", subjek: "GEO", kelas: "1S1" },
         { hari: "Selasa", masa: "13:30 - 14:30", subjek: "SEJ", kelas: "4S1" },
         { hari: "Rabu", masa: "09:00 - 09:30", subjek: "OB", kelas: "5S3" },
         { hari: "Rabu", masa: "09:30 - 10:30", subjek: "GEO", kelas: "1S2" },
@@ -914,22 +906,22 @@
         { hari: "Jumaat", masa: "11:00 - 12:00", subjek: "SEJ", kelas: "4S1" }
       ],
       "Norul Hafidzah bt Hassan": [
-        { hari: "Isnin", masa: "13:00 - 14:00", subjek: "KK", kelas: "5S3" }
+        { hari: "Isnin", masa: "13:00 - 13:30", subjek: "KK", kelas: "5S3" }
       ],
       "Jessica Chan Lai Peng": [
-        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "SC", kelas: "5S3" },
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "SC", kelas: "4S2" },
+        { hari: "Isnin", masa: "09:00 - 10:30", subjek: "SC", kelas: "5S3" },
+        { hari: "Isnin", masa: "11:00 - 12:30", subjek: "SC", kelas: "4S2" },
         { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "SC", kelas: "1S1" },
-        { hari: "Selasa", masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "SC", kelas: "5S3" },
+        { hari: "Selasa", masa: "10:30 - 12:00", subjek: "SC", kelas: "1S1" },
+        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "BI", kelas: "3S2" },
+        { hari: "Selasa", masa: "13:30 - 14:30", subjek: "SC", kelas: "5S3" },
         { hari: "Rabu", masa: "08:30 - 09:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
         { hari: "Rabu", masa: "11:30 - 12:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
         { hari: "Khamis", masa: "08:30 - 09:30", subjek: "SC", kelas: "1S1" },
         { hari: "Khamis", masa: "09:30 - 10:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
         { hari: "Khamis", masa: "11:30 - 12:30", subjek: "BI", kelas: "3S2" },
-        { hari: "Jumaat", masa: "09:00 - 10:00", subjek: "SC", kelas: "4S2" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2" }
+        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "SC", kelas: "4S2" },
+        { hari: "Jumaat", masa: "10:00 - 11:00", subjek: "BI", kelas: "3S2" }
       ],
       "Lavanya a/p Vejayan": [
         { hari: "Isnin", masa: "08:00 - 09:00", subjek: "BI", kelas: "5S3" },
@@ -969,7 +961,7 @@
       ],
       "Muhammad Syadza bin Yusof": [
         { hari: "Isnin", masa: "08:00 - 09:00", subjek: "SEJ", kelas: "3S2" },
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2" },
+        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "ASK/RBT", kelas: "2S1/2S2" },
         { hari: "Selasa", masa: "08:00 - 08:30", subjek: "SEJ", kelas: "1S1/1S2" },
         { hari: "Selasa", masa: "08:30 - 09:00", subjek: "PJ", kelas: "2S2" },
         { hari: "Selasa", masa: "10:30 - 11:30", subjek: "SEJ", kelas: "3S1" },
@@ -1168,21 +1160,16 @@
         { hari: "Khamis", masa: "10:30 - 11:00", subjek: "PK", kelas: "5S1/5S2/5S3" },
         { hari: "Khamis", masa: "12:00 - 13:00", subjek: "PSV", kelas: "1S1" },
         { hari: "Jumaat", masa: "09:00 - 10:00", subjek: "PSV", kelas: "1S2" }
-      ],
-      "Aishah binti A Hamid": [
-        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "PSV", kelas: "4S3" },
-        { hari: "Selasa", masa: "10:30 - 11:30", subjek: "PSV", kelas: "5S2" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "PSV", kelas: "2S1" },
-        { hari: "Khamis", masa: "11:30 - 12:30", subjek: "PSV", kelas: "2S2" }
       ]
     };
 
-    // Storan versi 3 untuk membersihkan cache lama secara automatik
-    const STORAGE_KEY = 'smkka_jadual_guru_v3';
+    // Bersihkan storan lama dan tetapkan versi 4 rujukan tunggal Siri 6
+    const STORAGE_KEY = 'smkka_jadual_siri6_v4';
+    localStorage.removeItem('smkka_jadual_guru');
+    localStorage.removeItem('smkka_jadual_guru_v3');
+
     let pentadbirList = JSON.parse(localStorage.getItem('smkka_pentadbir_list')) || DEFAULT_PENTADBIR;
     let jadualData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || JADUAL_SIRI_6_TEPAT;
-    
-    // Simpan kunci terkini
     localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
 
     let records = [];
@@ -1629,7 +1616,7 @@
           <td class="p-2.5"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-[10px]">${r["Status Pelaksanaan"] || '-'}</span></td>
           <td class="p-2.5 font-medium text-[11px]">${isVer ? `<span class="text-emerald-700 font-bold">${r["Disemak Oleh"]}</span>` : '<span class="text-amber-600 italic">Belum Sah</span>'}</td>
         `;
-        printTbody.appendChild(tr);
+        tbody.appendChild(tr);
       });
     }
 
@@ -1953,7 +1940,6 @@
       switchTab('guru');
     }
 
-    // ================= PENGURUSAN NAMA GURU DI HALAMAN ADMIN =================
     function editCurrentTeacherName() {
       const currentName = document.getElementById('adminTeacherSelect').value;
       if (!currentName) {
@@ -2130,7 +2116,6 @@
       });
     }
 
-    // PENGURUSAN ADMIN: PENTADBIR
     function renderAdminPentadbirTable() {
       const tbody = document.getElementById('adminPentadbirTableBody');
       if (!tbody) return;
