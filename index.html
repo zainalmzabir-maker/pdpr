@@ -17,22 +17,22 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
     
-    /* STIL CETAKAN OPR KHAS (ONE PAGE REPORT A4) */
+    /* GAYA KHAS CETAKAN (A4 OPR & LAPORAN TARIKH) */
     @media print {
       body * { visibility: hidden; }
-      #oprPrintModal, #oprPrintModal * { visibility: visible; }
-      #oprPrintModal {
+      .print-area, .print-area * { visibility: visible; }
+      .print-area {
         position: absolute;
         left: 0;
         top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
         background: white !important;
         box-shadow: none !important;
       }
       .no-print { display: none !important; }
-      @page { size: A4 portrait; margin: 10mm 12mm; }
+      @page { size: A4 portrait; margin: 8mm 10mm; }
     }
   </style>
 </head>
@@ -60,6 +60,9 @@
           <button onclick="switchTab('pemantau')" id="tabBtnPemantau" class="px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition">
             <i class="fa-solid fa-stamp"></i> Pengesahan Pentadbir
             <span id="pendingBadge" class="hidden ml-1 px-1.5 py-0.2 bg-rose-500 text-white text-[10px] rounded-full">0</span>
+          </button>
+          <button onclick="switchTab('laporan')" id="tabBtnLaporan" class="px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-file-invoice"></i> Laporan Tarikh
           </button>
           <button onclick="promptAdminLogin()" id="tabBtnAdmin" class="px-3.5 py-1.5 rounded-lg text-amber-300 hover:text-white flex items-center gap-1.5 transition">
             <i class="fa-solid fa-gear"></i> Admin
@@ -195,7 +198,6 @@
               <input type="text" id="tajukInput" placeholder="Standard Kandungan / Topik" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs">
             </div>
 
-            <!-- AKTIVITI & DAPATAN -->
             <div>
               <label class="block font-semibold text-slate-700 mb-1">Aktiviti yang Dijalankan</label>
               <textarea id="aktivitiInput" rows="2" placeholder="Nyatakan aktiviti pembelajaran secara ringkas..." required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs"></textarea>
@@ -222,7 +224,7 @@
               </div>
             </div>
 
-            <!-- RUANG GAMBAR OPR DENGAN AUTO-COMPRESSION (MIN 1, MAKS 4) -->
+            <!-- GAMBAR OPR -->
             <div class="p-3 bg-amber-50/70 rounded-xl border border-dashed border-amber-300 space-y-2">
               <div class="flex justify-between items-center">
                 <label class="block font-bold text-amber-950 text-xs flex items-center gap-1.5">
@@ -230,11 +232,10 @@
                 </label>
                 <span id="imgCountBadge" class="text-[10px] font-bold text-amber-800 bg-white px-2 py-0.5 rounded-full border border-amber-200">0 / 4 Gambar</span>
               </div>
-              <p class="text-[10px] text-amber-800">Wajib muat naik <strong>minimum 1 gambar</strong> dan maksimum <strong>4 gambar</strong>. Gambar dimampatkan automatik.</p>
+              <p class="text-[10px] text-amber-800">Wajib muat naik <strong>minimum 1 gambar</strong> dan maksimum <strong>4 gambar</strong>.</p>
               
               <input type="file" id="oprImageInput" accept="image/*" multiple onchange="handleMultipleImages(event)" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 cursor-pointer">
               
-              <!-- Container Galeri Gambar Mini -->
               <div id="imagePreviewGrid" class="grid grid-cols-4 gap-2 pt-1 hidden"></div>
             </div>
 
@@ -244,7 +245,7 @@
           </form>
         </div>
 
-        <!-- CARTA & SENARAI REKOD TERKINI DENGAN BUTANG CETAK OPR -->
+        <!-- CARTA & SENARAI REKOD TERKINI -->
         <div class="lg:col-span-2 space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -257,7 +258,7 @@
             </div>
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
               <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-chart-simple text-emerald-500"></i> Penggunaan Platform PdPR
+                <i class="fa-solid fa-chart-simple text-emerald-500"></i> Platform PdPR
               </h3>
               <div class="h-44 flex items-center justify-center">
                 <canvas id="chartPlatform"></canvas>
@@ -272,7 +273,7 @@
                 <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                   <i class="fa-solid fa-table-list text-indigo-600"></i> Senarai Rekod PdPR Terkini
                 </h2>
-                <p class="text-xs text-slate-400">Klik butang Cetak OPR untuk menghasilkan laporan rasmi satu halaman</p>
+                <p class="text-xs text-slate-400">Klik "Cetak OPR" untuk mencetak laporan satu halaman bergambar</p>
               </div>
               <input type="text" id="searchGuruInput" oninput="filterGuruTable()" placeholder="Cari guru / subjek..." class="p-2 border border-slate-300 rounded-xl text-xs w-full md:w-56 focus:ring-2 focus:ring-indigo-500">
             </div>
@@ -340,7 +341,95 @@
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 3: HALAMAN ADMIN (KATA LALUAN: adminpdpr) ================= -->
+    <!-- ================= PANDANGAN 3: PENJANA LAPORAN MENGIKUT TARIKH ================= -->
+    <div id="viewLaporan" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-200">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-file-invoice text-indigo-600"></i> Penjana Laporan Pemantauan PdPR Mengikut Tarikh
+            </h2>
+            <p class="text-xs text-slate-500">Pilih julat tarikh untuk menjana rumusan pemantauan harian atau mingguan sekolah.</p>
+          </div>
+          <button onclick="previewDateReport()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-2 transition">
+            <i class="fa-solid fa-print"></i> Cetak / Jana PDF Laporan Tarikh
+          </button>
+        </div>
+
+        <!-- Borang Penapis Tarikh -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tarikh Mula</label>
+            <input type="date" id="reportStartDate" onchange="filterDateReportTable()" class="w-full p-2.5 border border-slate-300 rounded-xl bg-white font-semibold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tarikh Akhir</label>
+            <input type="date" id="reportEndDate" onchange="filterDateReportTable()" class="w-full p-2.5 border border-slate-300 rounded-xl bg-white font-semibold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Status Pengesahan</label>
+            <select id="reportFilterStatus" onchange="filterDateReportTable()" class="w-full p-2.5 border border-slate-300 rounded-xl bg-white font-semibold">
+              <option value="ALL">Semua Rekod</option>
+              <option value="Disahkan">Hanya Yang Disahkan</option>
+              <option value="Belum Disahkan">Belum Disahkan</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button onclick="setReportDateToday()" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-calendar-day"></i> Hari Ini Sahaja
+            </button>
+          </div>
+        </div>
+
+        <!-- Ringkasan Statistik Laporan Terpilih -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+          <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
+            <p class="text-[11px] text-indigo-600 font-semibold">Jumlah Sesi</p>
+            <h4 id="repKpiTotal" class="text-xl font-extrabold text-indigo-950">0</h4>
+          </div>
+          <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+            <p class="text-[11px] text-emerald-600 font-semibold">Dilaksanakan</p>
+            <h4 id="repKpiExecuted" class="text-xl font-extrabold text-emerald-900">0</h4>
+          </div>
+          <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl">
+            <p class="text-[11px] text-blue-600 font-semibold">% Pelaksanaan</p>
+            <h4 id="repKpiRate" class="text-xl font-extrabold text-blue-900">0%</h4>
+          </div>
+          <div class="p-3 bg-purple-50 border border-purple-100 rounded-xl">
+            <p class="text-[11px] text-purple-600 font-semibold">Murid Terlibat</p>
+            <h4 id="repKpiStudents" class="text-xl font-extrabold text-purple-900">0</h4>
+          </div>
+          <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl col-span-2 md:col-span-1">
+            <p class="text-[11px] text-amber-700 font-semibold">Telah Disahkan</p>
+            <h4 id="repKpiVerified" class="text-xl font-extrabold text-amber-950">0</h4>
+          </div>
+        </div>
+
+        <!-- Jadual Hasil Tapisan Tarikh -->
+        <div class="overflow-x-auto max-h-[420px] rounded-xl border border-slate-200">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-indigo-950 text-white uppercase font-semibold sticky top-0 z-10">
+              <tr>
+                <th class="p-2.5">Bil</th>
+                <th class="p-2.5">Tarikh / Masa</th>
+                <th class="p-2.5">Nama Guru</th>
+                <th class="p-2.5">Mata Pelajaran & Kelas</th>
+                <th class="p-2.5">Platform</th>
+                <th class="p-2.5">Topik / Tajuk</th>
+                <th class="p-2.5">Murid</th>
+                <th class="p-2.5">Status PdPR</th>
+                <th class="p-2.5">Pengesahan</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= PANDANGAN 4: HALAMAN ADMIN (KATA LALUAN: adminpdpr) ================= -->
     <div id="viewAdmin" class="hidden space-y-6">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
         
@@ -381,7 +470,7 @@
           </div>
         </div>
 
-        <!-- 2. PENGURUSAN JADUAL WAKTU & GURU -->
+        <!-- 2. PENGURUSAN GURU & JADUAL WAKTU (DENGAN FUNGSI EDIT NAMA GURU) -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
           <div class="flex flex-wrap justify-between items-center gap-2">
             <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
@@ -397,18 +486,33 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-            <div>
-              <label class="block font-semibold text-slate-600 text-xs mb-1">Pilih Guru untuk Diedit</label>
-              <select id="adminTeacherSelect" onchange="renderAdminTeacherSlots()" class="w-full p-2 border border-slate-300 rounded-xl bg-white text-xs font-semibold">
-                <!-- Injected dynamically -->
+          <!-- Pemilihan Guru & Butang Pembetulan Nama -->
+          <div class="bg-white p-3.5 rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+            <div class="md:col-span-6">
+              <label class="block font-bold text-slate-700 text-xs mb-1">Pilih Guru untuk Disemak / Diedit</label>
+              <select id="adminTeacherSelect" onchange="renderAdminTeacherSlots()" class="w-full p-2 border border-slate-300 rounded-xl bg-slate-50 text-xs font-semibold">
+                <!-- Disuntik secara dinamik -->
               </select>
             </div>
-            <div>
-              <button onclick="openAddSlotModal()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-plus-circle"></i> Tambah Slot Waktu Guru Ini
+            <div class="md:col-span-3">
+              <button onclick="editCurrentTeacherName()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-pen-to-square"></i> Betulkan Nama Guru
               </button>
             </div>
+            <div class="md:col-span-3">
+              <button onclick="deleteCurrentTeacher()" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-trash-can"></i> Padam Guru Ini
+              </button>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-clock text-indigo-600"></i> Slot Waktu Mengajar Semasa Bagi Guru Dipilih
+            </span>
+            <button onclick="openAddSlotModal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1">
+              <i class="fa-solid fa-plus-circle"></i> Tambah Slot Waktu
+            </button>
           </div>
 
           <div class="overflow-x-auto max-h-60 bg-white rounded-lg border border-slate-200">
@@ -432,7 +536,7 @@
 
   </main>
 
-  <!-- ================= MODAL PENGESAHAN PENTADBIR DENGAN SCRIBBLE SIGNATURE ================= -->
+  <!-- ================= MODAL PENGESAHAN PENTADBIR ================= -->
   <div id="verifyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
@@ -462,7 +566,7 @@
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Pilih Pentadbir / Pemantau</label>
           <select id="selectPentadbirVerify" onchange="onPentadbirDropdownChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-medium">
-            <!-- Injected dynamically from admin list -->
+            <!-- Disuntik secara dinamik -->
           </select>
         </div>
 
@@ -514,9 +618,9 @@
 
   <!-- ================= MODAL PRATONTON & CETAKAN OPR (ONE PAGE REPORT A4) ================= -->
   <div id="oprPrintModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[96vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[96vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 print-area">
       
-      <!-- Bar Alat Tindakan Cetak (Tersembunyi bila cetak) -->
+      <!-- Bar Alat Tindakan Cetak -->
       <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 no-print">
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 bg-indigo-100 text-indigo-800 font-bold rounded-lg text-xs">Pratonton OPR Rasmi</span>
@@ -524,14 +628,14 @@
         </div>
         <div class="flex items-center gap-2">
           <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-print"></i> Cetak Sekarang / Simpan PDF
+            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
           </button>
           <button onclick="closeOprPrintModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Tutup</button>
         </div>
       </div>
 
       <!-- KANDUNGAN LAPORAN OPR A4 -->
-      <div id="oprDocumentArea" class="bg-white border-2 border-slate-900 p-6 space-y-4 text-slate-900 text-xs leading-relaxed">
+      <div class="bg-white border-2 border-slate-900 p-6 space-y-4 text-slate-900 text-xs leading-relaxed">
         
         <!-- Header Rasmi -->
         <div class="flex items-center gap-4 border-b-2 border-slate-900 pb-3">
@@ -582,14 +686,12 @@
           <p><strong>DAPATAN / HASIL PEMBELAJARAN:</strong> <span id="oprDocDapatan" class="font-medium">-</span></p>
         </div>
 
-        <!-- Bukti Bergambar (1 hingga 4 Gambar) -->
+        <!-- Bukti Bergambar -->
         <div>
           <h4 class="font-bold text-[11px] uppercase tracking-wider mb-1.5 flex items-center gap-1">
             <i class="fa-solid fa-images"></i> EVIDENS / RAKAMAN BERGAMBAR PELAKSANAAN (OPR)
           </h4>
-          <div id="oprDocImagesGrid" class="grid grid-cols-2 gap-2 border border-slate-900 p-2 bg-slate-50 min-h-[160px]">
-            <!-- Injected Dynamically -->
-          </div>
+          <div id="oprDocImagesGrid" class="grid grid-cols-2 gap-2 border border-slate-900 p-2 bg-slate-50 min-h-[160px]"></div>
         </div>
 
         <!-- Pengesahan Pentadbir & Tandatangan Digital -->
@@ -612,15 +714,95 @@
     </div>
   </div>
 
+  <!-- ================= MODAL CETAKAN LAPORAN PEMANTAUAN MENGIKUT TARIKH ================= -->
+  <div id="dateReportPrintModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[96vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 print-area">
+      
+      <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 no-print">
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 bg-indigo-100 text-indigo-800 font-bold rounded-lg text-xs">Laporan Pemantauan Berkala</span>
+          <span class="text-xs text-slate-500">Format Cetakan Rasmi PPD / JPN</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+          </button>
+          <button onclick="closeDateReportPrintModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Tutup</button>
+        </div>
+      </div>
+
+      <!-- DOKUMEN CETAK LAPORAN TARIKH -->
+      <div class="bg-white p-4 space-y-4 text-slate-900 text-xs">
+        
+        <div class="flex items-center gap-4 border-b-2 border-slate-900 pb-3">
+          <img src="logo.png" alt="Logo SMKKA" onerror="this.src='https://placehold.co/90x90/indigo/white?text=SMKKA'" class="w-16 h-16 object-contain">
+          <div class="text-center flex-1">
+            <h2 class="text-sm font-extrabold uppercase tracking-wide">SEKOLAH MENENGAH KEBANGSAAN KAMARUL ARIFFIN</h2>
+            <p class="text-[11px] text-slate-600">85300 LABIS, SEGAMAT, JOHOR DARUL TAKZIM</p>
+            <h3 class="text-xs font-black uppercase tracking-wider text-indigo-950 mt-1 bg-slate-100 py-1 border border-slate-300">
+              LAPORAN PEMANTAUAN PELAKSANAAN PdPR MENGIKUT TARIKH
+            </h3>
+            <p class="text-[11px] font-bold text-slate-700 mt-1">
+              TEMPOH PEMANTAUAN: <span id="printRepPeriodLabel" class="text-indigo-900 underline">-</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Ringkasan Eksekutif -->
+        <div class="grid grid-cols-4 gap-2 border border-slate-900 p-2.5 bg-slate-50 text-center text-[11px]">
+          <div><strong>JUMLAH SESI PDPR:</strong> <span id="printRepTotal" class="font-bold text-slate-900">0</span></div>
+          <div><strong>DILAKSANAKAN:</strong> <span id="printRepExecuted" class="font-bold text-emerald-800">0</span></div>
+          <div><strong>KADAR PELAKSANAAN:</strong> <span id="printRepRate" class="font-bold text-blue-800">0%</span></div>
+          <div><strong>TOTAL MURID HADIR:</strong> <span id="printRepStudents" class="font-bold text-indigo-900">0</span></div>
+        </div>
+
+        <!-- Senarai Rekod Pemantauan -->
+        <table class="w-full border-collapse border border-slate-900 text-[10px]">
+          <thead class="bg-slate-100 text-slate-900 uppercase font-bold text-center border-b border-slate-900">
+            <tr>
+              <th class="border border-slate-900 p-1.5 w-8">Bil</th>
+              <th class="border border-slate-900 p-1.5 w-20">Tarikh & Masa</th>
+              <th class="border border-slate-900 p-1.5">Nama Guru</th>
+              <th class="border border-slate-900 p-1.5">Mata Pelajaran & Kelas</th>
+              <th class="border border-slate-900 p-1.5">Platform</th>
+              <th class="border border-slate-900 p-1.5">Tajuk / Topik</th>
+              <th class="border border-slate-900 p-1.5 w-12">Murid</th>
+              <th class="border border-slate-900 p-1.5 w-20">Status</th>
+              <th class="border border-slate-900 p-1.5">Disahkan Oleh</th>
+            </tr>
+          </thead>
+          <tbody id="printRepTableBody"></tbody>
+        </table>
+
+        <!-- Ruangan Pengesahan Pengetua / GPK -->
+        <div class="grid grid-cols-2 gap-8 pt-6 text-[11px]">
+          <div>
+            <p>Disediakan oleh:</p>
+            <div class="h-16 border-b border-slate-400"></div>
+            <p class="font-bold mt-1">Penyelaras PdPR / Setiausaha Kurikulum</p>
+            <p class="text-[10px] text-slate-500">SMK Kamarul Ariffin, Labis</p>
+          </div>
+          <div>
+            <p>Disahkan oleh:</p>
+            <div class="h-16 border-b border-slate-400"></div>
+            <p class="font-bold mt-1">Pengetua / Guru Penolong Kanan</p>
+            <p class="text-[10px] text-slate-500">SMK Kamarul Ariffin, Labis</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <footer class="mt-auto py-3 bg-slate-900 text-slate-400 text-xs text-center border-t border-slate-800 no-print">
     SMK Kamarul Ariffin, 85300 Labis, Johor • Sistem e-pantau PdPr SMKKA
   </footer>
 
-  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <!-- ================= LOGIK JAVASCRIPT LENGKAP ================= -->
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    // 1. DATA PENTADBIR RASMI (BOLEH DIEDIT DI PANEL ADMIN)
+    // DATA PENTADBIR ASAL
     const DEFAULT_PENTADBIR = [
       { id: 1, nama: "Cikgu Hadi bin Adman", jawatan: "Pengetua" },
       { id: 2, nama: "GPK Pentadbiran", jawatan: "Guru Penolong Kanan Pentadbiran" },
@@ -632,7 +814,7 @@
       { id: 8, nama: "GKMP Teknik & Vokasional", jawatan: "Guru Kanan Teknik & Vokasional" }
     ];
 
-    // 2. DATA JADUAL GURU SIRI 6 (BOLEH DIEDIT DI PANEL ADMIN)
+    // DATA JADUAL GURU SIRI 6 ASAL
     const DEFAULT_JADUAL_SIRI_6 = {
       "Pengetua (Cikgu Hadi bin Adman)": [
         { hari: "Isnin", masa: "10:30 - 11:00", subjek: "PSV", kelas: "3S2" },
@@ -764,21 +946,23 @@
       ]
     };
 
-    // Muat data dari localStorage atau default
     let pentadbirList = JSON.parse(localStorage.getItem('smkka_pentadbir_list')) || DEFAULT_PENTADBIR;
     let jadualData = JSON.parse(localStorage.getItem('smkka_jadual_guru')) || DEFAULT_JADUAL_SIRI_6;
     let records = [];
     let compressedImages = [];
     const HARI_MAP = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
 
-    // KANVAS SCRIBBLE SIGNATURE
     let sigCanvas, sigCtx;
     let isDrawing = false;
     let hasDrawnSignature = false;
 
-    // INIT PADA MUAT TURUN
+    // INISIALISASI APABILA HALAMAN DIMUATKAN
     window.onload = function() {
-      document.getElementById('tarikhInput').value = new Date().toISOString().split('T')[0];
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('tarikhInput').value = todayStr;
+      document.getElementById('reportStartDate').value = todayStr;
+      document.getElementById('reportEndDate').value = todayStr;
+      
       populateTeacherDropdown();
       populatePentadbirDropdowns();
       initSignaturePad();
@@ -828,7 +1012,6 @@
       document.getElementById('jawatanPentadbirInput').value = opt ? (opt.dataset.jawatan || "") : "";
     }
 
-    // PENGESANAN HARI & SLOT WAKTU
     function updateHariLabel() {
       const dateVal = document.getElementById('tarikhInput').value;
       if (dateVal) {
@@ -878,7 +1061,7 @@
       }
     }
 
-    // ================= MAMPATAN GAMBAR (CLIENT-SIDE CANVAS COMPRESSION) =================
+    // ================= MAMPATAN GAMBAR OPR =================
     async function handleMultipleImages(e) {
       const files = Array.from(e.target.files);
       if (!files.length) return;
@@ -898,7 +1081,6 @@
         const compressedBase64 = await compressImageFile(file, 900, 0.7);
         compressedImages.push(compressedBase64);
 
-        // Preview thumbnail
         const thumb = document.createElement('div');
         thumb.className = "relative border rounded-lg overflow-hidden bg-slate-100 aspect-square group";
         thumb.innerHTML = `
@@ -949,7 +1131,6 @@
     async function submitGuruRecord(e) {
       e.preventDefault();
 
-      // Wajib sekurang-kurangnya 1 gambar
       if (compressedImages.length < 1) {
         Swal.fire({
           icon: 'warning',
@@ -984,7 +1165,6 @@
         localImagesCount: compressedImages.length
       };
 
-      // Simpan salinan penuh ke Local Cache untuk penjanaan segera OPR
       saveLocalRecordCache(payload);
 
       try {
@@ -1007,7 +1187,6 @@
         showConfirmButton: false
       });
 
-      // Reset
       document.getElementById('tajukInput').value = '';
       document.getElementById('aktivitiInput').value = '';
       document.getElementById('dapatanInput').value = '';
@@ -1028,7 +1207,7 @@
       localStorage.setItem('smkka_pdpr_local_records', JSON.stringify(localCache.slice(0, 50)));
     }
 
-    // ================= MUAT TURUN & PAPARAN DATA =================
+    // ================= MUAT TURUN DATA & STATISTIK =================
     async function refreshData() {
       const icon = document.getElementById('refreshIcon');
       icon.classList.add('fa-spin');
@@ -1047,6 +1226,7 @@
       icon.classList.remove('fa-spin');
       renderGuruTable(records);
       renderPemantauTable(records);
+      filterDateReportTable();
       updateKpis();
       renderCharts();
     }
@@ -1144,7 +1324,128 @@
       });
     }
 
-    // ================= PAD TANDATANGAN DIGITAL (SCRIBBLE SIGNATURE) =================
+    // ================= PENJANAAN LAPORAN MENGIKUT TARIKH =================
+    function setReportDateToday() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('reportStartDate').value = todayStr;
+      document.getElementById('reportEndDate').value = todayStr;
+      filterDateReportTable();
+    }
+
+    function getFilteredRecordsByDate() {
+      const sDate = document.getElementById('reportStartDate').value;
+      const eDate = document.getElementById('reportEndDate').value;
+      const statFilter = document.getElementById('reportFilterStatus').value;
+
+      return records.filter(r => {
+        const rDate = (r["Hari / Tarikh PDPR"] || "").slice(0, 10);
+        let matchDate = true;
+        if (sDate && eDate) {
+          matchDate = rDate >= sDate && rDate <= eDate;
+        } else if (sDate) {
+          matchDate = rDate >= sDate;
+        } else if (eDate) {
+          matchDate = rDate <= eDate;
+        }
+
+        let matchStatus = true;
+        if (statFilter === "Disahkan") matchStatus = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
+        else if (statFilter === "Belum Disahkan") matchStatus = !r["Status Pengesahan"] || r["Status Pengesahan"] === "Belum Disahkan";
+
+        return matchDate && matchStatus;
+      });
+    }
+
+    function filterDateReportTable() {
+      const filtered = getFilteredRecordsByDate();
+      const tbody = document.getElementById('reportTableBody');
+      tbody.innerHTML = '';
+
+      const total = filtered.length;
+      const executed = filtered.filter(r => r["Status Pelaksanaan"] === "Dilaksanakan").length;
+      const rate = total > 0 ? Math.round((executed / total) * 100) : 0;
+      const students = filtered.reduce((acc, curr) => acc + (parseInt(curr["Bil. Murid Terlibat"]) || 0), 0);
+      const verified = filtered.filter(r => r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan")).length;
+
+      document.getElementById('repKpiTotal').textContent = total;
+      document.getElementById('repKpiExecuted').textContent = executed;
+      document.getElementById('repKpiRate').textContent = `${rate}%`;
+      document.getElementById('repKpiStudents').textContent = students.toLocaleString();
+      document.getElementById('repKpiVerified').textContent = verified;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400">Tiada rekod PdPR dalam julat tarikh yang dipilih.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((r, idx) => {
+        const isVer = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold text-slate-400">${idx + 1}</td>
+          <td class="p-2.5 font-semibold text-slate-800 whitespace-nowrap">${r["Hari / Tarikh PDPR"] || '-'}<br><span class="text-[10px] text-slate-400">${r["Masa"] || ''}</span></td>
+          <td class="p-2.5 font-bold text-slate-900">${r["Nama Guru"] || '-'}</td>
+          <td class="p-2.5 font-medium"><span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 font-bold rounded">${r["Mata Pelajaran"] || '-'}</span> ${r["Kelas"] || ''}</td>
+          <td class="p-2.5 text-slate-600">${r["Platform PDPR"] || '-'}</td>
+          <td class="p-2.5 max-w-xs truncate text-slate-700">${r["Tajuk / Topik Diajar"] || '-'}</td>
+          <td class="p-2.5 font-bold text-slate-800">${r["Bil. Murid Terlibat"] || 0}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-[10px]">${r["Status Pelaksanaan"] || '-'}</span></td>
+          <td class="p-2.5 font-medium text-[11px]">${isVer ? `<span class="text-emerald-700 font-bold">${r["Disemak Oleh"]}</span>` : '<span class="text-amber-600 italic">Belum Sah</span>'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function previewDateReport() {
+      const filtered = getFilteredRecordsByDate();
+      if (!filtered.length) {
+        Swal.fire('Tiada Rekod', 'Tiada rekod PdPR ditemui dalam julat tarikh yang dipilih.', 'warning');
+        return;
+      }
+
+      const sDate = document.getElementById('reportStartDate').value || '-';
+      const eDate = document.getElementById('reportEndDate').value || '-';
+      document.getElementById('printRepPeriodLabel').textContent = sDate === eDate ? sDate : `${sDate} HINGGA ${eDate}`;
+
+      const total = filtered.length;
+      const executed = filtered.filter(r => r["Status Pelaksanaan"] === "Dilaksanakan").length;
+      const rate = total > 0 ? Math.round((executed / total) * 100) : 0;
+      const students = filtered.reduce((acc, curr) => acc + (parseInt(curr["Bil. Murid Terlibat"]) || 0), 0);
+
+      document.getElementById('printRepTotal').textContent = total;
+      document.getElementById('printRepExecuted').textContent = executed;
+      document.getElementById('printRepRate').textContent = `${rate}%`;
+      document.getElementById('printRepStudents').textContent = students.toLocaleString();
+
+      const printTbody = document.getElementById('printRepTableBody');
+      printTbody.innerHTML = '';
+
+      filtered.forEach((r, idx) => {
+        const isVer = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="border border-slate-900 p-1 text-center font-bold">${idx + 1}</td>
+          <td class="border border-slate-900 p-1 text-center">${r["Hari / Tarikh PDPR"] || '-'}<br>${r["Masa"] || ''}</td>
+          <td class="border border-slate-900 p-1 font-bold">${r["Nama Guru"] || '-'}</td>
+          <td class="border border-slate-900 p-1 font-semibold">${r["Mata Pelajaran"] || '-'} (${r["Kelas"] || ''})</td>
+          <td class="border border-slate-900 p-1">${r["Platform PDPR"] || '-'}</td>
+          <td class="border border-slate-900 p-1">${r["Tajuk / Topik Diajar"] || '-'}</td>
+          <td class="border border-slate-900 p-1 text-center font-bold">${r["Bil. Murid Terlibat"] || 0}</td>
+          <td class="border border-slate-900 p-1 text-center font-semibold">${r["Status Pelaksanaan"] || '-'}</td>
+          <td class="border border-slate-900 p-1">${isVer ? (r["Disemak Oleh"] || 'Disahkan') : 'Belum Sah'}</td>
+        `;
+        printTbody.appendChild(tr);
+      });
+
+      document.getElementById('dateReportPrintModal').classList.remove('hidden');
+    }
+
+    function closeDateReportPrintModal() {
+      document.getElementById('dateReportPrintModal').classList.add('hidden');
+    }
+
+    // ================= PAD TANDATANGAN PENTADBIR =================
     function initSignaturePad() {
       sigCanvas = document.getElementById('sigCanvas');
       if (!sigCanvas) return;
@@ -1200,7 +1501,6 @@
       hasDrawnSignature = false;
     }
 
-    // ================= MODAL PENGESAHAN & SUBMIT VERIFIKASI =================
     function openVerifyModal(recordId) {
       const record = records.find(r => r["ID Rekod"] === recordId) || {};
       document.getElementById('verifyRecordIdInput').value = recordId;
@@ -1212,7 +1512,6 @@
       document.getElementById('modalAktiviti').textContent = record["Aktiviti Dijalankan"] || '-';
       document.getElementById('modalDapatan').textContent = record["Dapatan / Hasil"] || '-';
 
-      // Papar gambar di modal
       const imgContainer = document.getElementById('modalImagesContainer');
       imgContainer.innerHTML = '';
       const localRecords = JSON.parse(localStorage.getItem('smkka_pdpr_local_records')) || [];
@@ -1224,7 +1523,7 @@
         imagesToShow = record["Gambar OPR"].split(" | ");
       }
 
-      imagesToShow.forEach((src, idx) => {
+      imagesToShow.forEach(src => {
         const img = document.createElement('img');
         img.src = src;
         img.className = "w-full h-16 object-cover rounded border";
@@ -1248,7 +1547,7 @@
       }
 
       if (!hasDrawnSignature) {
-        Swal.fire('Tandatangan Diperlukan', 'Sila turunkan scribble tandatangan pentadbir pada petak yang disediakan.', 'warning');
+        Swal.fire('Tandatangan Diperlukan', 'Sila turunkan scribble tandatangan pentadbir.', 'warning');
         return;
       }
 
@@ -1268,7 +1567,6 @@
         signatureBase64: sigBase64
       };
 
-      // Simpan tandatangan ke cache tempatan untuk cetakan OPR
       localStorage.setItem('sig_' + recordId, sigBase64);
 
       try {
@@ -1297,14 +1595,14 @@
       setTimeout(refreshData, 1200);
     }
 
-    // ================= PENJANAAN OPR (ONE PAGE REPORT) =================
+    // ================= MODAL PRATONTON OPR =================
     function openOprPrintModal(recordId) {
       const record = records.find(r => r["ID Rekod"] === recordId) || {};
       const localRecords = JSON.parse(localStorage.getItem('smkka_pdpr_local_records')) || [];
       const matchedLocal = localRecords.find(l => l.recordId === recordId) || {};
 
       document.getElementById('oprDocGuru').textContent = record["Nama Guru"] || matchedLocal.namaGuru || '-';
-      document.getElementById('oprDocTarikhHari').textContent = `${record["Hari / Tarikh PDPR"] || matchedLocal.tarikh || '-'} (Isnin)`;
+      document.getElementById('oprDocTarikhHari').textContent = `${record["Hari / Tarikh PDPR"] || matchedLocal.tarikh || '-'} (${record["Hari"] || 'Hari Persekolahan'})`;
       document.getElementById('oprDocMasa').textContent = record["Masa"] || matchedLocal.masa || '-';
       document.getElementById('oprDocSubjek').textContent = record["Mata Pelajaran"] || matchedLocal.mataPelajaran || '-';
       document.getElementById('oprDocKelas').textContent = record["Kelas"] || matchedLocal.kelas || '-';
@@ -1314,9 +1612,8 @@
 
       document.getElementById('oprDocTajuk').textContent = record["Tajuk / Topik Diajar"] || matchedLocal.tajuk || '-';
       document.getElementById('oprDocAktiviti').textContent = record["Aktiviti Dijalankan"] || matchedLocal.aktiviti || 'Murid melaksanakan tugasan dan aktiviti pembelajaran secara terpandu.';
-      document.getElementById('oprDocDapatan').textContent = record["Dapatan / Hasil"] || matchedLocal.dapatan || 'Objektif pembelajaran tercapai dengan penglibatan aktif murid.';
+      document.getElementById('oprDocDapatan').textContent = record["Dapatan / Hasil"] || matchedLocal.dapatan || 'Objektif pembelajaran tercapai dengan baik.';
 
-      // Bukti Bergambar (1 hingga 4 keping disusun cantik)
       const grid = document.getElementById('oprDocImagesGrid');
       grid.innerHTML = '';
 
@@ -1341,8 +1638,7 @@
         });
       }
 
-      // Bahagian Pengesahan
-      document.getElementById('oprDocCatatan').textContent = record["Catatan Pentadbir"] || "Pelaksanaan PdPR teratur dan menepati standard yang ditetapkan.";
+      document.getElementById('oprDocCatatan').textContent = record["Catatan Pentadbir"] || "Pelaksanaan PdPR teratur dan menepati jadual waktu.";
       document.getElementById('oprDocTarikhSah').textContent = record["Tarikh Pengesahan"] || new Date().toISOString().split('T')[0];
       document.getElementById('oprDocNamaPentadbir').textContent = record["Disemak Oleh"] || "(BELUM DISAHKAN)";
       document.getElementById('oprDocJawatanPentadbir').textContent = record["Jawatan Pentadbir"] || "Pentadbir SMK Kamarul Ariffin";
@@ -1369,7 +1665,7 @@
     function promptAdminLogin() {
       Swal.fire({
         title: 'Akses Pentadbir Sistem',
-        text: 'Sila masukkan kata laluan admin untuk mengubah jadual atau senarai pentadbir:',
+        text: 'Sila masukkan kata laluan admin untuk mengubah jadual atau senarai nama guru:',
         input: 'password',
         inputPlaceholder: 'Kata laluan admin',
         showCancelButton: true,
@@ -1380,7 +1676,7 @@
         if (result.isConfirmed) {
           if (result.value === 'adminpdpr') {
             switchTab('admin');
-            Swal.fire({ icon: 'success', title: 'Berjaya Masuk', text: 'Selamat datang ke Panel Admin e-pantau PdPr SMKKA', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Berjaya Masuk', text: 'Selamat datang ke Panel Kawalan Admin e-pantau PdPr SMKKA', timer: 1500, showConfirmButton: false });
           } else {
             Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Kata laluan tidak tepat!' });
           }
@@ -1391,10 +1687,12 @@
     function switchTab(tab) {
       document.getElementById('viewGuru').classList.add('hidden');
       document.getElementById('viewPemantau').classList.add('hidden');
+      document.getElementById('viewLaporan').classList.add('hidden');
       document.getElementById('viewAdmin').classList.add('hidden');
 
       document.getElementById('tabBtnGuru').className = "px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition";
       document.getElementById('tabBtnPemantau').className = "px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition";
+      document.getElementById('tabBtnLaporan').className = "px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition";
       document.getElementById('tabBtnAdmin').className = "px-3.5 py-1.5 rounded-lg text-amber-300 hover:text-white flex items-center gap-1.5 transition";
 
       if (tab === 'guru') {
@@ -1403,6 +1701,10 @@
       } else if (tab === 'pemantau') {
         document.getElementById('viewPemantau').classList.remove('hidden');
         document.getElementById('tabBtnPemantau').className = "px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition";
+      } else if (tab === 'laporan') {
+        document.getElementById('viewLaporan').classList.remove('hidden');
+        document.getElementById('tabBtnLaporan').className = "px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition";
+        filterDateReportTable();
       } else if (tab === 'admin') {
         document.getElementById('viewAdmin').classList.remove('hidden');
         document.getElementById('tabBtnAdmin').className = "px-3.5 py-1.5 rounded-lg bg-amber-600 text-white shadow-sm flex items-center gap-1.5 transition";
@@ -1415,59 +1717,78 @@
       switchTab('guru');
     }
 
-    // PENGURUSAN ADMIN: PENTADBIR
-    function renderAdminPentadbirTable() {
-      const tbody = document.getElementById('adminPentadbirTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      pentadbirList.forEach((p, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="p-2 font-bold text-slate-800">${p.nama}</td>
-          <td class="p-2 text-slate-600">${p.jawatan}</td>
-          <td class="p-2 text-center">
-            <button onclick="deletePentadbir(${idx})" class="text-rose-600 hover:text-rose-800 p-1 font-bold"><i class="fa-solid fa-trash-can"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+    // ================= PENGURUSAN NAMA GURU DI HALAMAN ADMIN =================
+    function editCurrentTeacherName() {
+      const currentName = document.getElementById('adminTeacherSelect').value;
+      if (!currentName) {
+        Swal.fire('Peringatan', 'Sila pilih guru terlebih dahulu.', 'warning');
+        return;
+      }
 
-    function openAddPentadbirModal() {
       Swal.fire({
-        title: 'Tambah Pentadbir',
-        html: `
-          <input id="swalPentadbirNama" class="swal2-input text-xs" placeholder="Nama Penuh Pentadbir">
-          <input id="swalPentadbirJawatan" class="swal2-input text-xs" placeholder="Jawatan (cth: GKMP Sains)">
-        `,
-        focusConfirm: false,
+        title: 'Betulkan Nama Guru',
+        text: `Nama semasa: ${currentName}`,
+        input: 'text',
+        inputValue: currentName,
+        inputPlaceholder: 'Masukkan ejaan / nama guru yang betul',
         showCancelButton: true,
-        confirmButtonText: 'Simpan',
-        preConfirm: () => {
-          const nama = document.getElementById('swalPentadbirNama').value.trim();
-          const jawatan = document.getElementById('swalPentadbirJawatan').value.trim();
-          if (!nama || !jawatan) {
-            Swal.showValidationMessage('Sila lengkapkan nama dan jawatan.');
+        confirmButtonText: 'Simpan Nama Baharu',
+        confirmButtonColor: '#f59e0b',
+        cancelButtonText: 'Batal',
+        preConfirm: (newVal) => {
+          if (!newVal || !newVal.trim()) {
+            Swal.showValidationMessage('Nama guru tidak boleh dibiarkan kosong.');
           }
-          return { nama, jawatan };
+          return newVal.trim();
         }
       }).then(res => {
-        if (res.isConfirmed) {
-          pentadbirList.push({ id: Date.now(), nama: res.value.nama, jawatan: res.value.jawatan });
-          localStorage.setItem('smkka_pentadbir_list', JSON.stringify(pentadbirList));
-          populatePentadbirDropdowns();
-          Swal.fire('Berjaya', 'Pentadbir baharu telah ditambah.', 'success');
+        if (res.isConfirmed && res.value && res.value !== currentName) {
+          const newName = res.value;
+
+          // Pindahkan jadual sedia ada ke nama baru
+          jadualData[newName] = jadualData[currentName] || [];
+          delete jadualData[currentName];
+
+          // Simpan ke localStorage
+          localStorage.setItem('smkka_jadual_guru', JSON.stringify(jadualData));
+
+          // Kemas kini dropdown dalam Mod Guru & Mod Admin
+          populateTeacherDropdown();
+          document.getElementById('adminTeacherSelect').value = newName;
+          renderAdminTeacherSlots();
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Nama Berjaya Dikemaskini!',
+            text: `Nama guru telah dibetulkan daripada "${currentName}" kepada "${newName}".`,
+            timer: 2000,
+            showConfirmButton: false
+          });
         }
       });
     }
 
-    function deletePentadbir(idx) {
-      pentadbirList.splice(idx, 1);
-      localStorage.setItem('smkka_pentadbir_list', JSON.stringify(pentadbirList));
-      populatePentadbirDropdowns();
+    function deleteCurrentTeacher() {
+      const teacher = document.getElementById('adminTeacherSelect').value;
+      if (!teacher) return;
+
+      Swal.fire({
+        title: `Padam Guru?`,
+        text: `Adakah anda pasti mahu memadam rekod guru "${teacher}" dan semua slot jadualnya?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Padam Guru',
+        confirmButtonColor: '#e11d48'
+      }).then(res => {
+        if (res.isConfirmed) {
+          delete jadualData[teacher];
+          localStorage.setItem('smkka_jadual_guru', JSON.stringify(jadualData));
+          populateTeacherDropdown();
+          Swal.fire('Dipadam', `Guru ${teacher} telah dikeluarkan dari pangkalan data.`, 'success');
+        }
+      });
     }
 
-    // PENGURUSAN ADMIN: JADUAL & GURU
     function renderAdminTeacherSlots() {
       const teacher = document.getElementById('adminTeacherSelect').value;
       const tbody = document.getElementById('adminSlotTableBody');
@@ -1576,7 +1897,59 @@
       });
     }
 
-    // ================= CARTA STATISTIK =================
+    // PENGURUSAN ADMIN: PENTADBIR
+    function renderAdminPentadbirTable() {
+      const tbody = document.getElementById('adminPentadbirTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      pentadbirList.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 font-bold text-slate-800">${p.nama}</td>
+          <td class="p-2 text-slate-600">${p.jawatan}</td>
+          <td class="p-2 text-center">
+            <button onclick="deletePentadbir(${idx})" class="text-rose-600 hover:text-rose-800 p-1 font-bold"><i class="fa-solid fa-trash-can"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openAddPentadbirModal() {
+      Swal.fire({
+        title: 'Tambah Pentadbir',
+        html: `
+          <input id="swalPentadbirNama" class="swal2-input text-xs" placeholder="Nama Penuh Pentadbir">
+          <input id="swalPentadbirJawatan" class="swal2-input text-xs" placeholder="Jawatan (cth: GKMP Sains)">
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Simpan',
+        preConfirm: () => {
+          const nama = document.getElementById('swalPentadbirNama').value.trim();
+          const jawatan = document.getElementById('swalPentadbirJawatan').value.trim();
+          if (!nama || !jawatan) {
+            Swal.showValidationMessage('Sila lengkapkan nama dan jawatan.');
+          }
+          return { nama, jawatan };
+        }
+      }).then(res => {
+        if (res.isConfirmed) {
+          pentadbirList.push({ id: Date.now(), nama: res.value.nama, jawatan: res.value.jawatan });
+          localStorage.setItem('smkka_pentadbir_list', JSON.stringify(pentadbirList));
+          populatePentadbirDropdowns();
+          Swal.fire('Berjaya', 'Pentadbir baharu telah ditambah.', 'success');
+        }
+      });
+    }
+
+    function deletePentadbir(idx) {
+      pentadbirList.splice(idx, 1);
+      localStorage.setItem('smkka_pentadbir_list', JSON.stringify(pentadbirList));
+      populatePentadbirDropdowns();
+    }
+
+    // ================= CARTA ANALISIS =================
     let chartStatusInst = null;
     let chartPlatformInst = null;
 
@@ -1636,7 +2009,7 @@
       });
     }
 
-    // TAPISAN JADUAL
+    // CARIAN GURU & PEMANTAU
     function filterGuruTable() {
       const q = document.getElementById('searchGuruInput').value.toLowerCase();
       const filtered = records.filter(r => 
