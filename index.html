@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e-Pantau PdPR | SMK Kamarul Ariffin</title>
+  <!-- Tailwind CSS, Font Awesome, Chart.js & SweetAlert2 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+  </style>
+</head>
+<body class="text-slate-800">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-indigo-700 rounded-xl flex items-center justify-center font-bold text-xl shadow">
+          <i class="fa-solid fa-chalkboard-user"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight">e-Pantau PdPR SMAR</h1>
+          <p class="text-xs text-indigo-200">SMK Kamarul Ariffin • Rujukan Jadual Waktu Siri 6</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openConfigModal()" class="px-3 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-xs rounded-xl transition border border-indigo-600 flex items-center gap-1.5 shadow-sm">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1 animate-pulse"></span>
+          <span id="syncStatus">Google Sheets Tersambung</span>
+        </button>
+        <button onclick="refreshData()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold rounded-xl transition shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i> Segar Semula
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- KPI STATS CARDS -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500">Jumlah Semakan</p>
+          <h3 id="statTotal" class="text-2xl font-bold text-slate-800">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+          <i class="fa-solid fa-clipboard-check"></i>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500">Dilaksanakan</p>
+          <h3 id="statExecuted" class="text-2xl font-bold text-emerald-600">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500">Kadar Pelaksanaan</p>
+          <h3 id="statRate" class="text-2xl font-bold text-indigo-600">0%</h3>
+        </div>
+        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500">Murid Terlibat</p>
+          <h3 id="statStudents" class="text-2xl font-bold text-purple-600">0</h3>
+        </div>
+        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+          <i class="fa-solid fa-user-graduate"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID: FORM & CHARTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- BORANG LOG PEMANTAUAN PDPR -->
+      <div class="lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+          <h2 class="font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-indigo-600"></i> Log / Semakan PdPR
+          </h2>
+          <span class="text-xs px-2.5 py-1 bg-indigo-50 text-indigo-700 font-semibold rounded-full">Borang Pantas</span>
+        </div>
+
+        <form id="pdprForm" onsubmit="submitRecord(event)" class="space-y-3.5 text-xs">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Nama Guru</label>
+            <select id="guruSelect" onchange="onTeacherChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-slate-50">
+              <option value="">-- Pilih Nama Guru --</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Mata Pelajaran</label>
+              <select id="subjekSelect" onchange="onSubjectChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+                <option value="">-- Subjek --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Kelas</label>
+              <select id="kelasSelect" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+                <option value="">-- Kelas --</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Tarikh PdPR</label>
+              <input type="date" id="tarikhInput" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Masa / Waktu</label>
+              <input type="text" id="masaInput" placeholder="cth: 08:30 - 09:30" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Platform PdPR</label>
+            <select id="platformSelect" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+              <option value="Delima Google Classroom">Delima Google Classroom</option>
+              <option value="Google Meet">Google Meet</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Telegram">Telegram</option>
+              <option value="Zoom">Zoom</option>
+              <option value="Microsoft Teams">Microsoft Teams</option>
+              <option value="Modul / Bahan Bercetak">Modul / Bahan Bercetak</option>
+              <option value="Lain-lain">Lain-lain</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Tajuk / Topik Pembelajaran</label>
+            <input type="text" id="tajukInput" placeholder="Standard Kandungan / Topik" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Status Pelaksanaan</label>
+              <select id="statusSelect" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-medium">
+                <option value="Dilaksanakan">Dilaksanakan</option>
+                <option value="Tidak Dilaksanakan">Tidak Dilaksanakan</option>
+                <option value="Ditangguhkan">Ditangguhkan</option>
+                <option value="Tidak Berkaitan (Cuti/PH)">Tidak Berkaitan (Cuti/PH)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Bil. Murid Hadir</label>
+              <input type="number" id="muridInput" min="0" value="0" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Catatan Pemantau / Refleksi</label>
+            <input type="text" id="catatanInput" placeholder="Komen semakan pemantau..." class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Disemak Oleh</label>
+            <select id="pemantauSelect" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white">
+              <option value="Pengetua">Pengetua</option>
+              <option value="GPK Pentadbiran">GPK Pentadbiran</option>
+              <option value="GPK HEM">GPK HEM</option>
+              <option value="GPK Kokurikulum">GPK Kokurikulum</option>
+              <option value="GKMP Bahasa">GKMP Bahasa</option>
+              <option value="GKMP Sains & Matematik">GKMP Sains & Matematik</option>
+              <option value="GKMP Kemanusiaan">GKMP Kemanusiaan</option>
+              <option value="GKMP Teknik & Vokasional">GKMP Teknik & Vokasional</option>
+              <option value="Ketua Panitia">Ketua Panitia</option>
+            </select>
+          </div>
+
+          <button type="submit" id="btnSubmit" class="w-full mt-2 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Hantar Rekod ke Google Sheet
+          </button>
+        </form>
+      </div>
+
+      <!-- ANALISIS & CARTA -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-indigo-500"></i> Status Pelaksanaan
+            </h3>
+            <div class="h-48 flex items-center justify-center">
+              <canvas id="chartStatus"></canvas>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-emerald-500"></i> Pecahan Platform PdPR
+            </h3>
+            <div class="h-48 flex items-center justify-center">
+              <canvas id="chartPlatform"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- JADUAL REKOD SEMAKAN -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h2 class="font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-table-list text-indigo-600"></i> Rekod Pemantauan Harian
+              </h2>
+              <p class="text-xs text-slate-500">Senarai rekod semakan disimpan terus dalam Google Sheets</p>
+            </div>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+              <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari guru / subjek / kelas..." class="p-2 border border-slate-300 rounded-xl text-xs w-full md:w-56 focus:ring-2 focus:ring-indigo-500">
+              <button onclick="exportCSV()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-file-csv"></i> Eksport
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto mt-4 max-h-[400px]">
+            <table class="w-full text-left text-xs text-slate-700">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-semibold sticky top-0 z-10 border-b border-slate-200">
+                <tr>
+                  <th class="p-2.5">Bil</th>
+                  <th class="p-2.5">Nama Guru</th>
+                  <th class="p-2.5">Mata Pelajaran</th>
+                  <th class="p-2.5">Kelas</th>
+                  <th class="p-2.5">Tarikh / Masa</th>
+                  <th class="p-2.5">Platform</th>
+                  <th class="p-2.5">Status</th>
+                  <th class="p-2.5">Murid</th>
+                  <th class="p-2.5">Disemak</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody" class="divide-y divide-slate-100">
+                <!-- Data dinamik disuntik di sini -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL KONFIGURASI API -->
+  <div id="configModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+          <i class="fa-brands fa-google-drive text-emerald-600"></i> Pautan Google Apps Script
+        </h3>
+        <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+        Web App URL yang digunakan untuk menyegerakkan data ke Google Sheets (ID: <span class="font-mono bg-slate-100 px-1 py-0.5 rounded text-[11px]">1Gz273w...</span>).
+      </p>
+      <input type="url" id="apiUrlInput" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs mb-4 focus:ring-2 focus:ring-indigo-500 font-mono">
+      <div class="flex justify-end gap-2">
+        <button onclick="closeConfigModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">Tutup</button>
+        <button onclick="saveApiUrl()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 shadow">Simpan & Uji</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // URL Web Script Apps Script & Spreadsheet ID
+    const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
+    
+    // PANGKALAN DATA GURU BERDASARKAN JADUAL SIRI 6 & FAIL SEMAKAN PDPR SMAR
+    const TEACHER_DATABASE = {
+      "Pengetua (Cikgu Hadi bin Adman)": [
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "3S2" },
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "1S1/1S2" }
+      ],
+      "Masnon bin Amat": [
+        { kod: "MM", subjek: "Matematik", kelas: "3S2" },
+        { kod: "MM", subjek: "Matematik", kelas: "5S3" }
+      ],
+      "Oskasmazila binti Osman": [
+        { kod: "MM", subjek: "Matematik", kelas: "1S1" },
+        { kod: "MM", subjek: "Matematik", kelas: "1S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "4S1/4S2/4S3" }
+      ],
+      "Zainal bin Zabir": [
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "2S1/2S2" },
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "1S1/1S2" },
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "3S1/3S2" },
+        { kod: "BIO/AK/PP", subjek: "Biologi / A.Kimpulan / Pendidikan Pengguna (kelas kombinasi)", kelas: "5S1/5S2" }
+      ],
+      "Mohd Nizam bin Subani": [
+        { kod: "MM", subjek: "Matematik", kelas: "3S1" },
+        { kod: "MM", subjek: "Matematik", kelas: "2S1" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "4S1/4S2/4S3" },
+        { kod: "BIO/AK/PP", subjek: "Biologi / A.Kimpulan / Pendidikan Pengguna (kelas kombinasi)", kelas: "5S1/5S2" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "4S1/4S2/4S3" }
+      ],
+      "Mohd Riduwan bin Mohd Yasan": [
+        { kod: "FIZ", subjek: "Fizik", kelas: "5S1" },
+        { kod: "FIZ", subjek: "Fizik", kelas: "4S1" },
+        { kod: "MT", subjek: "Matematik Tambahan", kelas: "5S1" },
+        { kod: "MM", subjek: "Matematik", kelas: "2S2" }
+      ],
+      "Rohana Jasmin": [
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "2S1" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "5S3" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "4S2" }
+      ],
+      "Fadzeli bin Azam": [
+        { kod: "GEO", subjek: "Geografi", kelas: "3S1" },
+        { kod: "GEO", subjek: "Geografi", kelas: "3S2" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "1S1/1S2" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "2S1/2S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "1S1/1S2" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "1S1/1S2" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "2S1/2S2" }
+      ],
+      "Zaimah bt Samad": [
+        { kod: "GEO", subjek: "Geografi", kelas: "1S1" },
+        { kod: "GEO", subjek: "Geografi", kelas: "1S2" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "5S3" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "4S1" },
+        { kod: "OB", subjek: "Pengurusan Perniagaan (OB)", kelas: "5S3" },
+        { kod: "PP", subjek: "Pengajian Perniagaan (PP)", kelas: "5S3" },
+        { kod: "LM", subjek: "Literasi Media (LM)", kelas: "4S1" }
+      ],
+      "Norul Hafidzah bt Hassan": [
+        { kod: "KK", subjek: "Kokurikulum / Kelas Khas", kelas: "5S3" }
+      ],
+      "Aishah binti A Hamid": [
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "4S3" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "5S2" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "2S1" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "2S2" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "4S2" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "5S3" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "5S1/5S2/5S3" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "5S1/5S2/5S3" }
+      ],
+      "Jessica Chan Lai Peng": [
+        { kod: "SC", subjek: "Sains", kelas: "5S3" },
+        { kod: "SC", subjek: "Sains", kelas: "4S2" },
+        { kod: "SC", subjek: "Sains", kelas: "1S1" },
+        { kod: "BIO/AK/PP", subjek: "Biologi / A.Kimpulan / Pendidikan Pengguna", kelas: "5S1/5S2" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "3S2" },
+        { kod: "BIO/AK/SEJ", subjek: "Biologi / A.Kimpulan / Sejarah", kelas: "4S1/4S2" }
+      ],
+      "Lavanya a/p Vejayan": [
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "5S3" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "4S1/4S2" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "5S1/5S2" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "2S1" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "4S3" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "3S1" }
+      ],
+      "Muhammad Amirul Aiman bin Zakariaa": [
+        { kod: "SEJ", subjek: "Sejarah", kelas: "1S1" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "1S2" },
+        { kod: "GEO", subjek: "Geografi", kelas: "2S2" },
+        { kod: "GEO", subjek: "Geografi", kelas: "2S1" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "4S1/4S2/4S3" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "3S1/3S2" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "5S1/5S2/5S3" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "4S1/4S2/4S3" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "5S1/5S2/5S3" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "3S1/3S2" }
+      ],
+      "Muhammad Syadza bin Yusof": [
+        { kod: "SEJ", subjek: "Sejarah", kelas: "3S2" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "2S2" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "3S1" },
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "2S1/2S2" },
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "3S1/3S2" },
+        { kod: "BIO/AK/SEJ", subjek: "Biologi / A.Kimpulan / Sejarah", kelas: "4S1/4S2" }
+      ],
+      "Norfaizah bt Ismail": [
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "2S1/2S2" },
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "1S1/1S2" },
+        { kod: "ASK/RBT", subjek: "Asas Sains Komputer / Reka Bentuk Teknologi", kelas: "3S1/3S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "5S1/5S2/5S3" }
+      ],
+      "Norhayati bt Md Zain": [
+        { kod: "MM", subjek: "Matematik", kelas: "5S1" },
+        { kod: "SC", subjek: "Sains", kelas: "2S1" },
+        { kod: "SC", subjek: "Sains", kelas: "2S2" },
+        { kod: "SC", subjek: "Sains", kelas: "4S3" },
+        { kod: "SC", subjek: "Sains", kelas: "5S2" }
+      ],
+      "Norhamizah bt Shafie": [
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "2S2" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "4S3" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "5S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "3S1/3S2" }
+      ],
+      "Norihan Binti Yusof": [
+        { kod: "TI", subjek: "Tasawwur Islam", kelas: "5S2" },
+        { kod: "TI", subjek: "Tasawwur Islam", kelas: "4S2" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "3S1" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "3S2" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "1S1" }
+      ],
+      "Nurfatin Nazirah Rashidi": [
+        { kod: "MM", subjek: "Matematik", kelas: "5S2" },
+        { kod: "MM", subjek: "Matematik", kelas: "4S3" },
+        { kod: "MM", subjek: "Matematik", kelas: "4S1/4S2" },
+        { kod: "MT", subjek: "Matematik Tambahan", kelas: "4S1" }
+      ],
+      "Nurul Hamizah Binti Md Said": [
+        { kod: "SEJ", subjek: "Sejarah", kelas: "4S2/4S3" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "2S1" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "4S1" },
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "5S1" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "2S1/2S2" }
+      ],
+      "Nur Aina Najwa Mohd Nor": [
+        { kod: "SC", subjek: "Sains", kelas: "1S2" },
+        { kod: "SC", subjek: "Sains", kelas: "3S1" },
+        { kod: "SC", subjek: "Sains", kelas: "3S2" },
+        { kod: "KIM", subjek: "Kimia", kelas: "5S1" },
+        { kod: "KIM", subjek: "Kimia", kelas: "4S1" }
+      ],
+      "Siti Haniza binti Imran": [
+        { kod: "IC", subjek: "ICT", kelas: "4S1/4S2/4S3" },
+        { kod: "IC", subjek: "ICT", kelas: "5S1/5S2/5S3" },
+        { kod: "IC", subjek: "ICT", kelas: "2S1/2S2" },
+        { kod: "IC", subjek: "ICT", kelas: "1S1/1S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "2S1/2S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "1S1/1S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "5S1/5S2/5S3" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "4S1/4S2/4S3" }
+      ],
+      "Siti Nur Hakimah bt Mohd Noor": [
+        { kod: "IC", subjek: "ICT", kelas: "4S1/4S2/4S3" },
+        { kod: "IC", subjek: "ICT", kelas: "5S1/5S2/5S3" },
+        { kod: "IC", subjek: "ICT", kelas: "3S1/3S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "3S1/3S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "1S1/1S2" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "5S1/5S2/5S3" },
+        { kod: "PIM", subjek: "Pendidikan Islam / Moral", kelas: "4S1/4S2/4S3" }
+      ],
+      "Tamil Vani": [
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "1S1" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "1S2" },
+        { kod: "BI", subjek: "Bahasa Inggeris", kelas: "2S2" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "5S1" },
+        { kod: "SEJ", subjek: "Sejarah", kelas: "5S2" },
+        { kod: "BIO/AK/SEJ", subjek: "Biologi / A.Kimpulan / Sejarah", kelas: "4S1/4S2" }
+      ],
+      "Tan Bee Kean": [
+        { kod: "IC", subjek: "ICT", kelas: "4S1/4S2/4S3" },
+        { kod: "IC", subjek: "ICT", kelas: "3S1/3S2" },
+        { kod: "IC", subjek: "ICT", kelas: "5S1/5S2/5S3" },
+        { kod: "IC", subjek: "ICT", kelas: "2S1/2S2" },
+        { kod: "IC", subjek: "ICT", kelas: "1S1/1S2" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "2S1/2S2" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "3S1/3S2" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "2S1/2S2" }
+      ],
+      "Tanty bt Ramli": [
+        { kod: "BM", subjek: "Bahasa Melayu", kelas: "1S2" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "3S1" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "4S1/4S2/4S3" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "1S1/1S2" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "4S1/4S2/4S3" },
+        { kod: "PJ", subjek: "Pendidikan Jasmani", kelas: "5S1/5S2/5S3" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "1S1/1S2" },
+        { kod: "PK", subjek: "Pendidikan Kesihatan", kelas: "5S1/5S2/5S3" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "1S1" },
+        { kod: "PSV", subjek: "Pendidikan Seni Visual", kelas: "1S2" }
+      ]
+    };
+
+    let records = [];
+    let chartStatusInst = null;
+    let chartPlatformInst = null;
+
+    function getApiUrl() {
+      return localStorage.getItem('smkar_pdpr_api_url') || DEFAULT_API_URL;
+    }
+
+    // INISIALISASI
+    window.onload = function() {
+      document.getElementById('tarikhInput').value = new Date().toISOString().split('T')[0];
+      
+      const guruSelect = document.getElementById('guruSelect');
+      Object.keys(TEACHER_DATABASE).sort().forEach(guru => {
+        const opt = document.createElement('option');
+        opt.value = guru;
+        opt.textContent = guru;
+        guruSelect.appendChild(opt);
+      });
+
+      // Muat turun data terkini dari Google Sheets secara automatik
+      refreshData();
+    };
+
+    // DROP-DOWN DINAMIK SUBJEK & KELAS
+    function onTeacherChange() {
+      const guru = document.getElementById('guruSelect').value;
+      const subjekSelect = document.getElementById('subjekSelect');
+      const kelasSelect = document.getElementById('kelasSelect');
+      
+      subjekSelect.innerHTML = '<option value="">-- Subjek --</option>';
+      kelasSelect.innerHTML = '<option value="">-- Kelas --</option>';
+
+      if (guru && TEACHER_DATABASE[guru]) {
+        const subjekSet = new Set();
+        TEACHER_DATABASE[guru].forEach(item => subjekSet.add(item.kod));
+        subjekSet.forEach(sub => {
+          const opt = document.createElement('option');
+          opt.value = sub;
+          opt.textContent = sub;
+          subjekSelect.appendChild(opt);
+        });
+
+        if (subjekSet.size === 1) {
+          subjekSelect.selectedIndex = 1;
+          onSubjectChange();
+        }
+      }
+    }
+
+    function onSubjectChange() {
+      const guru = document.getElementById('guruSelect').value;
+      const subjek = document.getElementById('subjekSelect').value;
+      const kelasSelect = document.getElementById('kelasSelect');
+
+      kelasSelect.innerHTML = '<option value="">-- Kelas --</option>';
+      if (guru && subjek && TEACHER_DATABASE[guru]) {
+        TEACHER_DATABASE[guru]
+          .filter(item => item.kod === subjek)
+          .forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.kelas;
+            opt.textContent = item.kelas;
+            kelasSelect.appendChild(opt);
+          });
+        
+        if (kelasSelect.options.length === 2) {
+          kelasSelect.selectedIndex = 1;
+        }
+      }
+    }
+
+    // SIMPAN REKOD KE GOOGLE SHEETS
+    async function submitRecord(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menghantar ke Google Sheet...`;
+
+      const newRecord = {
+        action: 'addRecord',
+        namaGuru: document.getElementById('guruSelect').value,
+        mataPelajaran: document.getElementById('subjekSelect').value,
+        kelas: document.getElementById('kelasSelect').value,
+        tarikh: document.getElementById('tarikhInput').value,
+        masa: document.getElementById('masaInput').value,
+        platform: document.getElementById('platformSelect').value,
+        tajuk: document.getElementById('tajukInput').value,
+        status: document.getElementById('statusSelect').value,
+        bilMurid: parseInt(document.getElementById('muridInput').value) || 0,
+        catatan: document.getElementById('catatanInput').value,
+        disemakOleh: document.getElementById('pemantauSelect').value
+      };
+
+      const apiUrl = getApiUrl();
+      let sentSuccessfully = false;
+
+      try {
+        // Hantar POST dengan text/plain bagi mengelakkan CORS Preflight Block
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(newRecord)
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          sentSuccessfully = true;
+        }
+      } catch (err) {
+        // Fallback no-cors jika pelayar mengetatkan sekatan redirection
+        try {
+          await fetch(apiUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(newRecord)
+          });
+          sentSuccessfully = true;
+        } catch (postErr) {
+          console.error("Gagal sync terus:", postErr);
+        }
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Berjaya Disimpan!',
+        text: 'Rekod pemantauan telah selamat dihantar ke Google Sheets.',
+        timer: 1800,
+        showConfirmButton: false
+      });
+
+      document.getElementById('tajukInput').value = '';
+      document.getElementById('catatanInput').value = '';
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Hantar Rekod ke Google Sheet`;
+
+      // Muat semula rekod terkini daripada Google Sheet
+      setTimeout(refreshData, 1000);
+    }
+
+    // MUAT TURUN REKOD DARI GOOGLE SHEETS
+    async function refreshData() {
+      const url = getApiUrl();
+      const icon = document.getElementById('refreshIcon');
+      icon.classList.add('fa-spin');
+
+      try {
+        const res = await fetch(`${url}?action=getRecords`);
+        const json = await res.json();
+        if (json.status === "success" && Array.isArray(json.data)) {
+          records = json.data.reverse(); // Rekod terkini di atas
+          localStorage.setItem('smkar_pdpr_cache', JSON.stringify(records));
+        }
+      } catch (e) {
+        console.warn("Gagal mendapatkan rekod live, guna cache tempatan jika ada:", e);
+        records = JSON.parse(localStorage.getItem('smkar_pdpr_cache')) || [];
+      }
+
+      icon.classList.remove('fa-spin');
+      renderTable(records);
+      renderCharts();
+      updateKpis();
+    }
+
+    // STATISTIK KPI
+    function updateKpis() {
+      const total = records.length;
+      const executed = records.filter(r => r["Status Pelaksanaan"] === "Dilaksanakan").length;
+      const rate = total > 0 ? Math.round((executed / total) * 100) : 0;
+      const students = records.reduce((acc, curr) => acc + (parseInt(curr["Bil. Murid Terlibat"]) || 0), 0);
+
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statExecuted').innerText = executed;
+      document.getElementById('statRate').innerText = `${rate}%`;
+      document.getElementById('statStudents').innerText = students.toLocaleString();
+    }
+
+    // JADUAL PAPARAN
+    function renderTable(dataList) {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (dataList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400">Tiada rekod semakan dalam pangkalan data. Sila hantar semakan pertama di atas.</td></tr>`;
+        return;
+      }
+
+      dataList.forEach((r, idx) => {
+        let statusBadge = "bg-emerald-100 text-emerald-800";
+        if (r["Status Pelaksanaan"] === "Tidak Dilaksanakan") statusBadge = "bg-rose-100 text-rose-800";
+        else if (r["Status Pelaksanaan"] === "Ditangguhkan") statusBadge = "bg-amber-100 text-amber-800";
+        else if (r["Status Pelaksanaan"]?.includes("Cuti")) statusBadge = "bg-slate-200 text-slate-700";
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold text-slate-400">${idx + 1}</td>
+          <td class="p-2.5 font-semibold text-slate-800">${r["Nama Guru"] || '-'}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded font-medium">${r["Mata Pelajaran"] || '-'}</span></td>
+          <td class="p-2.5 font-medium">${r["Kelas"] || '-'}</td>
+          <td class="p-2.5 text-slate-500 whitespace-nowrap">${r["Hari / Tarikh PDPR"] || ''}<br><span class="text-[10px] text-slate-400">${r["Masa"] || ''}</span></td>
+          <td class="p-2.5 text-slate-600">${r["Platform PDPR"] || '-'}</td>
+          <td class="p-2.5"><span class="px-2 py-0.5 rounded-full font-semibold text-[10px] ${statusBadge}">${r["Status Pelaksanaan"]}</span></td>
+          <td class="p-2.5 font-bold text-slate-700">${r["Bil. Murid Terlibat"] || 0}</td>
+          <td class="p-2.5 text-slate-500">${r["Disemak Oleh"] || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // CARIAN PANTAS
+    function filterTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = records.filter(r => 
+        (r["Nama Guru"] && r["Nama Guru"].toLowerCase().includes(q)) ||
+        (r["Mata Pelajaran"] && r["Mata Pelajaran"].toLowerCase().includes(q)) ||
+        (r["Kelas"] && r["Kelas"].toLowerCase().includes(q)) ||
+        (r["Platform PDPR"] && r["Platform PDPR"].toLowerCase().includes(q)) ||
+        (r["Tajuk / Topik Diajar"] && r["Tajuk / Topik Diajar"].toLowerCase().includes(q))
+      );
+      renderTable(filtered);
+    }
+
+    // CARTA PELAKSANAAN & PLATFORM
+    function renderCharts() {
+      const statusCounts = { "Dilaksanakan": 0, "Tidak Dilaksanakan": 0, "Ditangguhkan": 0, "Lain-lain": 0 };
+      records.forEach(r => {
+        if (statusCounts[r["Status Pelaksanaan"]] !== undefined) statusCounts[r["Status Pelaksanaan"]]++;
+        else statusCounts["Lain-lain"]++;
+      });
+
+      if (chartStatusInst) chartStatusInst.destroy();
+      const ctxStatus = document.getElementById('chartStatus').getContext('2d');
+      chartStatusInst = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(statusCounts),
+          datasets: [{
+            data: Object.values(statusCounts),
+            backgroundColor: ['#10b981', '#f43f5e', '#f59e0b', '#94a3b8'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+        }
+      });
+
+      const platformMap = {};
+      records.forEach(r => {
+        const plat = r["Platform PDPR"] || "Lain-lain";
+        platformMap[plat] = (platformMap[plat] || 0) + 1;
+      });
+
+      if (chartPlatformInst) chartPlatformInst.destroy();
+      const ctxPlat = document.getElementById('chartPlatform').getContext('2d');
+      chartPlatformInst = new Chart(ctxPlat, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(platformMap),
+          datasets: [{
+            label: 'Sesi',
+            data: Object.values(platformMap),
+            backgroundColor: '#6366f1',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 9 } } },
+            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } } }
+          }
+        }
+      });
+    }
+
+    // MODAL KONFIGURASI
+    function openConfigModal() {
+      document.getElementById('apiUrlInput').value = getApiUrl();
+      document.getElementById('configModal').classList.remove('hidden');
+    }
+    function closeConfigModal() {
+      document.getElementById('configModal').classList.add('hidden');
+    }
+    function saveApiUrl() {
+      const url = document.getElementById('apiUrlInput').value.trim();
+      if (url) {
+        localStorage.setItem('smkar_pdpr_api_url', url);
+        closeConfigModal();
+        refreshData();
+      }
+    }
+
+    // EKSPORT DATA KE CSV
+    function exportCSV() {
+      if (records.length === 0) return alert('Tiada rekod untuk dieksport.');
+      const headers = ["Bil", "Nama Guru", "Mata Pelajaran", "Kelas", "Tarikh", "Masa", "Platform", "Tajuk", "Status", "Murid", "Catatan", "Disemak Oleh"];
+      let csv = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+      
+      records.forEach(r => {
+        const row = [
+          r["Bil"],
+          `"${r["Nama Guru"] || ""}"`,
+          `"${r["Mata Pelajaran"] || ""}"`,
+          `"${r["Kelas"] || ""}"`,
+          `"${r["Hari / Tarikh PDPR"] || ""}"`,
+          `"${r["Masa"] || ""}"`,
+          `"${r["Platform PDPR"] || ""}"`,
+          `"${r["Tajuk / Topik Diajar"] || ""}"`,
+          `"${r["Status Pelaksanaan"] || ""}"`,
+          r["Bil. Murid Terlibat"] || 0,
+          `"${r["Catatan Pemantau"] || ""}"`,
+          `"${r["Disemak Oleh"] || ""}"`
+        ];
+        csv += row.join(",") + "\n";
+      });
+
+      const uri = encodeURI(csv);
+      const a = document.createElement("a");
+      a.href = uri;
+      a.download = `Laporan_PDPR_SMAR_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>
