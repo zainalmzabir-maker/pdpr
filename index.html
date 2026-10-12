@@ -104,7 +104,7 @@
             <h2 class="font-bold text-slate-900 text-base">Borang Laporan PdPR</h2>
           </div>
           <span class="px-2.5 py-0.5 text-xs font-semibold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
-            Auto-Jadual Siri 6
+            26 Guru &bull; Siri 6
           </span>
         </div>
 
@@ -142,7 +142,7 @@
               <option value="">-- Pilih Slot Mengajar Hari Ini --</option>
             </select>
             <p class="text-[10px] text-indigo-700 italic leading-snug">
-              *Setiap petak bernilai 30 minit. Petak bergabung dikira 1 jam atau 1 jam 30 minit.
+              *Setiap petak bernilai 30 minit. Petak bergabung dikira 1 jam atau 1 jam 30 minit mengikut jadual rasmi sekolah[cite: 28, 31].
             </p>
           </div>
 
@@ -191,7 +191,7 @@
 
           <!-- Dapatan / Refleksi -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Dapatan / Hasil Pembelajaran</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Dapatan / Refleksi</label>
             <textarea id="dapatanInput" rows="2" placeholder="Dapatan murid, pencapaian objektif atau refleksi..." class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50 resize-none"></textarea>
           </div>
 
@@ -295,9 +295,7 @@
                   <th class="py-3 px-3 text-center">Tindakan</th>
                 </tr>
               </thead>
-              <tbody id="rekodTableBody" class="divide-y divide-slate-100">
-                <!-- Data dimasukkan oleh JavaScript -->
-              </tbody>
+              <tbody id="rekodTableBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
@@ -364,7 +362,7 @@
           </div>
         </div>
 
-        <!-- GAMBAR BUKTI PELAKSANAAN (1 - 4) -->
+        <!-- GAMBAR BUKTI (1 - 4) -->
         <div>
           <span class="font-bold text-xs text-slate-700 block mb-1.5 uppercase tracking-wide">Gambar Bukti Pelaksanaan:</span>
           <div id="oprGambarGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
@@ -522,38 +520,14 @@
     </div>
   </div>
 
-  <!-- LOGIK JAVASCRIPT SISTEM -->
+  <!-- JAVASCRIPT: LOGIK UTAMA & DATA LENGKAP 26 GURU -->
   <script>
-    // =========================================================================
-    // 1. URL GOOGLE APPS SCRIPT WEB APP (DIKEMAS KINI)
-    // =========================================================================
+    // 1. API GOOGLE APPS SCRIPT
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    // =========================================================================
-    // 2. DATA JADUAL WAKTU GURU SIRI 6 (15 JUN 2026) - SMK KAMARUL ARIFFIN
-    // 1 kotak = 30 minit | 2 kotak = 1 jam | 3 kotak = 1 jam 30 minit
-    // =========================================================================
+    // 2. DATA JADUAL KESELURUHAN 26 GURU (SMK KAMARUL ARIFFIN SIRI 6)
+    // 1 petak = 30 min | 2 petak = 1 Jam | 3 petak = 1 Jam 30 Min
     const JADUAL_SIRI_6 = {
-      "ZAINAL BIN MOHD ZABIR": {
-        "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
-        ],
-        "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
-        ],
-        "Rabu": [
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "11:00 - 12:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
-        ],
-        "Khamis": [
-          { masa: "10:00 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam 30 Minit (3 petak)" }
-        ],
-        "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
-        ]
-      },
       "ABD HADI BIN ADMAN": {
         "Isnin": [
           { masa: "10:00 - 11:00", subjek: "PSV", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
@@ -562,9 +536,7 @@
         "Selasa": [
           { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
         ],
-        "Rabu": [],
-        "Khamis": [],
-        "Jumaat": []
+        "Rabu": [], "Khamis": [], "Jumaat": []
       },
       "MASNON BIN AMAT": {
         "Isnin": [
@@ -582,7 +554,10 @@
           { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
           { masa: "10:30 - 11:30", subjek: "MM", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
         ],
-        "Jumaat": []
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
+        ]
       },
       "OSKASMAZILA BINTI OSMAN": {
         "Isnin": [
@@ -606,6 +581,26 @@
           { masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2", tempoh: "1 Jam (2 petak)" }
         ]
       },
+      "ZAINAL BIN MOHD ZABIR": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "10:00 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam 30 Minit (3 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
       "MOHD NIZAM BIN SUBANI": {
         "Isnin": [
           { masa: "08:00 - 09:00", subjek: "MM", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
@@ -626,7 +621,10 @@
           { masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
           { masa: "11:30 - 12:30", subjek: "MM", kelas: "3S1", tempoh: "1 Jam (2 petak)" }
         ],
-        "Jumaat": []
+        "Jumaat": [
+          { masa: "09:30 - 10:30", subjek: "MM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "MM", kelas: "3S1", tempoh: "1 Jam (2 petak)" }
+        ]
       },
       "MOHD RIDUWAN BIN MOHD YASAN": {
         "Isnin": [
@@ -711,19 +709,25 @@
         ],
         "Rabu": [
           { masa: "09:00 - 10:00", subjek: "GEO", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:00", subjek: "LM", kelas: "1S2", tempoh: "30 Minit (1 petak)" }
         ],
         "Khamis": [
           { masa: "09:00 - 10:00", subjek: "GEO", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
           { masa: "10:30 - 11:30", subjek: "SEJ", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
           { masa: "12:00 - 13:00", subjek: "SEJ", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
         ],
-        "Jumaat": []
+        "Jumaat": [
+          { masa: "08:00 - 09:00", subjek: "LM", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PP", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
+        ]
       },
       "NORUL HAFIDZAH BINTI HASSAN": {
+        "Isnin": [],
         "Selasa": [
           { masa: "13:30 - 14:30", subjek: "KK", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
-        ]
+        ],
+        "Rabu": [], "Khamis": [], "Jumaat": []
       },
       "JESSICA CHAN LAI PENG": {
         "Isnin": [
@@ -734,22 +738,405 @@
           { masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
           { masa: "09:30 - 10:30", subjek: "SC", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
           { masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "12:30 - 13:30", subjek: "SC", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+          { masa: "12:30 - 13:30", subjek: "SC", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "14:00 - 15:00", subjek: "KBSM1", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:30 - 09:30", subjek: "SC", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "SC", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "09:30 - 10:30", subjek: "SC", kelas: "4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
         ]
       },
       "LAVANYA A/P VEJAYAN": {
         "Isnin": [
           { masa: "08:00 - 09:00", subjek: "BI", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
           { masa: "09:00 - 10:00", subjek: "BI", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "11:30 - 12:30", subjek: "BI", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "13:00 - 14:00", subjek: "BI", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
-          { masa: "14:00 - 15:00", subjek: "BI", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+          { masa: "11:00 - 12:00", subjek: "BI", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "BI", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "BI", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
         ],
         "Selasa": [
           { masa: "10:00 - 11:00", subjek: "BI", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
           { masa: "11:30 - 12:30", subjek: "BI", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
           { masa: "13:00 - 14:00", subjek: "BI", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
           { masa: "14:00 - 15:00", subjek: "BI", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:30 - 09:30", subjek: "BI", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BI", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "BI", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "BI", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "07:30 - 08:30", subjek: "BI", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "08:30 - 09:30", subjek: "BI", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "BI", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "BI", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:00 - 09:00", subjek: "BI", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "BI", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 13:30", subjek: "LET", kelas: "Semua", tempoh: "30 Minit (1 petak)" }
+        ]
+      },
+      "MUHAMMAD AMIRUL AIMAN BIN ZAKARIA": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "GEO", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PK", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:00 - 09:00", subjek: "GEO", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "PJ", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "SEJ", kelas: "1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "PJ", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "PK", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "07:30 - 08:30", subjek: "PJ", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "GEO", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "PK", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "GEO", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "GEO", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "2S1", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "MUHAMMAD SYADZA BIN YUSOF": {
+        "Isnin": [
+          { masa: "08:00 - 09:00", subjek: "SEJ", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "07:30 - 08:30", subjek: "PJ", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:30 - 09:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PK", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:00 - 09:00", subjek: "SEJ", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:00 - 09:00", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "SEJ", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "NORFAIZAH BINTI ISMAIL": {
+        "Isnin": [
+          { masa: "07:30 - 08:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:00 - 09:00", subjek: "DDM", kelas: "Semua", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "DDM", kelas: "Semua", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "DDM", kelas: "Semua", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "07:30 - 08:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "PSV", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "PSV", kelas: "5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "07:30 - 08:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "08:30 - 09:30", subjek: "PIM", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "DDM", kelas: "Semua", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "DDM", kelas: "Semua", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "NORHAYATI BT MD ZAIN": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "SC", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "MM", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "SC", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "SC", kelas: "5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "12:00 - 13:00", subjek: "SC", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "MM", kelas: "5S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "SC", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "09:00 - 10:00", subjek: "SC", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "SC", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "MM", kelas: "5S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "SC", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "NORHAMIZAH BINTI SHAFIE": {
+        "Isnin": [
+          { masa: "09:30 - 10:30", subjek: "BM", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "BM", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "10:00 - 11:00", subjek: "BM", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "BM", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "14:00 - 15:00", subjek: "BM", kelas: "5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "BM", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "BM", kelas: "5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "09:30 - 10:30", subjek: "BM", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "BM", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "PSV", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "14:00 - 15:00", subjek: "PSV", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "BM", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "BM", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "NORIHAN BINTI YUSOF": {
+        "Isnin": [
+          { masa: "09:30 - 10:30", subjek: "TI", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "BM", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "BM", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "12:00 - 13:00", subjek: "BM", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "TI", kelas: "4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "14:00 - 15:00", subjek: "TI", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:30 - 10:30", subjek: "BM", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "TI", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "BM", kelas: "1S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "09:00 - 10:00", subjek: "BM", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "BM", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "TI", kelas: "4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "14:00 - 15:00", subjek: "TI", kelas: "5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "09:30 - 10:30", subjek: "BM", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "3S1", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "NUR FATIN NAZIRAH BINTI RASHIDI": {
+        "Isnin": [
+          { masa: "09:00 - 10:00", subjek: "MT", kelas: "4S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "PIM", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "MM", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "MM", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:30 - 09:30", subjek: "MM", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "PIM", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "MM", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "MM", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "MT", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "NURUL HAMIZAH BINTI MD SAID": {
+        "Isnin": [
+          { masa: "09:00 - 10:00", subjek: "SEJ", kelas: "4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "BM", kelas: "4S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "4S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "PIM", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "SEJ", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "BM", kelas: "4S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "PIM", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "SEJ", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "PIM", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PIM", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "BM", kelas: "5S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:30 - 09:30", subjek: "BM", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "SEJ", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:00 - 09:00", subjek: "BM", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "BM", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "NUR AINA NAJWA BINTI MOHD NOR": {
+        "Isnin": [
+          { masa: "10:30 - 11:30", subjek: "SC", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "SC", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "KIM", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:00 - 09:00", subjek: "SC", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "SC", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "PJ", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "KIM", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "SC", kelas: "3S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "11:30 - 12:30", subjek: "PK", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "KIM", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "12:30 - 13:30", subjek: "KIM", kelas: "5S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "SC", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "SITI HANIZA BINTI IMRAN": {
+        "Isnin": [
+          { masa: "07:30 - 08:30", subjek: "IC", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "IC", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "PIM", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "IC", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "IC", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "IC", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "PIM", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "08:30 - 09:30", subjek: "IC", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "IC", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PIM", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "PIM", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "07:30 - 08:30", subjek: "IC", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "IC", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "PIM", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "IC", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "PIM", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": []
+      },
+      "SITI NUR HAKIMAH BINTI MOHD NOOR": {
+        "Isnin": [
+          { masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "08:30 - 09:30", subjek: "IC", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "IC", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "IC", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "IC", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "PIM", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "09:30 - 10:30", subjek: "IC", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PIM", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "PIM", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "PIM", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "11:00 - 12:00", subjek: "IC", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "IC", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "07:30 - 08:30", subjek: "IC", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "PIM", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "TAMILVANI A/P KRISHNAN": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "BI", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BI", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "BI", kelas: "1S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "09:00 - 10:00", subjek: "BI", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "BI", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "5S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "SEJ", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "BI", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "SEJ", kelas: "5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "07:30 - 08:30", subjek: "BI", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BI", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "BI", kelas: "1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "10:30 - 11:30", subjek: "BI", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 13:30", subjek: "LET", kelas: "Semua", tempoh: "30 Minit (1 petak)" }
+        ]
+      },
+      "TAN BEE KEAN": {
+        "Isnin": [
+          { masa: "08:00 - 09:00", subjek: "IC", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "IC", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "IC", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "IC", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:00 - 09:00", subjek: "PJ", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "PK", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "IC", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:00 - 09:00", subjek: "IC", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "IC", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:00 - 09:00", subjek: "PJ", kelas: "2S2/2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "PK", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "IC", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "IC", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "IC", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "IC", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
         ]
       },
       "TANTY BINTI RAMLI": {
@@ -761,49 +1148,33 @@
         "Selasa": [
           { masa: "08:30 - 09:30", subjek: "PJ", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
           { masa: "09:30 - 10:00", subjek: "PJ", kelas: "4S1/4S2/4S3", tempoh: "30 Minit (1 petak)" },
-          { masa: "10:30 - 11:30", subjek: "BM", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
-          { masa: "12:00 - 13:00", subjek: "PSV", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "PSV", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:30 - 10:30", subjek: "PJ", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "PK", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:00 - 09:00", subjek: "PSV", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "PSV", kelas: "5S1/5S2/5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PK", kelas: "1S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "10:00 - 11:00", subjek: "PSV", kelas: "1S2", tempoh: "1 Jam (2 petak)" }
         ]
       }
     };
 
-    const SENARAI_GURU = [
-      "ZAINAL BIN MOHD ZABIR",
-      "ABD HADI BIN ADMAN",
-      "MASNON BIN AMAT",
-      "OSKASMAZILA BINTI OSMAN",
-      "MOHD NIZAM BIN SUBANI",
-      "MOHD RIDUWAN BIN MOHD YASAN",
-      "ROHANA BINTI JASMIN",
-      "MOHAMAAD FADZELI BIN AZAM",
-      "ZAIMAH BINTI SAMAD",
-      "NORUL HAFIDZAH BINTI HASSAN",
-      "JESSICA CHAN LAI PENG",
-      "LAVANYA A/P VEJAYAN",
-      "MUHAMMAD AMIRUL AIMAN BIN ZAKARIA",
-      "MUHAMMAD SYADZA BIN YUSOF",
-      "NORFAIZAH BINTI ISMAIL",
-      "NORHAYATI BT MD ZAIN",
-      "NORHAMIZAH BINTI SHAFIE",
-      "NORIHAN BINTI YUSOF",
-      "NUR FATIN NAZIRAH BINTI RASHIDI",
-      "NURUL HAMIZAH BINTI MD SAID",
-      "NUR AINA NAJWA BINTI MOHD NOR",
-      "SITI HANIZA BINTI IMRAN",
-      "SITI NUR HAKIMAH BINTI MOHD NOOR",
-      "TAMILVANI A/P KRISHNAN",
-      "TAN BEE KEAN",
-      "TANTY BINTI RAMLI"
-    ];
+    const SENARAI_GURU = Object.keys(JADUAL_SIRI_6);
 
-    // Pembolehubah Global
     let senaraiRekod = [];
     let senaraiGambarBase64 = [];
     let selectedRecordForSah = null;
     let chartStatusInstance = null;
     let chartPlatformInstance = null;
 
-    // Inisialisasi
     window.addEventListener('DOMContentLoaded', () => {
       isiPilihanGuru();
       setTarikhHariIni();
@@ -898,9 +1269,7 @@
       }
     }
 
-    // =========================================================================
-    // 3. PEMAMPATAN IMEJ AUTONOMIK (AUTO-COMPRESSION KE BASE64 RINGKAS)
-    // =========================================================================
+    // 3. PEMAMPATAN IMEJ AUTONOMIK
     async function prosesMuatNaikGambar(e) {
       const files = Array.from(e.target.files);
       if (files.length + senaraiGambarBase64.length > 4) {
@@ -965,9 +1334,7 @@
       renderGambarPreview();
     }
 
-    // =========================================================================
-    // 4. HANTAR BORANG & SIMPAN KE GOOGLE APPS SCRIPT
-    // =========================================================================
+    // 4. HANTAR BORANG KE GOOGLE SHEETS
     async function hantarBorang(e) {
       e.preventDefault();
 
@@ -1026,9 +1393,7 @@
       }
     }
 
-    // =========================================================================
     // 5. AMBIL DATA DARI GOOGLE APPS SCRIPT
-    // =========================================================================
     async function muatSemulaData() {
       try {
         const res = await fetch(GAS_API_URL);
@@ -1038,7 +1403,7 @@
           kemaskiniStatistikDanJadual();
         }
       } catch (err) {
-        console.warn("Ralat memuat data dari GAS:", err);
+        console.warn("Ralat memuat data:", err);
       }
     }
 
@@ -1106,9 +1471,7 @@
       });
     }
 
-    // =========================================================================
-    // 6. CARTA CHART.JS
-    // =========================================================================
+    // 6. CARTA STATISTIK
     function initCharts() {
       const ctxStatus = document.getElementById('chartStatus').getContext('2d');
       chartStatusInstance = new Chart(ctxStatus, {
@@ -1172,9 +1535,7 @@
       chartPlatformInstance.update();
     }
 
-    // =========================================================================
-    // 7. PENJANA OPR GURU (SATU HALAMAN A4)
-    // =========================================================================
+    // 7. PENJANA OPR GURU
     function paparOPR(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
       if (!r) return;
@@ -1216,9 +1577,7 @@
       bukaModal('oprModal');
     }
 
-    // =========================================================================
-    // 8. TANDATANGAN SCRIBBLE & PENGESAHAN
-    // =========================================================================
+    // 8. TANDATANGAN DIGITAL (SCRIBBLE)
     let canvas, ctx, isDrawing = false;
 
     function initSignatureCanvas() {
@@ -1318,9 +1677,7 @@
       }
     }
 
-    // =========================================================================
     // 9. LAPORAN PELAKSANAAN HARIAN SEKOLAH
-    // =========================================================================
     function bukaModalLaporanSekolah() {
       janaLaporanSekolah();
       bukaModal('laporanSekolahModal');
@@ -1369,7 +1726,7 @@
       });
     }
 
-    // Modal Helper
+    // Modal Helpers
     function bukaModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function tutupModal(id) { document.getElementById(id).classList.add('hidden'); }
   </script>
