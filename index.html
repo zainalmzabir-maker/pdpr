@@ -3,1320 +3,920 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>e-pantau PdPr SMKKA</title>
-  <!-- Favicon Sekolah -->
-  <link rel="icon" type="image/png" href="logo.png">
-  
-  <!-- Tailwind CSS, Font Awesome, Chart.js & SweetAlert2 -->
+  <title>Sistem Pelaporan PdPR SMK Kamarul Ariffin</title>
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-    
     @media print {
       body * { visibility: hidden; }
-      .print-area, .print-area * { visibility: visible; }
-      .print-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        box-shadow: none !important;
-      }
+      #printableArea, #printableArea * { visibility: visible; }
+      #printableArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 12px; }
       .no-print { display: none !important; }
-      @page { size: A4 portrait; margin: 8mm 10mm; }
     }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-  <!-- NAVBAR UTAMA -->
-  <header class="bg-indigo-950 text-white shadow-xl sticky top-0 z-40 border-b border-indigo-900 no-print">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+  <!-- NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <img src="logo.png" alt="Logo SMKKA" onerror="this.src='https://placehold.co/80x80/indigo/white?text=SMKKA'" class="w-11 h-11 object-contain drop-shadow-md">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
+          <i class="fa-solid fa-graduation-cap text-lg"></i>
+        </div>
         <div>
-          <h1 class="text-lg font-black tracking-tight flex items-center gap-2">
-            e-pantau PdPr SMKKA
-          </h1>
-          <p class="text-xs text-indigo-300">SMK Kamarul Ariffin, Labis, Johor • Rujukan Tunggal Siri 6/2026</p>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">E-Laporan PdPR Sekolah</h1>
+          <p class="text-xs text-indigo-600 font-semibold">SMK Kamarul Ariffin &bull; Siri 6/2026</p>
         </div>
       </div>
-      
-      <!-- Navigasi Tab -->
-      <div class="flex items-center gap-2">
-        <div class="bg-indigo-900/90 p-1 rounded-xl flex text-xs font-semibold">
-          <button onclick="switchTab('guru')" id="tabBtnGuru" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-chalkboard-user"></i> Mod Guru
-          </button>
-          <button onclick="switchTab('pemantau')" id="tabBtnPemantau" class="px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-stamp"></i> Pengesahan Pentadbir
-            <span id="pendingBadge" class="hidden ml-1 px-1.5 py-0.2 bg-rose-500 text-white text-[10px] rounded-full">0</span>
-          </button>
-          <button onclick="switchTab('laporan')" id="tabBtnLaporan" class="px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-file-invoice"></i> Laporan Tarikh
-          </button>
-          <button onclick="promptAdminLogin()" id="tabBtnAdmin" class="px-3.5 py-1.5 rounded-lg text-amber-300 hover:text-white flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-gear"></i> Admin
-          </button>
-        </div>
-        <button onclick="refreshData()" title="Segar Semula Data" class="p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold transition shadow flex items-center gap-1">
-          <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+      <div class="flex items-center space-x-2">
+        <button onclick="bukaModalLaporanSekolah()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition flex items-center space-x-1.5 shadow-sm">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span class="hidden sm:inline">Laporan Harian Sekolah</span>
+          <span class="sm:hidden">Laporan</span>
+        </button>
+        <button onclick="muatSemulaData()" class="p-2.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition" title="Muat Semula Rekod">
+          <i class="fa-solid fa-arrows-rotate"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6 flex-1 w-full no-print">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- KPI STATISTIK -->
+    <!-- 4 KAD STATISTIK UTAMA -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
-          <p class="text-xs font-medium text-slate-500">Jumlah PdPR</p>
-          <h3 id="statTotal" class="text-2xl font-bold text-slate-800">0</h3>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Jumlah PdPR</p>
+          <h3 id="statJumlahPdpr" class="text-3xl font-extrabold text-slate-900 mt-1">0</h3>
         </div>
-        <div class="w-11 h-11 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg">
-          <i class="fa-solid fa-book-open-reader"></i>
+        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-chalkboard-user"></i>
         </div>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
-          <p class="text-xs font-medium text-slate-500">Telah Disahkan</p>
-          <h3 id="statVerified" class="text-2xl font-bold text-emerald-600">0</h3>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Telah Disahkan</p>
+          <h3 id="statDisahkan" class="text-3xl font-extrabold text-emerald-600 mt-1">0</h3>
         </div>
-        <div class="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg">
-          <i class="fa-solid fa-shield-check"></i>
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-circle-check"></i>
         </div>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
-          <p class="text-xs font-medium text-slate-500">Menunggu Sah</p>
-          <h3 id="statPending" class="text-2xl font-bold text-amber-600">0</h3>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Menunggu Sah</p>
+          <h3 id="statMenunggu" class="text-3xl font-extrabold text-amber-500 mt-1">0</h3>
         </div>
-        <div class="w-11 h-11 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-lg">
+        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </div>
       </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
         <div>
-          <p class="text-xs font-medium text-slate-500">Jumlah Murid</p>
-          <h3 id="statStudents" class="text-2xl font-bold text-indigo-600">0</h3>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Jumlah Murid</p>
+          <h3 id="statJumlahMurid" class="text-3xl font-extrabold text-indigo-600 mt-1">0</h3>
         </div>
-        <div class="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg">
+        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
           <i class="fa-solid fa-user-graduate"></i>
         </div>
       </div>
     </div>
 
-    <!-- ================= PANDANGAN 1: MOD GURU ================= -->
-    <div id="viewGuru" class="space-y-6">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- STRUKTUR: KIRI (BORANG) & KANAN (CARTA + REKOD) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <div class="lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-            <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-feather text-indigo-600"></i> Borang Laporan PdPR
-            </h2>
-            <span class="text-[11px] px-2.5 py-0.5 bg-indigo-50 text-indigo-700 font-semibold rounded-full">Auto-Jadual Siri 6</span>
+      <!-- BORANG LAPORAN PDPR (KIRI) -->
+      <div class="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+          <div class="flex items-center space-x-2">
+            <span class="text-indigo-600 text-lg"><i class="fa-solid fa-feather-pointed"></i></span>
+            <h2 class="font-bold text-slate-900 text-base">Borang Laporan PdPR</h2>
           </div>
-
-          <form id="pdprForm" onsubmit="submitGuruRecord(event)" class="space-y-3.5 text-xs">
-            <div>
-              <label class="block font-semibold text-slate-700 mb-1">Nama Guru</label>
-              <select id="guruSelect" onchange="onTeacherOrDateChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-slate-50 text-xs font-semibold">
-                <option value="">-- Pilih Guru --</option>
-              </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Tarikh PdPR</label>
-                <input type="date" id="tarikhInput" onchange="onTeacherOrDateChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs">
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Hari</label>
-                <input type="text" id="hariDisplay" readonly class="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-100 font-semibold text-slate-600 text-xs" value="Isnin">
-              </div>
-            </div>
-
-            <!-- SLOT JADUAL WAKTU TEPAT SIRI 6 -->
-            <div class="p-3 bg-indigo-50/70 rounded-xl border border-indigo-100 space-y-2">
-              <div class="flex justify-between items-center">
-                <label class="block font-bold text-indigo-950 text-xs flex items-center gap-1.5">
-                  <i class="fa-solid fa-calendar-check text-indigo-600"></i> Slot Waktu Mengajar Rasmi
-                </label>
-                <span id="slotCountBadge" class="text-[10px] font-bold text-indigo-700 bg-white px-2 py-0.5 rounded-full border border-indigo-200">0 Slot</span>
-              </div>
-              <select id="jadualSlotSelect" onchange="onSlotSelected()" class="w-full p-2.5 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-indigo-950 text-xs">
-                <option value="">-- Pilih Slot Mengajar Hari Ini --</option>
-              </select>
-              <p class="text-[10px] text-slate-500 italic">*Setiap petak bernilai 30 minit. Petak bergabung dikira 1 jam atau 1 jam 30 minit.</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Masa Mengajar</label>
-                <input type="text" id="masaInput" placeholder="cth: 08:30 - 09:30" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-bold text-indigo-950">
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Kelas</label>
-                <input type="text" id="kelasInput" placeholder="cth: 2S1/2S2" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-bold text-indigo-950">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Mata Pelajaran</label>
-                <input type="text" id="subjekInput" placeholder="cth: ASK/RBT" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-bold text-indigo-950">
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Platform PdPR</label>
-                <select id="platformSelect" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-medium">
-                  <option value="Delima Google Classroom">Delima Google Classroom</option>
-                  <option value="Google Meet">Google Meet</option>
-                  <option value="WhatsApp">WhatsApp</option>
-                  <option value="Telegram">Telegram</option>
-                  <option value="Zoom">Zoom</option>
-                  <option value="Microsoft Teams">Microsoft Teams</option>
-                  <option value="Modul / Lembaran Kerja">Modul / Lembaran Kerja</option>
-                  <option value="Lain-lain">Lain-lain</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label class="block font-semibold text-slate-700 mb-1">Tajuk / Topik Diajar</label>
-              <input type="text" id="tajukInput" placeholder="Standard Kandungan / Topik" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs">
-            </div>
-
-            <div>
-              <label class="block font-semibold text-slate-700 mb-1">Aktiviti yang Dijalankan</label>
-              <textarea id="aktivitiInput" rows="2" placeholder="Nyatakan aktiviti pembelajaran secara ringkas..." required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs"></textarea>
-            </div>
-
-            <div>
-              <label class="block font-semibold text-slate-700 mb-1">Dapatan / Hasil Pembelajaran</label>
-              <textarea id="dapatanInput" rows="2" placeholder="Dapatan murid, pencapaian objektif atau refleksi..." required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs"></textarea>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Status Pelaksanaan</label>
-                <select id="statusSelect" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-medium text-xs">
-                  <option value="Dilaksanakan">Dilaksanakan</option>
-                  <option value="Tidak Dilaksanakan">Tidak Dilaksanakan</option>
-                  <option value="Ditangguhkan">Ditangguhkan</option>
-                  <option value="Tidak Berkaitan (Cuti/PH)">Tidak Berkaitan (Cuti/PH)</option>
-                </select>
-              </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Bil. Murid Hadir</label>
-                <input type="number" id="muridInput" min="0" value="0" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white text-xs font-semibold">
-              </div>
-            </div>
-
-            <!-- GAMBAR OPR -->
-            <div class="p-3 bg-amber-50/70 rounded-xl border border-dashed border-amber-300 space-y-2">
-              <div class="flex justify-between items-center">
-                <label class="block font-bold text-amber-950 text-xs flex items-center gap-1.5">
-                  <i class="fa-solid fa-camera text-amber-600"></i> Gambar Bukti OPR <span class="text-rose-500">*</span>
-                </label>
-                <span id="imgCountBadge" class="text-[10px] font-bold text-amber-800 bg-white px-2 py-0.5 rounded-full border border-amber-200">0 / 4 Gambar</span>
-              </div>
-              <p class="text-[10px] text-amber-800">Wajib muat naik <strong>minimum 1 gambar</strong> dan maksimum <strong>4 gambar</strong>.</p>
-              
-              <input type="file" id="oprImageInput" accept="image/*" multiple onchange="handleMultipleImages(event)" class="block w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 cursor-pointer">
-              
-              <div id="imagePreviewGrid" class="grid grid-cols-4 gap-2 pt-1 hidden"></div>
-            </div>
-
-            <button type="submit" id="btnSubmitGuru" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Hantar Rekod PdPR
-            </button>
-          </form>
+          <span class="px-2.5 py-0.5 text-xs font-semibold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+            Auto-Jadual Siri 6
+          </span>
         </div>
 
-        <!-- CARTA & SENARAI REKOD TERKINI -->
-        <div class="lg:col-span-2 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-chart-pie text-indigo-500"></i> Status Pelaksanaan
-              </h3>
-              <div class="h-44 flex items-center justify-center">
-                <canvas id="chartStatus"></canvas>
-              </div>
-            </div>
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-chart-simple text-emerald-500"></i> Platform PdPR
-              </h3>
-              <div class="h-44 flex items-center justify-center">
-                <canvas id="chartPlatform"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <!-- JADUAL REKOD TERKINI -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-100">
-              <div>
-                <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                  <i class="fa-solid fa-table-list text-indigo-600"></i> Senarai Rekod PdPR Terkini
-                </h2>
-                <p class="text-xs text-slate-400">Klik butang Cetak OPR untuk menghasilkan laporan satu halaman bergambar</p>
-              </div>
-              <input type="text" id="searchGuruInput" oninput="filterGuruTable()" placeholder="Cari guru / subjek..." class="p-2 border border-slate-300 rounded-xl text-xs w-full md:w-56 focus:ring-2 focus:ring-indigo-500">
-            </div>
-
-            <div class="overflow-x-auto mt-4 max-h-[420px]">
-              <table class="w-full text-left text-xs text-slate-700">
-                <thead class="bg-slate-50 text-slate-500 uppercase font-semibold sticky top-0 z-10 border-b border-slate-200">
-                  <tr>
-                    <th class="p-2.5">Bil</th>
-                    <th class="p-2.5">Guru</th>
-                    <th class="p-2.5">Subjek / Kelas</th>
-                    <th class="p-2.5">Tarikh / Masa</th>
-                    <th class="p-2.5">Gambar</th>
-                    <th class="p-2.5">Status</th>
-                    <th class="p-2.5 text-center">Tindakan</th>
-                  </tr>
-                </thead>
-                <tbody id="guruTableBody" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ================= PANDANGAN 2: PORTAL PENGESAHAN PENTADBIR ================= -->
-    <div id="viewPemantau" class="hidden space-y-6">
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-100">
+        <form id="pdprForm" onsubmit="hantarBorang(event)" class="space-y-4">
+          <!-- Nama Guru -->
           <div>
-            <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
-              <i class="fa-solid fa-stamp text-indigo-600"></i> Pengesahan Pentadbir & Pemantauan
-            </h2>
-            <p class="text-xs text-slate-500">Pilih rekod guru untuk disahkan bersama tandatangan digital pentadbir.</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <select id="filterStatusVerify" onchange="filterPemantauTable()" class="p-2 border border-slate-300 rounded-xl text-xs bg-white font-medium">
-              <option value="ALL">Semua Rekod</option>
-              <option value="Belum Disahkan" selected>Menunggu Pengesahan</option>
-              <option value="Disahkan">Telah Disahkan</option>
-            </select>
-            <input type="text" id="searchPemantauInput" oninput="filterPemantauTable()" placeholder="Cari guru..." class="p-2 border border-slate-300 rounded-xl text-xs w-48">
-          </div>
-        </div>
-
-        <div class="overflow-x-auto mt-4 max-h-[500px]">
-          <table class="w-full text-left text-xs text-slate-700">
-            <thead class="bg-indigo-950 text-white uppercase font-semibold sticky top-0 z-10">
-              <tr>
-                <th class="p-3">ID Rekod</th>
-                <th class="p-3">Nama Guru</th>
-                <th class="p-3">Subjek & Kelas</th>
-                <th class="p-3">Tarikh & Masa</th>
-                <th class="p-3">Topik / Tajuk</th>
-                <th class="p-3">Gambar</th>
-                <th class="p-3">Status Pengesahan</th>
-                <th class="p-3">Disahkan Oleh</th>
-                <th class="p-3 text-center">Tindakan</th>
-              </tr>
-            </thead>
-            <tbody id="pemantauTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ================= PANDANGAN 3: PENJANA LAPORAN MENGIKUT TARIKH ================= -->
-    <div id="viewLaporan" class="hidden space-y-6">
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-        
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-200">
-          <div>
-            <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-file-invoice text-indigo-600"></i> Penjana Laporan Pemantauan PdPR Mengikut Tarikh
-            </h2>
-            <p class="text-xs text-slate-500">Pilih julat tarikh untuk menjana rumusan pemantauan harian atau mingguan sekolah.</p>
-          </div>
-          <button onclick="previewDateReport()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-2 transition">
-            <i class="fa-solid fa-print"></i> Cetak / Jana PDF Laporan Tarikh
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Tarikh Mula</label>
-            <input type="date" id="reportStartDate" onchange="filterDateReportTable()" class="w-full p-2.5 border border-slate-300 rounded-xl bg-white font-semibold">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Tarikh Akhir</label>
-            <input type="date" id="reportEndDate" onchange="filterDateReportTable()" class="w-full p-2.5 border border-slate-300 rounded-xl bg-white font-semibold">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Status Pengesahan</label>
-            <select id="reportFilterStatus" onchange="filterDateReportTable()" class="w-full p-2.5 border border-slate-300 rounded-xl bg-white font-semibold">
-              <option value="ALL">Semua Rekod</option>
-              <option value="Disahkan">Hanya Yang Disahkan</option>
-              <option value="Belum Disahkan">Belum Disahkan</option>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Guru</label>
+            <select id="guruSelect" onchange="kemaskiniSlotHarian()" required class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2.5 focus:border-indigo-500 outline-none bg-slate-50">
+              <option value="">-- Pilih Guru --</option>
             </select>
           </div>
-          <div class="flex items-end">
-            <button onclick="setReportDateToday()" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold transition flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-calendar-day"></i> Hari Ini Sahaja
-            </button>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
-          <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
-            <p class="text-[11px] text-indigo-600 font-semibold">Jumlah Sesi</p>
-            <h4 id="repKpiTotal" class="text-xl font-extrabold text-indigo-950">0</h4>
-          </div>
-          <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
-            <p class="text-[11px] text-emerald-600 font-semibold">Dilaksanakan</p>
-            <h4 id="repKpiExecuted" class="text-xl font-extrabold text-emerald-900">0</h4>
-          </div>
-          <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl">
-            <p class="text-[11px] text-blue-600 font-semibold">% Pelaksanaan</p>
-            <h4 id="repKpiRate" class="text-xl font-extrabold text-blue-900">0%</h4>
-          </div>
-          <div class="p-3 bg-purple-50 border border-purple-100 rounded-xl">
-            <p class="text-[11px] text-purple-600 font-semibold">Murid Terlibat</p>
-            <h4 id="repKpiStudents" class="text-xl font-extrabold text-purple-900">0</h4>
-          </div>
-          <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl col-span-2 md:col-span-1">
-            <p class="text-[11px] text-amber-700 font-semibold">Telah Disahkan</p>
-            <h4 id="repKpiVerified" class="text-xl font-extrabold text-amber-950">0</h4>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto max-h-[420px] rounded-xl border border-slate-200">
-          <table class="w-full text-left text-xs text-slate-700">
-            <thead class="bg-indigo-950 text-white uppercase font-semibold sticky top-0 z-10">
-              <tr>
-                <th class="p-2.5">Bil</th>
-                <th class="p-2.5">Tarikh / Masa</th>
-                <th class="p-2.5">Nama Guru</th>
-                <th class="p-2.5">Mata Pelajaran & Kelas</th>
-                <th class="p-2.5">Platform</th>
-                <th class="p-2.5">Topik / Tajuk</th>
-                <th class="p-2.5">Murid</th>
-                <th class="p-2.5">Status PdPR</th>
-                <th class="p-2.5">Pengesahan</th>
-              </tr>
-            </thead>
-            <tbody id="reportTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ================= PANDANGAN 4: HALAMAN ADMIN (KATA LALUAN: adminpdpr) ================= -->
-    <div id="viewAdmin" class="hidden space-y-6">
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-        
-        <div class="flex flex-wrap justify-between items-center pb-4 border-b border-slate-200 gap-3">
-          <div>
-            <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-user-shield text-amber-600"></i> Panel Kawalan Admin e-pantau PdPr SMKKA
-            </h2>
-            <p class="text-xs text-slate-500">Urus jadual rasmi Siri 6, betulkan nama guru, dan konfigurasikan pentadbir pengesah.</p>
-          </div>
-          <button onclick="logoutAdmin()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar Mod Admin
-          </button>
-        </div>
-
-        <!-- 1. PENGURUSAN PENTADBIR -->
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-          <div class="flex justify-between items-center">
-            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <i class="fa-solid fa-id-card-clip text-indigo-600"></i> Senarai Pentadbir Pengesah
-            </h3>
-            <button onclick="openAddPentadbirModal()" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg shadow transition flex items-center gap-1">
-              <i class="fa-solid fa-plus"></i> Tambah Pentadbir
-            </button>
-          </div>
-
-          <div class="overflow-x-auto max-h-48 bg-white rounded-lg border border-slate-200">
-            <table class="w-full text-xs text-left">
-              <thead class="bg-slate-100 text-slate-600 font-semibold border-b">
-                <tr>
-                  <th class="p-2">Nama Pentadbir</th>
-                  <th class="p-2">Jawatan</th>
-                  <th class="p-2 text-center w-24">Tindakan</th>
-                </tr>
-              </thead>
-              <tbody id="adminPentadbirTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 2. PENGURUSAN GURU & JADUAL SIRI 6 -->
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-          <div class="flex flex-wrap justify-between items-center gap-2">
-            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <i class="fa-solid fa-calendar-days text-indigo-600"></i> Pengurusan Guru & Jadual Waktu Siri 6
-            </h3>
-            <div class="flex items-center gap-2">
-              <button onclick="openAddTeacherModal()" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow transition flex items-center gap-1">
-                <i class="fa-solid fa-user-plus"></i> Tambah Guru Baharu
-              </button>
-              <button onclick="resetDefaultJadual()" class="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold rounded-lg transition">
-                Set Semula ke Siri 6 Asal
-              </button>
+          <!-- Tarikh & Hari -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tarikh PdPR</label>
+              <input type="date" id="tarikhInput" onchange="kemaskiniHariDanSlot()" required class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 focus:border-indigo-500 outline-none bg-slate-50">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Hari</label>
+              <input type="text" id="hariInput" readonly placeholder="Isnin" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 bg-slate-100 text-slate-600 outline-none font-medium">
             </div>
           </div>
 
-          <div class="bg-white p-3.5 rounded-xl border border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-            <div class="md:col-span-6">
-              <label class="block font-bold text-slate-700 text-xs mb-1">Pilih Guru untuk Disemak / Diedit</label>
-              <select id="adminTeacherSelect" onchange="renderAdminTeacherSlots()" class="w-full p-2 border border-slate-300 rounded-xl bg-slate-50 text-xs font-semibold">
-              </select>
+          <!-- Slot Waktu Mengajar Rasmi (Auto) -->
+          <div class="bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-900 flex items-center space-x-1.5">
+                <i class="fa-regular fa-calendar-check text-indigo-600"></i>
+                <span>Slot Waktu Mengajar Rasmi</span>
+              </span>
+              <span id="badgeSlotCount" class="text-[11px] px-2 py-0.5 bg-indigo-200 text-indigo-800 font-bold rounded-full">0 Slot</span>
             </div>
-            <div class="md:col-span-3">
-              <button onclick="editCurrentTeacherName()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-pen-to-square"></i> Betulkan Nama Guru
-              </button>
-            </div>
-            <div class="md:col-span-3">
-              <button onclick="deleteCurrentTeacher()" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-trash-can"></i> Padam Guru Ini
-              </button>
-            </div>
-          </div>
-
-          <div class="flex justify-between items-center pt-2">
-            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <i class="fa-solid fa-clock text-indigo-600"></i> Slot Waktu Mengajar Semasa Bagi Guru Dipilih
-            </span>
-            <button onclick="openAddSlotModal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1">
-              <i class="fa-solid fa-plus-circle"></i> Tambah Slot Waktu
-            </button>
-          </div>
-
-          <div class="overflow-x-auto max-h-60 bg-white rounded-lg border border-slate-200">
-            <table class="w-full text-xs text-left">
-              <thead class="bg-slate-100 text-slate-600 font-semibold border-b">
-                <tr>
-                  <th class="p-2">Hari</th>
-                  <th class="p-2">Masa</th>
-                  <th class="p-2">Mata Pelajaran</th>
-                  <th class="p-2">Kelas</th>
-                  <th class="p-2 text-center w-24">Tindakan</th>
-                </tr>
-              </thead>
-              <tbody id="adminSlotTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ================= MODAL PENGESAHAN PENTADBIR ================= -->
-  <div id="verifyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-        <div class="flex items-center gap-2.5">
-          <img src="logo.png" alt="Logo" class="w-8 h-8 object-contain">
-          <div>
-            <h3 class="font-bold text-slate-900 text-sm">Pengesahan Pentadbir PdPR</h3>
-            <p id="modalRecordId" class="text-[11px] font-mono text-indigo-600"></p>
-          </div>
-        </div>
-        <button onclick="closeVerifyModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-
-      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 mb-4 text-xs">
-        <p><strong class="text-slate-600">Guru:</strong> <span id="modalGuruName" class="font-bold text-slate-900"></span></p>
-        <p><strong class="text-slate-600">Sesi:</strong> <span id="modalSubjekKelas"></span> • <span id="modalMasa"></span></p>
-        <p><strong class="text-slate-600">Tajuk:</strong> <span id="modalTajuk"></span></p>
-        <p><strong class="text-slate-600">Aktiviti:</strong> <span id="modalAktiviti" class="text-slate-700"></span></p>
-        <p><strong class="text-slate-600">Dapatan:</strong> <span id="modalDapatan" class="text-slate-700"></span></p>
-        <div id="modalImagesContainer" class="grid grid-cols-4 gap-2 pt-2"></div>
-      </div>
-
-      <form id="verifyForm" onsubmit="submitVerification(event)" class="space-y-3 text-xs">
-        <input type="hidden" id="verifyRecordIdInput">
-        
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">Pilih Pentadbir / Pemantau</label>
-          <select id="selectPentadbirVerify" onchange="onPentadbirDropdownChange()" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-medium">
-          </select>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">Jawatan Pentadbir</label>
-            <input type="text" id="jawatanPentadbirInput" readonly class="w-full p-2.5 border border-slate-200 rounded-xl bg-slate-100 font-semibold text-slate-600">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">Status Pengesahan</label>
-            <select id="statusVerifySelect" required class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-medium">
-              <option value="Disahkan & Lengkap">Disahkan & Lengkap</option>
-              <option value="Perlu Tindakan">Perlu Tindakan</option>
-              <option value="Ditolak">Ditolak</option>
+            <select id="slotSelect" onchange="pilihSlotJadual()" class="w-full text-sm rounded-lg border-indigo-200 border px-3 py-2 bg-white focus:border-indigo-500 outline-none">
+              <option value="">-- Pilih Slot Mengajar Hari Ini --</option>
             </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">Catatan / Ulasan Pentadbir</label>
-          <textarea id="catatanPentadbirInput" rows="2" placeholder="Ulasan bimbingan atau refleksi pemantau..." class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white"></textarea>
-        </div>
-
-        <div class="space-y-1.5">
-          <div class="flex justify-between items-center">
-            <label class="block font-bold text-slate-700 text-xs flex items-center gap-1.5">
-              <i class="fa-solid fa-signature text-indigo-600"></i> Tandatangan Digital (Scribble di sini)
-            </label>
-            <button type="button" onclick="clearSignaturePad()" class="text-[11px] text-rose-600 hover:underline font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-rotate-left"></i> Padam
-            </button>
-          </div>
-          <div class="border border-slate-300 rounded-xl bg-white p-1">
-            <canvas id="sigCanvas" width="450" height="130" class="w-full h-28 touch-none border border-dashed border-slate-200 rounded-lg cursor-crosshair bg-slate-50/50"></canvas>
-          </div>
-          <p class="text-[10px] text-slate-400 italic">Gunakan jari atau tetikus untuk menurunkan tandatangan.</p>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeVerifyModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">Batal</button>
-          <button type="submit" id="btnSubmitVerify" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 shadow flex items-center gap-1.5">
-            <i class="fa-solid fa-circle-check"></i> Sahkan & Simpan
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= MODAL PRATONTON & CETAKAN OPR ================= -->
-  <div id="oprPrintModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[96vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 print-area">
-      
-      <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 no-print">
-        <div class="flex items-center gap-2">
-          <span class="px-3 py-1 bg-indigo-100 text-indigo-800 font-bold rounded-lg text-xs">Pratonton OPR Rasmi</span>
-          <span class="text-xs text-slate-500">Format A4 Satu Halaman</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
-          </button>
-          <button onclick="closeOprPrintModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Tutup</button>
-        </div>
-      </div>
-
-      <div class="bg-white border-2 border-slate-900 p-6 space-y-4 text-slate-900 text-xs leading-relaxed">
-        
-        <div class="flex items-center gap-4 border-b-2 border-slate-900 pb-3">
-          <img src="logo.png" alt="Logo SMKKA" onerror="this.src='https://placehold.co/90x90/indigo/white?text=SMKKA'" class="w-16 h-16 object-contain">
-          <div class="text-center flex-1">
-            <h2 class="text-sm font-extrabold uppercase tracking-wide">SEKOLAH MENENGAH KEBANGSAAN KAMARUL ARIFFIN</h2>
-            <p class="text-[11px] text-slate-600">85300 LABIS, SEGAMAT, JOHOR DARUL TAKZIM</p>
-            <h3 class="text-xs font-black uppercase tracking-wider text-indigo-950 mt-1 bg-slate-100 py-0.5 border border-slate-300">ONE PAGE REPORT (OPR) — PELAKSANAAN PdPR</h3>
-          </div>
-        </div>
-
-        <table class="w-full border-collapse border border-slate-900 text-[11px]">
-          <tbody>
-            <tr>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100 w-28">NAMA GURU</td>
-              <td id="oprDocGuru" class="border border-slate-900 p-1.5 font-semibold" colspan="3">-</td>
-            </tr>
-            <tr>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100">TARIKH & HARI</td>
-              <td id="oprDocTarikhHari" class="border border-slate-900 p-1.5">-</td>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100 w-28">MASA</td>
-              <td id="oprDocMasa" class="border border-slate-900 p-1.5">-</td>
-            </tr>
-            <tr>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100">MATA PELAJARAN</td>
-              <td id="oprDocSubjek" class="border border-slate-900 p-1.5 font-semibold">-</td>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100">KELAS</td>
-              <td id="oprDocKelas" class="border border-slate-900 p-1.5 font-semibold">-</td>
-            </tr>
-            <tr>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100">PLATFORM</td>
-              <td id="oprDocPlatform" class="border border-slate-900 p-1.5">-</td>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100">BIL. MURID</td>
-              <td id="oprDocMurid" class="border border-slate-900 p-1.5 font-semibold">- orang</td>
-            </tr>
-            <tr>
-              <td class="border border-slate-900 p-1.5 font-bold bg-slate-100">STATUS</td>
-              <td id="oprDocStatus" class="border border-slate-900 p-1.5 font-bold text-indigo-900" colspan="3">-</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="border border-slate-900 p-2.5 rounded bg-slate-50/50 space-y-1.5 text-[11px]">
-          <p><strong>TAJUK / STANDARD KANDUNGAN:</strong> <span id="oprDocTajuk" class="font-medium">-</span></p>
-          <p><strong>AKTIVITI PEMBELAJARAN:</strong> <span id="oprDocAktiviti" class="font-medium">-</span></p>
-          <p><strong>DAPATAN / HASIL PEMBELAJARAN:</strong> <span id="oprDocDapatan" class="font-medium">-</span></p>
-        </div>
-
-        <div>
-          <h4 class="font-bold text-[11px] uppercase tracking-wider mb-1.5 flex items-center gap-1">
-            <i class="fa-solid fa-images"></i> EVIDENS / RAKAMAN BERGAMBAR PELAKSANAAN (OPR)
-          </h4>
-          <div id="oprDocImagesGrid" class="grid grid-cols-2 gap-2 border border-slate-900 p-2 bg-slate-50 min-h-[160px]"></div>
-        </div>
-
-        <div class="border border-slate-900 p-2.5 bg-slate-50 flex justify-between items-end text-[11px]">
-          <div class="space-y-1 max-w-md">
-            <p><strong>ULASAN / CATATAN PENTADBIR:</strong></p>
-            <p id="oprDocCatatan" class="italic text-slate-700 bg-white p-1.5 border border-slate-300 rounded min-h-[38px]">-</p>
-            <p class="text-[10px] text-slate-500">Tarikh Pengesahan: <span id="oprDocTarikhSah" class="font-semibold text-slate-800">-</span></p>
-          </div>
-          <div class="text-center w-48 space-y-1">
-            <div id="oprDocSigContainer" class="h-16 flex items-center justify-center border-b border-slate-900 pb-1">
-              <span class="text-[10px] text-slate-400 italic">Belum Ditandatangani</span>
-            </div>
-            <p id="oprDocNamaPentadbir" class="font-extrabold uppercase text-[11px]">-</p>
-            <p id="oprDocJawatanPentadbir" class="text-[10px] text-slate-600 font-medium leading-none">-</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= MODAL CETAKAN LAPORAN PEMANTAUAN MENGIKUT TARIKH ================= -->
-  <div id="dateReportPrintModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[96vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-200 print-area">
-      
-      <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 no-print">
-        <div class="flex items-center gap-2">
-          <span class="px-3 py-1 bg-indigo-100 text-indigo-800 font-bold rounded-lg text-xs">Laporan Pemantauan Berkala</span>
-          <span class="text-xs text-slate-500">Format Cetakan Rasmi PPD / JPN</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
-          </button>
-          <button onclick="closeDateReportPrintModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Tutup</button>
-        </div>
-      </div>
-
-      <div class="bg-white p-4 space-y-4 text-slate-900 text-xs">
-        
-        <div class="flex items-center gap-4 border-b-2 border-slate-900 pb-3">
-          <img src="logo.png" alt="Logo SMKKA" onerror="this.src='https://placehold.co/90x90/indigo/white?text=SMKKA'" class="w-16 h-16 object-contain">
-          <div class="text-center flex-1">
-            <h2 class="text-sm font-extrabold uppercase tracking-wide">SEKOLAH MENENGAH KEBANGSAAN KAMARUL ARIFFIN</h2>
-            <p class="text-[11px] text-slate-600">85300 LABIS, SEGAMAT, JOHOR DARUL TAKZIM</p>
-            <h3 class="text-xs font-black uppercase tracking-wider text-indigo-950 mt-1 bg-slate-100 py-1 border border-slate-300">
-              LAPORAN PEMANTAUAN PELAKSANAAN PdPR MENGIKUT TARIKH
-            </h3>
-            <p class="text-[11px] font-bold text-slate-700 mt-1">
-              TEMPOH PEMANTAUAN: <span id="printRepPeriodLabel" class="text-indigo-900 underline">-</span>
+            <p class="text-[10px] text-indigo-700 italic leading-snug">
+              *Setiap petak bernilai 30 minit. Petak bergabung dikira 1 jam atau 1 jam 30 minit.
             </p>
           </div>
-        </div>
 
-        <div class="grid grid-cols-4 gap-2 border border-slate-900 p-2.5 bg-slate-50 text-center text-[11px]">
-          <div><strong>JUMLAH SESI PDPR:</strong> <span id="printRepTotal" class="font-bold text-slate-900">0</span></div>
-          <div><strong>DILAKSANAKAN:</strong> <span id="printRepExecuted" class="font-bold text-emerald-800">0</span></div>
-          <div><strong>KADAR PELAKSANAAN:</strong> <span id="printRepRate" class="font-bold text-blue-800">0%</span></div>
-          <div><strong>TOTAL MURID HADIR:</strong> <span id="printRepStudents" class="font-bold text-indigo-900">0</span></div>
-        </div>
-
-        <table class="w-full border-collapse border border-slate-900 text-[10px]">
-          <thead class="bg-slate-100 text-slate-900 uppercase font-bold text-center border-b border-slate-900">
-            <tr>
-              <th class="border border-slate-900 p-1.5 w-8">Bil</th>
-              <th class="border border-slate-900 p-1.5 w-20">Tarikh & Masa</th>
-              <th class="border border-slate-900 p-1.5">Nama Guru</th>
-              <th class="border border-slate-900 p-1.5">Mata Pelajaran & Kelas</th>
-              <th class="border border-slate-900 p-1.5">Platform</th>
-              <th class="border border-slate-900 p-1.5">Tajuk / Topik</th>
-              <th class="border border-slate-900 p-1.5 w-12">Murid</th>
-              <th class="border border-slate-900 p-1.5 w-20">Status</th>
-              <th class="border border-slate-900 p-1.5">Disahkan Oleh</th>
-            </tr>
-          </thead>
-          <tbody id="printRepTableBody"></tbody>
-        </table>
-
-        <div class="grid grid-cols-2 gap-8 pt-6 text-[11px]">
-          <div>
-            <p>Disediakan oleh:</p>
-            <div class="h-16 border-b border-slate-400"></div>
-            <p class="font-bold mt-1">Penyelaras PdPR / Setiausaha Kurikulum</p>
-            <p class="text-[10px] text-slate-500">SMK Kamarul Ariffin, Labis</p>
+          <!-- Masa Mengajar & Kelas -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Masa Mengajar</label>
+              <input type="text" id="masaInput" required placeholder="cth: 08:30 - 09:30" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Kelas</label>
+              <input type="text" id="kelasInput" required placeholder="cth: 2S1/2S2" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50">
+            </div>
           </div>
+
+          <!-- Mata Pelajaran & Platform PdPR -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Mata Pelajaran</label>
+              <input type="text" id="subjekInput" required placeholder="cth: ASK/RBT" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Platform PdPR</label>
+              <select id="platformSelect" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50">
+                <option value="Delima Google Classroom">Delima Google Classroom</option>
+                <option value="Google Meet">Google Meet</option>
+                <option value="WhatsApp / Telegram">WhatsApp / Telegram</option>
+                <option value="Quizizz / Wordwall">Quizizz / Wordwall</option>
+                <option value="YouTube / Video">YouTube / Video</option>
+                <option value="Modul Luar Talian">Modul Luar Talian</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tajuk / Topik Diajar -->
           <div>
-            <p>Disahkan oleh:</p>
-            <div class="h-16 border-b border-slate-400"></div>
-            <p class="font-bold mt-1">Pengetua / Guru Penolong Kanan</p>
-            <p class="text-[10px] text-slate-500">SMK Kamarul Ariffin, Labis</p>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Tajuk / Topik Diajar</label>
+            <input type="text" id="tajukInput" required placeholder="Standard Kandungan / Topik" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50">
+          </div>
+
+          <!-- Aktiviti yang Dijalankan -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Aktiviti yang Dijalankan</label>
+            <textarea id="aktivitiInput" rows="2" required placeholder="Nyatakan aktiviti pembelajaran secara ringkas..." class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50 resize-none"></textarea>
+          </div>
+
+          <!-- Dapatan / Refleksi -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Dapatan / Hasil Pembelajaran</label>
+            <textarea id="dapatanInput" rows="2" placeholder="Dapatan murid, pencapaian objektif atau refleksi..." class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50 resize-none"></textarea>
+          </div>
+
+          <!-- Status & Kehadiran -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Status Pelaksanaan</label>
+              <select id="statusSelect" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50">
+                <option value="Dilaksanakan">Dilaksanakan</option>
+                <option value="Tidak Dilaksanakan">Tidak Dilaksanakan</option>
+                <option value="Ditangguhkan">Ditangguhkan</option>
+                <option value="Lain-lain">Lain-lain</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Bil. Murid Hadir</label>
+              <input type="number" id="muridInput" min="0" value="0" class="w-full text-sm rounded-xl border-slate-200 border px-3 py-2 outline-none focus:border-indigo-500 bg-slate-50">
+            </div>
+          </div>
+
+          <!-- Gambar Bukti OPR (1 - 4 Gambar) -->
+          <div class="bg-amber-50/70 p-4 rounded-xl border border-dashed border-amber-300 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
+                <i class="fa-solid fa-camera text-amber-600"></i>
+                <span>Gambar Bukti OPR *</span>
+              </span>
+              <span id="labelGambarCount" class="text-[11px] px-2 py-0.5 bg-amber-200 text-amber-900 font-bold rounded-full">0 / 4 Gambar</span>
+            </div>
+            <p class="text-[11px] text-amber-800">Wajib muat naik minimum <strong>1 gambar</strong> dan maksimum <strong>4 gambar</strong>.</p>
+            <input type="file" id="gambarInput" multiple accept="image/*" onchange="prosesMuatNaikGambar(event)" class="text-xs text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-700 cursor-pointer">
+            <div id="gambarPreviewContainer" class="grid grid-cols-4 gap-2 pt-2 empty:hidden"></div>
+          </div>
+
+          <!-- Butang Hantar -->
+          <button type="submit" id="btnHantar" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Hantar Rekod PdPR</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- CARTA & JADUAL REKOD (KANAN) -->
+      <div class="lg:col-span-8 space-y-6">
+
+        <!-- CARTA STATISTIK -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-2">
+              <i class="fa-solid fa-chart-pie text-indigo-500"></i>
+              <span>Status Pelaksanaan</span>
+            </h3>
+            <div class="relative h-44 w-full mt-2 flex items-center justify-center">
+              <canvas id="chartStatus"></canvas>
+            </div>
+            <div class="flex justify-center space-x-3 text-[11px] font-medium text-slate-500 mt-2">
+              <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block"></span><span>Dilaksanakan</span></span>
+              <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-rose-500 rounded-full inline-block"></span><span>Tidak</span></span>
+              <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span><span>Tangguh</span></span>
+              <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-slate-400 rounded-full inline-block"></span><span>Lain</span></span>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-2">
+              <i class="fa-solid fa-chart-column text-emerald-500"></i>
+              <span>Platform PdPR</span>
+            </h3>
+            <div class="relative h-48 w-full mt-2">
+              <canvas id="chartPlatform"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- JADUAL REKOD TERKINI -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h2 class="font-bold text-slate-900 text-base flex items-center space-x-2">
+                <i class="fa-solid fa-table-list text-indigo-600"></i>
+                <span>Senarai Rekod PdPR Terkini</span>
+              </h2>
+              <p class="text-xs text-slate-500">Klik butang OPR untuk mencetak laporan bergambar satu halaman rasmi.</p>
+            </div>
+            <div class="relative">
+              <input type="text" id="searchInput" oninput="tapisSenaraiRekod()" placeholder="Cari guru / subjek..." class="text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-2 w-full sm:w-56 outline-none focus:border-indigo-500 bg-slate-50">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-100">
+            <table class="w-full text-left text-xs text-slate-600">
+              <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 uppercase tracking-wider text-[11px]">
+                <tr>
+                  <th class="py-3 px-3">Bil</th>
+                  <th class="py-3 px-3">Guru</th>
+                  <th class="py-3 px-3">Subjek / Kelas</th>
+                  <th class="py-3 px-3">Tarikh / Masa</th>
+                  <th class="py-3 px-3 text-center">Gambar</th>
+                  <th class="py-3 px-3 text-center">Status</th>
+                  <th class="py-3 px-3 text-center">Tindakan</th>
+                </tr>
+              </thead>
+              <tbody id="rekodTableBody" class="divide-y divide-slate-100">
+                <!-- Data dimasukkan oleh JavaScript -->
+              </tbody>
+            </table>
           </div>
         </div>
 
       </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: ONE PAGE REPORT (OPR) GURU -->
+  <div id="oprModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl max-h-[94vh] flex flex-col overflow-hidden">
+      <div class="p-3 sm:p-4 bg-indigo-700 text-white flex justify-between items-center no-print">
+        <h3 class="font-bold text-sm flex items-center space-x-2">
+          <i class="fa-solid fa-file-lines"></i>
+          <span>Pratonton One Page Report (OPR) PdPR</span>
+        </h3>
+        <div class="space-x-2">
+          <button onclick="window.print()" class="px-3 py-1 bg-white text-indigo-700 hover:bg-indigo-50 rounded-lg text-xs font-bold transition shadow-sm">
+            <i class="fa-solid fa-print mr-1"></i> Cetak / Simpan PDF
+          </button>
+          <button onclick="tutupModal('oprModal')" class="text-white hover:text-slate-200 text-base px-2">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- KANDUNGAN SATU HALAMAN OPR -->
+      <div id="printableArea" class="p-6 sm:p-8 overflow-y-auto custom-scrollbar space-y-4 bg-white text-slate-900">
+        <!-- HEADER SEKOLAH -->
+        <div class="text-center border-b-2 border-slate-800 pb-3">
+          <h2 class="text-lg font-black uppercase tracking-wider">SMK KAMARUL ARIFFIN</h2>
+          <p class="text-xs text-slate-600 font-medium">85300 LABIS, SEGAMAT, JOHOR DARUL TA'ZIM</p>
+          <h3 class="text-xs sm:text-sm font-extrabold mt-1.5 uppercase text-indigo-900 bg-indigo-50 py-1 rounded inline-block px-4 border border-indigo-100">
+            LAPORAN SATU HALAMAN (ONE PAGE REPORT - OPR) PdPR
+          </h3>
+        </div>
+
+        <!-- MAKLUMAT PDPR -->
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs border border-slate-200 p-3 rounded-lg bg-slate-50/60">
+          <div><span class="font-bold text-slate-600">Nama Guru:</span> <span id="oprNama" class="font-semibold text-slate-900"></span></div>
+          <div><span class="font-bold text-slate-600">Tarikh / Hari:</span> <span id="oprTarikh" class="font-semibold text-slate-900"></span></div>
+          <div><span class="font-bold text-slate-600">Mata Pelajaran:</span> <span id="oprSubjek" class="font-semibold text-slate-900"></span></div>
+          <div><span class="font-bold text-slate-600">Masa Mengajar:</span> <span id="oprMasa" class="font-semibold text-slate-900"></span></div>
+          <div><span class="font-bold text-slate-600">Kelas / Tingkatan:</span> <span id="oprKelas" class="font-semibold text-slate-900"></span></div>
+          <div><span class="font-bold text-slate-600">Platform:</span> <span id="oprPlatform" class="font-semibold text-slate-900"></span></div>
+          <div><span class="font-bold text-slate-600">Kehadiran Murid:</span> <span id="oprMurid" class="font-semibold text-slate-900"></span></div>
+          <div><span class="font-bold text-slate-600">Status Pelaksanaan:</span> <span id="oprStatus" class="font-semibold text-slate-900"></span></div>
+        </div>
+
+        <!-- TAJUK & AKTIVITI -->
+        <div class="space-y-2 text-xs">
+          <div class="p-2.5 rounded border border-slate-200">
+            <span class="font-bold text-slate-700 block mb-0.5">Tajuk / Topik:</span>
+            <p id="oprTajuk" class="text-slate-800"></p>
+          </div>
+          <div class="p-2.5 rounded border border-slate-200">
+            <span class="font-bold text-slate-700 block mb-0.5">Aktiviti Pembelajaran:</span>
+            <p id="oprAktiviti" class="text-slate-800 whitespace-pre-line"></p>
+          </div>
+          <div class="p-2.5 rounded border border-slate-200">
+            <span class="font-bold text-slate-700 block mb-0.5">Dapatan / Refleksi:</span>
+            <p id="oprDapatan" class="text-slate-800 whitespace-pre-line"></p>
+          </div>
+        </div>
+
+        <!-- GAMBAR BUKTI PELAKSANAAN (1 - 4) -->
+        <div>
+          <span class="font-bold text-xs text-slate-700 block mb-1.5 uppercase tracking-wide">Gambar Bukti Pelaksanaan:</span>
+          <div id="oprGambarGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+        </div>
+
+        <!-- RUANG TANDATANGAN & PENGESAHAN -->
+        <div class="grid grid-cols-2 gap-6 pt-3 border-t border-slate-200 text-xs">
+          <div>
+            <p class="font-semibold text-slate-600 mb-10">Disediakan oleh (Guru Matapelajaran):</p>
+            <p class="font-bold uppercase text-slate-900 border-t border-slate-400 pt-1" id="oprSignGuruNama">GURU</p>
+            <p class="text-[11px] text-slate-500">SMK Kamarul Ariffin</p>
+          </div>
+          <div>
+            <p class="font-semibold text-slate-600 mb-1">Disahkan oleh (Pentadbir):</p>
+            <div id="oprSignatureDisplay" class="h-10 flex items-center">
+              <span class="text-amber-600 italic text-[11px]">Belum disahkan oleh Pentadbir</span>
+            </div>
+            <p class="font-bold uppercase text-slate-900 border-t border-slate-400 pt-1" id="oprSignPentadbirNama">PENTADBIR SEKOLAH</p>
+            <p class="text-[11px] text-slate-500" id="oprSignPentadbirJawatan">SMK Kamarul Ariffin</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <footer class="mt-auto py-3 bg-slate-900 text-slate-400 text-xs text-center border-t border-slate-800 no-print">
-    SMK Kamarul Ariffin, 85300 Labis, Johor • Sistem e-pantau PdPr SMKKA
-  </footer>
+  <!-- MODAL: PENGESAHAN PENTADBIR & SCRIBBLE PAD -->
+  <div id="sahModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-4 bg-indigo-700 text-white flex justify-between items-center">
+        <h3 class="font-bold text-sm flex items-center space-x-2">
+          <i class="fa-solid fa-signature"></i>
+          <span>Pengesahan Laporan PdPR Pentadbir</span>
+        </h3>
+        <button onclick="tutupModal('sahModal')" class="text-white hover:text-slate-200 text-sm">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
 
-  <!-- ================= LOGIK JAVASCRIPT LENGKAP ================= -->
+      <div class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nama Pentadbir</label>
+          <input type="text" id="sahNamaPentadbir" placeholder="cth: Pengetua / PK Pentadbiran" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Jawatan</label>
+          <select id="sahJawatanPentadbir" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 outline-none focus:border-indigo-500">
+            <option value="Pengetua">Pengetua</option>
+            <option value="PK Pentadbiran">Penolong Kanan Pentadbiran</option>
+            <option value="PK HEM">Penolong Kanan HEM</option>
+            <option value="PK Kokurikulum">Penolong Kanan Kokurikulum</option>
+            <option value="GKMP Teknik & Vokasional">GKMP Teknik & Vokasional</option>
+            <option value="GKMP Sains & Matematik">GKMP Sains & Matematik</option>
+            <option value="GKMP Bahasa">GKMP Bahasa</option>
+            <option value="GKMP Kemanusiaan">GKMP Kemanusiaan</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Ulasan / Catatan Pentadbir</label>
+          <textarea id="sahUlasan" rows="2" placeholder="PdPR dilaksanakan dengan teratur mengikut sukatan..." class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 outline-none focus:border-indigo-500 resize-none"></textarea>
+        </div>
+
+        <!-- CANVAS SCRIBBLE SIGNATURE -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-semibold text-slate-700">Tandatangan Digital (Scribble)</label>
+            <button type="button" onclick="padamSignature()" class="text-rose-600 hover:text-rose-700 text-[11px] font-bold">
+              <i class="fa-solid fa-eraser mr-0.5"></i> Padam Semula
+            </button>
+          </div>
+          <div class="border-2 border-dashed border-indigo-200 rounded-xl bg-slate-50 relative overflow-hidden">
+            <canvas id="signaturePad" width="380" height="150" class="w-full h-36 touch-none cursor-crosshair bg-white"></canvas>
+            <div id="signPlaceholder" class="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-300 text-xs">
+              <i class="fa-solid fa-pen-nib mr-1.5"></i> Scribble tandatangan di sini
+            </div>
+          </div>
+        </div>
+
+        <button onclick="simpanPengesahanPentadbir()" id="btnSimpanSah" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center space-x-2 transition shadow">
+          <i class="fa-solid fa-check-double"></i>
+          <span>Sahkan & Turunkan Tandatangan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LAPORAN PELAKSANAAN PDPR SEKOLAH -->
+  <div id="laporanSekolahModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl max-h-[94vh] flex flex-col overflow-hidden">
+      <div class="p-3 sm:p-4 bg-slate-800 text-white flex justify-between items-center no-print">
+        <div class="flex items-center space-x-3">
+          <h3 class="font-bold text-sm flex items-center space-x-2">
+            <i class="fa-solid fa-school"></i>
+            <span>Laporan Pelaksanaan PdPR Peringkat Sekolah</span>
+          </h3>
+          <div class="flex items-center space-x-2">
+            <label class="text-xs text-slate-300">Pilih Tarikh:</label>
+            <input type="date" id="tarikhFilterSekolah" onchange="janaLaporanSekolah()" class="text-xs rounded-lg bg-slate-700 border-slate-600 text-white px-2 py-1 outline-none">
+          </div>
+        </div>
+        <div class="space-x-2">
+          <button onclick="window.print()" class="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition">
+            <i class="fa-solid fa-print mr-1"></i> Cetak Laporan
+          </button>
+          <button onclick="tutupModal('laporanSekolahModal')" class="text-white hover:text-slate-200 text-base px-2">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-6 overflow-y-auto custom-scrollbar space-y-4 bg-white text-slate-900">
+        <div class="text-center border-b pb-3">
+          <h2 class="text-lg font-black uppercase">SMK KAMARUL ARIFFIN, 85300 LABIS, JOHOR</h2>
+          <h3 class="text-sm font-extrabold text-indigo-800 uppercase mt-0.5">LAPORAN HARIAN PELAKSANAAN PENGAJARAN & PEMBELAJARAN DI RUMAH (PdPR)</h3>
+          <p id="laporanSekolahTarikhText" class="text-xs text-slate-600 font-semibold mt-1"></p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-3 text-center text-xs">
+          <div class="p-3 bg-slate-50 border rounded-xl">
+            <span class="text-slate-500 block">Jumlah PdPR</span>
+            <span id="sekJumlah" class="text-xl font-bold text-slate-900">0</span>
+          </div>
+          <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+            <span class="text-emerald-700 block">Dilaksanakan</span>
+            <span id="sekDilaksana" class="text-xl font-bold text-emerald-700">0</span>
+          </div>
+          <div class="p-3 bg-rose-50 border border-rose-100 rounded-xl">
+            <span class="text-rose-700 block">Tidak Dilaksanakan</span>
+            <span id="sekTidak" class="text-xl font-bold text-rose-700">0</span>
+          </div>
+          <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
+            <span class="text-indigo-700 block">Jumlah Murid Terlibat</span>
+            <span id="sekMurid" class="text-xl font-bold text-indigo-700">0</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 font-bold border-b text-slate-700">
+              <tr>
+                <th class="p-2.5">Bil</th>
+                <th class="p-2.5">Nama Guru</th>
+                <th class="p-2.5">Masa</th>
+                <th class="p-2.5">Kelas</th>
+                <th class="p-2.5">Subjek</th>
+                <th class="p-2.5">Platform</th>
+                <th class="p-2.5 text-center">Hadir</th>
+                <th class="p-2.5 text-center">Status</th>
+                <th class="p-2.5 text-center">Pengesahan</th>
+              </tr>
+            </thead>
+            <tbody id="sekTbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIK JAVASCRIPT SISTEM -->
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
+    // =========================================================================
+    // 1. URL GOOGLE APPS SCRIPT WEB APP (DIKEMAS KINI)
+    // =========================================================================
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    const DEFAULT_PENTADBIR = [
-      { id: 1, nama: "Cikgu Hadi bin Adman", jawatan: "Pengetua" },
-      { id: 2, nama: "GPK Pentadbiran", jawatan: "Guru Penolong Kanan Pentadbiran" },
-      { id: 3, nama: "GPK Hal Ehwal Murid", jawatan: "Guru Penolong Kanan HEM" },
-      { id: 4, nama: "GPK Kokurikulum", jawatan: "Guru Penolong Kanan Kokurikulum" },
-      { id: 5, nama: "GKMP Bahasa", jawatan: "Guru Kanan Mata Pelajaran Bahasa" },
-      { id: 6, nama: "GKMP Sains & Matematik", jawatan: "Guru Kanan Sains & Matematik" },
-      { id: 7, nama: "GKMP Kemanusiaan", jawatan: "Guru Kanan Mata Pelajaran Kemanusiaan" },
-      { id: 8, nama: "GKMP Teknik & Vokasional", jawatan: "Guru Kanan Teknik & Vokasional" }
+    // =========================================================================
+    // 2. DATA JADUAL WAKTU GURU SIRI 6 (15 JUN 2026) - SMK KAMARUL ARIFFIN
+    // 1 kotak = 30 minit | 2 kotak = 1 jam | 3 kotak = 1 jam 30 minit
+    // =========================================================================
+    const JADUAL_SIRI_6 = {
+      "ZAINAL BIN MOHD ZABIR": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "10:00 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2", tempoh: "1 Jam 30 Minit (3 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "ABD HADI BIN ADMAN": {
+        "Isnin": [
+          { masa: "10:00 - 11:00", subjek: "PSV", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [],
+        "Khamis": [],
+        "Jumaat": []
+      },
+      "MASNON BIN AMAT": {
+        "Isnin": [
+          { masa: "11:30 - 12:30", subjek: "MM", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "MM", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "09:00 - 10:00", subjek: "MM", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "MM", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "MM", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": []
+      },
+      "OSKASMAZILA BINTI OSMAN": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "MM", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "MM", kelas: "1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "09:30 - 10:30", subjek: "MM", kelas: "1S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:30 - 10:30", subjek: "MM", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "09:30 - 10:30", subjek: "MM", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "MOHD NIZAM BIN SUBANI": {
+        "Isnin": [
+          { masa: "08:00 - 09:00", subjek: "MM", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "MM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "PK", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:00 - 09:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 09:30", subjek: "PJ", kelas: "4S1/4S2/4S3", tempoh: "30 Minit (1 petak)" },
+          { masa: "12:00 - 13:00", subjek: "MM", kelas: "2S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:00 - 09:00", subjek: "MM", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "MM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "MM", kelas: "3S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": []
+      },
+      "MOHD RIDUWAN BIN MOHD YASAN": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "FIZ", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "MM", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "MT", kelas: "5S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "FIZ", kelas: "4S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "MT", kelas: "5S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "11:00 - 12:00", subjek: "MM", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "11:30 - 12:30", subjek: "MM", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:30 - 09:30", subjek: "FIZ", kelas: "5S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "FIZ", kelas: "4S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "MM", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "ROHANA BINTI JASMIN": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "BM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:30 - 14:30", subjek: "BM", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "09:00 - 10:00", subjek: "BM", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "BM", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "BM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "BM", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "09:00 - 10:00", subjek: "BM", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "BM", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "BM", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "09:00 - 10:00", subjek: "BM", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "BM", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "MOHAMAAD FADZELI BIN AZAM": {
+        "Isnin": [
+          { masa: "12:30 - 13:30", subjek: "PSV", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "GEO", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "GEO", kelas: "3S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "08:30 - 09:30", subjek: "PJ", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "PSV", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "08:00 - 09:00", subjek: "PSV", kelas: "4S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 09:30", subjek: "GEO", kelas: "3S1", tempoh: "30 Minit (1 petak)" },
+          { masa: "09:30 - 10:00", subjek: "GEO", kelas: "3S2", tempoh: "30 Minit (1 petak)" },
+          { masa: "11:00 - 12:00", subjek: "PSV", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": [
+          { masa: "08:00 - 09:00", subjek: "PSV", kelas: "4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "PK", kelas: "2S1/2S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "ZAIMAH BINTI SAMAD": {
+        "Isnin": [
+          { masa: "08:00 - 09:00", subjek: "PP", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "PP", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "GEO", kelas: "1S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:00 - 12:00", subjek: "GEO", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "SEJ", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Rabu": [
+          { masa: "09:00 - 10:00", subjek: "GEO", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Khamis": [
+          { masa: "09:00 - 10:00", subjek: "GEO", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "SEJ", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "SEJ", kelas: "4S1", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Jumaat": []
+      },
+      "NORUL HAFIDZAH BINTI HASSAN": {
+        "Selasa": [
+          { masa: "13:30 - 14:30", subjek: "KK", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "JESSICA CHAN LAI PENG": {
+        "Isnin": [
+          { masa: "09:00 - 10:00", subjek: "SC", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "SC", kelas: "4S2", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:30", subjek: "SC", kelas: "1S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:30 - 13:30", subjek: "SC", kelas: "5S3", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "LAVANYA A/P VEJAYAN": {
+        "Isnin": [
+          { masa: "08:00 - 09:00", subjek: "BI", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:00 - 10:00", subjek: "BI", kelas: "4S1/4S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "BI", kelas: "5S1/5S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "BI", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "14:00 - 15:00", subjek: "BI", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "10:00 - 11:00", subjek: "BI", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "BI", kelas: "5S3", tempoh: "1 Jam (2 petak)" },
+          { masa: "13:00 - 14:00", subjek: "BI", kelas: "2S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "14:00 - 15:00", subjek: "BI", kelas: "4S3", tempoh: "1 Jam (2 petak)" }
+        ]
+      },
+      "TANTY BINTI RAMLI": {
+        "Isnin": [
+          { masa: "08:30 - 09:30", subjek: "BM", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "10:00 - 11:00", subjek: "PSV", kelas: "3S1", tempoh: "1 Jam (2 petak)" },
+          { masa: "11:30 - 12:30", subjek: "PK", kelas: "4S1/4S2/4S3", tempoh: "1 Jam (2 petak)" }
+        ],
+        "Selasa": [
+          { masa: "08:30 - 09:30", subjek: "PJ", kelas: "1S1/1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "09:30 - 10:00", subjek: "PJ", kelas: "4S1/4S2/4S3", tempoh: "30 Minit (1 petak)" },
+          { masa: "10:30 - 11:30", subjek: "BM", kelas: "1S2", tempoh: "1 Jam (2 petak)" },
+          { masa: "12:00 - 13:00", subjek: "PSV", kelas: "2S2", tempoh: "1 Jam (2 petak)" }
+        ]
+      }
+    };
+
+    const SENARAI_GURU = [
+      "ZAINAL BIN MOHD ZABIR",
+      "ABD HADI BIN ADMAN",
+      "MASNON BIN AMAT",
+      "OSKASMAZILA BINTI OSMAN",
+      "MOHD NIZAM BIN SUBANI",
+      "MOHD RIDUWAN BIN MOHD YASAN",
+      "ROHANA BINTI JASMIN",
+      "MOHAMAAD FADZELI BIN AZAM",
+      "ZAIMAH BINTI SAMAD",
+      "NORUL HAFIDZAH BINTI HASSAN",
+      "JESSICA CHAN LAI PENG",
+      "LAVANYA A/P VEJAYAN",
+      "MUHAMMAD AMIRUL AIMAN BIN ZAKARIA",
+      "MUHAMMAD SYADZA BIN YUSOF",
+      "NORFAIZAH BINTI ISMAIL",
+      "NORHAYATI BT MD ZAIN",
+      "NORHAMIZAH BINTI SHAFIE",
+      "NORIHAN BINTI YUSOF",
+      "NUR FATIN NAZIRAH BINTI RASHIDI",
+      "NURUL HAMIZAH BINTI MD SAID",
+      "NUR AINA NAJWA BINTI MOHD NOR",
+      "SITI HANIZA BINTI IMRAN",
+      "SITI NUR HAKIMAH BINTI MOHD NOOR",
+      "TAMILVANI A/P KRISHNAN",
+      "TAN BEE KEAN",
+      "TANTY BINTI RAMLI"
     ];
 
-    // PANGKALAN DATA JADUAL GURU SIRI 6 (100% TEPAT MENGIKUT PDF SIRI 6 RUJUKAN TUNGGAL)
-    const JADUAL_SIRI_6_TEPAT = {
-      "Pengetua (Cikgu Hadi bin Adman)": [
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "PSV", kelas: "3S2" },
-        { hari: "Isnin", masa: "12:00 - 13:00", subjek: "ASK/RBT", kelas: "1S1/1S2" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2" }
-      ],
-      "Masnon bin Amat": [
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "MM", kelas: "3S2" },
-        { hari: "Isnin", masa: "13:00 - 14:30", subjek: "MM", kelas: "5S3" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "MM", kelas: "3S2" },
-        { hari: "Rabu", masa: "09:30 - 10:00", subjek: "MM", kelas: "3S2" },
-        { hari: "Rabu", masa: "11:00 - 12:30", subjek: "MM", kelas: "5S3" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "MM", kelas: "5S3" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "MM", kelas: "5S3" },
-        { hari: "Jumaat", masa: "10:30 - 11:00", subjek: "MM", kelas: "3S2" }
-      ],
-      "Oskasmazila binti Osman": [
-        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "MM", kelas: "1S1" },
-        { hari: "Isnin", masa: "13:00 - 14:00", subjek: "MM", kelas: "1S2" },
-        { hari: "Selasa", masa: "09:30 - 10:00", subjek: "MM", kelas: "1S2" },
-        { hari: "Rabu", masa: "09:30 - 10:00", subjek: "MM", kelas: "1S1" },
-        { hari: "Rabu", masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3" },
-        { hari: "Khamis", masa: "09:00 - 10:00", subjek: "MM", kelas: "1S1" },
-        { hari: "Khamis", masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2" },
-        { hari: "Khamis", masa: "13:30 - 14:30", subjek: "PIM", kelas: "4S1/4S2/4S3" },
-        { hari: "Jumaat", masa: "10:30 - 11:00", subjek: "MM", kelas: "1S1" },
-        { hari: "Jumaat", masa: "11:30 - 12:00", subjek: "MM", kelas: "1S2" }
-      ],
-      "Zainal bin Zabir": [
-        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-        { hari: "Isnin", masa: "12:00 - 13:00", subjek: "ASK/RBT", kelas: "1S1/1S2" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2" },
-        { hari: "Rabu", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-        { hari: "Rabu", masa: "11:30 - 13:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Khamis", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "ASK/RBT", kelas: "2S1/2S2" }
-      ],
-      "Mohd Nizam bin Subani": [
-        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "MM", kelas: "3S1" },
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "MM", kelas: "2S1" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "PK", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "PJ", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "MM", kelas: "2S1" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "MM", kelas: "3S1" },
-        { hari: "Rabu", masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1" },
-        { hari: "Rabu", masa: "11:30 - 13:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Khamis", masa: "11:00 - 12:00", subjek: "MM", kelas: "2S1" },
-        { hari: "Khamis", masa: "12:00 - 13:00", subjek: "MM", kelas: "3S1" },
-        { hari: "Jumaat", masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1" },
-        { hari: "Jumaat", masa: "11:00 - 12:00", subjek: "MM", kelas: "3S1" }
-      ],
-      "Mohd Riduwan bin Mohd Yasan": [
-        { hari: "Isnin", masa: "08:00 - 09:30", subjek: "FIZ", kelas: "5S1" },
-        { hari: "Isnin", masa: "13:00 - 14:30", subjek: "MT", kelas: "5S1" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "FIZ", kelas: "4S1" },
-        { hari: "Selasa", masa: "10:30 - 12:00", subjek: "MM", kelas: "2S2" },
-        { hari: "Rabu", masa: "09:30 - 10:00", subjek: "MM", kelas: "2S2" },
-        { hari: "Khamis", masa: "08:00 - 09:30", subjek: "FIZ", kelas: "4S1" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "FIZ", kelas: "5S1" },
-        { hari: "Khamis", masa: "11:00 - 12:30", subjek: "MM", kelas: "2S2" },
-        { hari: "Khamis", masa: "13:00 - 14:30", subjek: "MT", kelas: "5S1" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "FIZ", kelas: "4S1" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "MM", kelas: "2S2" }
-      ],
-      "Rohana Jasmin": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "BM", kelas: "2S1" },
-        { hari: "Isnin", masa: "11:00 - 12:00", subjek: "BM", kelas: "5S3" },
-        { hari: "Isnin", masa: "13:00 - 14:00", subjek: "BM", kelas: "4S2" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BM", kelas: "5S3" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "BM", kelas: "5S3" },
-        { hari: "Rabu", masa: "11:00 - 12:00", subjek: "BM", kelas: "2S1" },
-        { hari: "Rabu", masa: "12:00 - 13:00", subjek: "BM", kelas: "4S2" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "BM", kelas: "2S1" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "BM", kelas: "5S3" },
-        { hari: "Khamis", masa: "10:30 - 11:30", subjek: "BM", kelas: "4S2" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "BM", kelas: "5S3" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "BM", kelas: "4S2" }
-      ],
-      "Fadzeli bin Azam": [
-        { hari: "Isnin", masa: "12:00 - 12:30", subjek: "PSV", kelas: "4S3" },
-        { hari: "Selasa", masa: "08:30 - 10:00", subjek: "GEO", kelas: "3S1" },
-        { hari: "Selasa", masa: "10:30 - 12:00", subjek: "GEO", kelas: "3S2" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "PJ", kelas: "2S2/2S1" },
-        { hari: "Rabu", masa: "12:00 - 13:00", subjek: "PSV", kelas: "4S2" },
-        { hari: "Khamis", masa: "07:30 - 08:30", subjek: "PSV", kelas: "4S3" },
-        { hari: "Khamis", masa: "08:30 - 09:00", subjek: "GEO", kelas: "3S1" },
-        { hari: "Khamis", masa: "09:00 - 09:30", subjek: "GEO", kelas: "3S2" },
-        { hari: "Khamis", masa: "10:30 - 11:30", subjek: "PSV", kelas: "4S3" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "PSV", kelas: "4S2" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "PK", kelas: "2S1/2S2" }
-      ],
-      "Zaimah bt Samad": [
-        { hari: "Isnin", masa: "07:30 - 08:30", subjek: "PP/OB", kelas: "5S3" },
-        { hari: "Isnin", masa: "10:30 - 12:00", subjek: "GEO", kelas: "1S1" },
-        { hari: "Selasa", masa: "10:00 - 11:00", subjek: "OB", kelas: "5S3" },
-        { hari: "Selasa", masa: "11:00 - 12:00", subjek: "SEJ", kelas: "5S3" },
-        { hari: "Selasa", masa: "13:00 - 13:30", subjek: "GEO", kelas: "1S1" },
-        { hari: "Selasa", masa: "13:30 - 14:30", subjek: "SEJ", kelas: "4S1" },
-        { hari: "Rabu", masa: "09:00 - 09:30", subjek: "OB", kelas: "5S3" },
-        { hari: "Rabu", masa: "09:30 - 10:30", subjek: "GEO", kelas: "1S2" },
-        { hari: "Rabu", masa: "11:00 - 12:00", subjek: "OB", kelas: "5S3" },
-        { hari: "Rabu", masa: "12:00 - 13:00", subjek: "SEJ", kelas: "5S3" },
-        { hari: "Rabu", masa: "13:30 - 14:30", subjek: "LM", kelas: "4S1" },
-        { hari: "Khamis", masa: "09:00 - 10:00", subjek: "GEO", kelas: "1S2" },
-        { hari: "Khamis", masa: "14:30 - 15:00", subjek: "OB", kelas: "5S3" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "LM", kelas: "4S1" },
-        { hari: "Jumaat", masa: "10:00 - 11:00", subjek: "SEJ", kelas: "5S3" },
-        { hari: "Jumaat", masa: "11:00 - 12:00", subjek: "SEJ", kelas: "4S1" }
-      ],
-      "Norul Hafidzah bt Hassan": [
-        { hari: "Isnin", masa: "13:00 - 13:30", subjek: "KK", kelas: "5S3" }
-      ],
-      "Jessica Chan Lai Peng": [
-        { hari: "Isnin", masa: "09:00 - 10:30", subjek: "SC", kelas: "5S3" },
-        { hari: "Isnin", masa: "11:00 - 12:30", subjek: "SC", kelas: "4S2" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Selasa", masa: "10:30 - 12:00", subjek: "SC", kelas: "1S1" },
-        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "BI", kelas: "3S2" },
-        { hari: "Selasa", masa: "13:30 - 14:30", subjek: "SC", kelas: "5S3" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "SC", kelas: "1S1" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-        { hari: "Khamis", masa: "11:30 - 12:30", subjek: "BI", kelas: "3S2" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "SC", kelas: "4S2" },
-        { hari: "Jumaat", masa: "10:00 - 11:00", subjek: "BI", kelas: "3S2" }
-      ],
-      "Lavanya a/p Vejayan": [
-        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "BI", kelas: "5S3" },
-        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "BI", kelas: "4S1/4S2" },
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "BI", kelas: "5S1/5S2" },
-        { hari: "Isnin", masa: "12:00 - 13:00", subjek: "BI", kelas: "2S1" },
-        { hari: "Isnin", masa: "13:30 - 14:30", subjek: "BI", kelas: "4S3" },
-        { hari: "Selasa", masa: "10:00 - 11:00", subjek: "BI", kelas: "3S1" },
-        { hari: "Selasa", masa: "11:30 - 12:30", subjek: "BI", kelas: "5S3" },
-        { hari: "Selasa", masa: "13:00 - 14:00", subjek: "BI", kelas: "2S1" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "BI", kelas: "5S1/5S2" },
-        { hari: "Rabu", masa: "10:30 - 11:30", subjek: "BI", kelas: "4S1/4S2" },
-        { hari: "Rabu", masa: "12:00 - 13:00", subjek: "BI", kelas: "4S3" },
-        { hari: "Rabu", masa: "13:30 - 14:30", subjek: "BI", kelas: "5S3" },
-        { hari: "Khamis", masa: "07:30 - 08:30", subjek: "BI", kelas: "4S1/4S2" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "BI", kelas: "3S1" },
-        { hari: "Khamis", masa: "10:30 - 11:30", subjek: "BI", kelas: "2S1" },
-        { hari: "Khamis", masa: "11:30 - 12:30", subjek: "BI", kelas: "4S3" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "BI", kelas: "3S1" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "BI", kelas: "5S1/5S2" }
-      ],
-      "Muhammad Amirul Aiman bin Zakariaa": [
-        { hari: "Isnin", masa: "09:30 - 10:30", subjek: "SEJ", kelas: "1S1" },
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "GEO", kelas: "2S2" },
-        { hari: "Isnin", masa: "12:00 - 12:30", subjek: "PK", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "GEO", kelas: "2S1" },
-        { hari: "Selasa", masa: "10:00 - 10:30", subjek: "PJ", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "SEJ", kelas: "1S2" },
-        { hari: "Rabu", masa: "10:00 - 10:30", subjek: "PJ", kelas: "5S1/5S2/5S3" },
-        { hari: "Rabu", masa: "11:30 - 12:00", subjek: "PK", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "07:30 - 08:00", subjek: "PJ", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "GEO", kelas: "2S1" },
-        { hari: "Khamis", masa: "11:00 - 11:30", subjek: "PK", kelas: "5S1/5S2/5S3" },
-        { hari: "Khamis", masa: "12:00 - 13:00", subjek: "GEO", kelas: "2S2" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "SEJ", kelas: "1S1" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "SEJ", kelas: "1S2" }
-      ],
-      "Muhammad Syadza bin Yusof": [
-        { hari: "Isnin", masa: "08:00 - 09:00", subjek: "SEJ", kelas: "3S2" },
-        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-        { hari: "Selasa", masa: "08:00 - 08:30", subjek: "SEJ", kelas: "1S1/1S2" },
-        { hari: "Selasa", masa: "08:30 - 09:00", subjek: "PJ", kelas: "2S2" },
-        { hari: "Selasa", masa: "10:30 - 11:30", subjek: "SEJ", kelas: "3S1" },
-        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "SEJ", kelas: "3S2" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-        { hari: "Rabu", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "SEJ", kelas: "2S2" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-        { hari: "Khamis", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "SEJ", kelas: "3S1" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-        { hari: "Jumaat", masa: "10:00 - 10:30", subjek: "SEJ", kelas: "2S2" }
-      ],
-      "Norfaizah bt Ismail": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "ASK/RBT", kelas: "1S1/1S2" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2" },
-        { hari: "Rabu", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-        { hari: "Khamis", masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "12:30 - 13:30", subjek: "PSV", kelas: "5S2" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-        { hari: "Jumaat", masa: "10:00 - 10:30", subjek: "PIM", kelas: "5S1/5S2/5S3" }
-      ],
-      "Norhayati bt Md Zain": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "SC", kelas: "2S2" },
-        { hari: "Isnin", masa: "10:00 - 11:00", subjek: "MM", kelas: "5S1" },
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "SC", kelas: "2S1" },
-        { hari: "Isnin", masa: "13:00 - 14:00", subjek: "SC", kelas: "5S2" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "SC", kelas: "5S2" },
-        { hari: "Selasa", masa: "13:30 - 14:30", subjek: "MM", kelas: "5S1" },
-        { hari: "Rabu", masa: "09:30 - 10:30", subjek: "SC", kelas: "4S3" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "SC", kelas: "2S2" },
-        { hari: "Khamis", masa: "12:30 - 13:30", subjek: "SC", kelas: "2S1" },
-        { hari: "Khamis", masa: "13:30 - 14:30", subjek: "MM", kelas: "5S1" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "SC", kelas: "4S3" }
-      ],
-      "Norhamizah bt Shafie": [
-        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "BM", kelas: "4S3" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "BM", kelas: "2S2" },
-        { hari: "Selasa", masa: "09:00 - 10:00", subjek: "BM", kelas: "2S2" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "BM", kelas: "4S3" },
-        { hari: "Selasa", masa: "13:30 - 14:30", subjek: "BM", kelas: "5S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "BM", kelas: "2S2" },
-        { hari: "Rabu", masa: "12:30 - 13:30", subjek: "BM", kelas: "4S3" },
-        { hari: "Rabu", masa: "13:30 - 14:30", subjek: "BM", kelas: "5S2" },
-        { hari: "Khamis", masa: "09:00 - 10:00", subjek: "BM", kelas: "4S3" },
-        { hari: "Khamis", masa: "10:00 - 11:00", subjek: "BM", kelas: "5S2" },
-        { hari: "Khamis", masa: "12:30 - 13:30", subjek: "PSV", kelas: "5S3" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "BM", kelas: "5S2" },
-        { hari: "Jumaat", masa: "10:00 - 11:00", subjek: "BM", kelas: "4S3" }
-      ],
-      "Norihan Binti Yusof": [
-        { hari: "Isnin", masa: "09:30 - 10:30", subjek: "TI", kelas: "5S2" },
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "BM", kelas: "3S1" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "BM", kelas: "3S2" },
-        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "BM", kelas: "1S1" },
-        { hari: "Selasa", masa: "13:30 - 14:30", subjek: "TI", kelas: "4S2" },
-        { hari: "Rabu", masa: "09:30 - 10:30", subjek: "BM", kelas: "3S1" },
-        { hari: "Rabu", masa: "11:00 - 12:00", subjek: "TI", kelas: "5S2" },
-        { hari: "Rabu", masa: "12:00 - 13:00", subjek: "BM", kelas: "1S1" },
-        { hari: "Khamis", masa: "09:00 - 10:00", subjek: "BM", kelas: "3S2" },
-        { hari: "Khamis", masa: "12:00 - 13:00", subjek: "BM", kelas: "1S1" },
-        { hari: "Khamis", masa: "13:00 - 14:00", subjek: "TI", kelas: "4S2" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "BM", kelas: "3S2" },
-        { hari: "Jumaat", masa: "11:00 - 12:00", subjek: "BM", kelas: "3S1" }
-      ],
-      "Nurfatin Nazirah Rashidi": [
-        { hari: "Isnin", masa: "09:30 - 10:30", subjek: "MT", kelas: "4S1" },
-        { hari: "Isnin", masa: "11:00 - 12:00", subjek: "MM", kelas: "4S3" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "PIM", kelas: "3S1/3S2" },
-        { hari: "Selasa", masa: "10:30 - 11:30", subjek: "MM", kelas: "5S2" },
-        { hari: "Selasa", masa: "11:30 - 12:30", subjek: "MM", kelas: "4S1/4S2" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "MM", kelas: "4S3" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "MM", kelas: "4S1/4S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "MM", kelas: "4S3" },
-        { hari: "Rabu", masa: "12:30 - 13:30", subjek: "PIM", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "MM", kelas: "5S2" },
-        { hari: "Khamis", masa: "10:00 - 11:00", subjek: "MM", kelas: "4S3" },
-        { hari: "Khamis", masa: "11:30 - 12:30", subjek: "MM", kelas: "4S1/4S2" },
-        { hari: "Khamis", masa: "12:30 - 13:30", subjek: "MT", kelas: "4S1" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "MM", kelas: "5S2" },
-        { hari: "Jumaat", masa: "11:00 - 12:00", subjek: "MM", kelas: "4S3" }
-      ],
-      "Nurul Hamizah Binti Md Said": [
-        { hari: "Isnin", masa: "09:30 - 10:30", subjek: "SEJ", kelas: "4S2/4S3" },
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "BM", kelas: "4S1" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "PIM", kelas: "2S1/2S2" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "SEJ", kelas: "4S2/4S3" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "SEJ", kelas: "2S1" },
-        { hari: "Selasa", masa: "11:00 - 12:00", subjek: "BM", kelas: "5S1" },
-        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "BM", kelas: "4S1" },
-        { hari: "Rabu", masa: "09:00 - 10:00", subjek: "SEJ", kelas: "4S3" },
-        { hari: "Rabu", masa: "10:30 - 11:30", subjek: "PIM", kelas: "2S1/2S2" },
-        { hari: "Rabu", masa: "13:00 - 14:00", subjek: "BM", kelas: "5S1" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "BM", kelas: "5S1" },
-        { hari: "Khamis", masa: "11:00 - 12:00", subjek: "SEJ", kelas: "4S3" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "BM", kelas: "5S1" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "BM", kelas: "4S1" }
-      ],
-      "Nur Aina Najwa Mohd Nor": [
-        { hari: "Isnin", masa: "11:00 - 12:00", subjek: "SC", kelas: "1S2" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "SC", kelas: "3S1" },
-        { hari: "Isnin", masa: "13:30 - 14:30", subjek: "KIM", kelas: "4S1" },
-        { hari: "Selasa", masa: "08:00 - 09:00", subjek: "SC", kelas: "1S2" },
-        { hari: "Selasa", masa: "09:00 - 10:00", subjek: "SC", kelas: "3S2" },
-        { hari: "Selasa", masa: "11:30 - 12:30", subjek: "KIM", kelas: "5S1" },
-        { hari: "Rabu", masa: "12:00 - 13:00", subjek: "SC", kelas: "3S1" },
-        { hari: "Khamis", masa: "12:00 - 13:00", subjek: "KIM", kelas: "4S1" },
-        { hari: "Khamis", masa: "13:00 - 14:00", subjek: "KIM", kelas: "5S1" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "SC", kelas: "3S2" }
-      ],
-      "Siti Haniza binti Imran": [
-        { hari: "Isnin", masa: "07:30 - 08:30", subjek: "IC", kelas: "4S1/4S2/4S3" },
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "IC", kelas: "5S1/5S2/5S3" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "PIM", kelas: "2S1/2S2" },
-        { hari: "Selasa", masa: "09:00 - 10:00", subjek: "IC", kelas: "5S1/5S2/5S3" },
-        { hari: "Selasa", masa: "10:00 - 11:00", subjek: "IC", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "11:00 - 12:00", subjek: "IC", kelas: "2S1/2S2" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "PIM", kelas: "1S1/1S2" },
-        { hari: "Rabu", masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "IC", kelas: "2S1/2S2" },
-        { hari: "Rabu", masa: "09:30 - 10:30", subjek: "IC", kelas: "1S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "PIM", kelas: "2S1/2S2" },
-        { hari: "Khamis", masa: "07:30 - 08:30", subjek: "IC", kelas: "1S1/1S2" },
-        { hari: "Khamis", masa: "10:00 - 11:00", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-        { hari: "Khamis", masa: "12:30 - 13:30", subjek: "PIM", kelas: "4S1/4S2/4S3" },
-        { hari: "Jumaat", masa: "08:00 - 09:00", subjek: "PIM", kelas: "1S1/1S2" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "PIM", kelas: "4S1/4S2/4S3" }
-      ],
-      "Siti Nur Hakimah bt Mohd Noor": [
-        { hari: "Isnin", masa: "07:30 - 08:30", subjek: "IC", kelas: "4S1/4S2/4S3" },
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "IC", kelas: "3S1/3S2" },
-        { hari: "Isnin", masa: "11:30 - 12:30", subjek: "IC", kelas: "5S1/5S2/5S3" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "PIM", kelas: "3S1/3S2" },
-        { hari: "Selasa", masa: "09:00 - 10:00", subjek: "IC", kelas: "5S1/5S2/5S3" },
-        { hari: "Selasa", masa: "10:00 - 11:00", subjek: "IC", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "PIM", kelas: "1S1/1S2" },
-        { hari: "Rabu", masa: "09:30 - 10:30", subjek: "PIM", kelas: "1S1/1S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "PIM", kelas: "3S1/3S2" },
-        { hari: "Rabu", masa: "12:30 - 13:30", subjek: "PIM", kelas: "4S1/4S2/4S3" },
-        { hari: "Khamis", masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "IC", kelas: "1S1/1S2" },
-        { hari: "Khamis", masa: "11:00 - 12:00", subjek: "IC", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "12:30 - 13:30", subjek: "PIM", kelas: "4S1/4S2/4S3" },
-        { hari: "Jumaat", masa: "07:30 - 08:30", subjek: "IC", kelas: "1S1/1S2" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "PIM", kelas: "5S1/5S2/5S3" }
-      ],
-      "Tamil Vani": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "SEJ", kelas: "5S2" },
-        { hari: "Isnin", masa: "09:30 - 10:30", subjek: "BI", kelas: "1S2" },
-        { hari: "Isnin", masa: "11:00 - 12:00", subjek: "BI", kelas: "2S2" },
-        { hari: "Isnin", masa: "12:30 - 13:30", subjek: "BI", kelas: "1S1" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "BI", kelas: "1S1" },
-        { hari: "Selasa", masa: "11:00 - 12:00", subjek: "BI", kelas: "1S2" },
-        { hari: "Selasa", masa: "12:00 - 13:00", subjek: "SEJ", kelas: "5S1" },
-        { hari: "Rabu", masa: "09:30 - 10:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-        { hari: "Rabu", masa: "11:00 - 12:00", subjek: "SEJ", kelas: "2S2" },
-        { hari: "Rabu", masa: "11:30 - 12:30", subjek: "BI", kelas: "5S1" },
-        { hari: "Rabu", masa: "13:30 - 14:30", subjek: "SEJ", kelas: "5S2" },
-        { hari: "Khamis", masa: "07:30 - 08:30", subjek: "BI", kelas: "1S1" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-        { hari: "Khamis", masa: "11:00 - 12:00", subjek: "BI", kelas: "2S2" },
-        { hari: "Khamis", masa: "12:00 - 13:00", subjek: "BI", kelas: "1S2" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "SEJ", kelas: "5S1" },
-        { hari: "Jumaat", masa: "10:30 - 11:30", subjek: "BI", kelas: "1S1" }
-      ],
-      "Tan Bee Kean": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "IC", kelas: "4S1/4S2/4S3" },
-        { hari: "Isnin", masa: "09:00 - 10:00", subjek: "IC", kelas: "3S1/3S2" },
-        { hari: "Isnin", masa: "10:30 - 11:30", subjek: "IC", kelas: "5S1/5S2/5S3" },
-        { hari: "Selasa", masa: "08:30 - 09:30", subjek: "PJ", kelas: "3S1/3S2" },
-        { hari: "Selasa", masa: "09:30 - 10:30", subjek: "IC", kelas: "5S1/5S2/5S3" },
-        { hari: "Selasa", masa: "10:30 - 11:30", subjek: "IC", kelas: "2S1/2S2" },
-        { hari: "Rabu", masa: "08:30 - 09:30", subjek: "IC", kelas: "3S1/3S2" },
-        { hari: "Rabu", masa: "10:00 - 11:00", subjek: "IC", kelas: "4S1/4S2/4S3" },
-        { hari: "Khamis", masa: "08:30 - 09:30", subjek: "PJ", kelas: "2S2/2S1" },
-        { hari: "Khamis", masa: "09:30 - 10:30", subjek: "PK", kelas: "3S1/3S2" },
-        { hari: "Khamis", masa: "10:30 - 11:30", subjek: "IC", kelas: "1S1/1S2" },
-        { hari: "Jumaat", masa: "08:30 - 09:30", subjek: "IC", kelas: "2S1/2S2" },
-        { hari: "Jumaat", masa: "09:30 - 10:30", subjek: "IC", kelas: "1S1/1S2" },
-        { hari: "Jumaat", masa: "11:00 - 11:30", subjek: "PK", kelas: "2S1/2S2" }
-      ],
-      "Tanty bt Ramli": [
-        { hari: "Isnin", masa: "08:30 - 09:30", subjek: "BM", kelas: "1S2" },
-        { hari: "Isnin", masa: "10:00 - 11:00", subjek: "PSV", kelas: "3S1" },
-        { hari: "Isnin", masa: "11:30 - 12:00", subjek: "PK", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "08:30 - 09:00", subjek: "PJ", kelas: "1S1/1S2" },
-        { hari: "Selasa", masa: "09:00 - 09:30", subjek: "PJ", kelas: "4S1/4S2/4S3" },
-        { hari: "Selasa", masa: "11:00 - 12:00", subjek: "BM", kelas: "1S2" },
-        { hari: "Selasa", masa: "12:30 - 13:30", subjek: "PSV", kelas: "2S2" },
-        { hari: "Rabu", masa: "09:30 - 10:00", subjek: "PJ", kelas: "5S1/5S2/5S3" },
-        { hari: "Rabu", masa: "11:00 - 12:00", subjek: "BM", kelas: "1S2" },
-        { hari: "Rabu", masa: "12:00 - 12:30", subjek: "PK", kelas: "1S1/1S2" },
-        { hari: "Khamis", masa: "08:00 - 09:00", subjek: "PSV", kelas: "2S1" },
-        { hari: "Khamis", masa: "10:30 - 11:00", subjek: "PK", kelas: "5S1/5S2/5S3" },
-        { hari: "Khamis", masa: "12:00 - 13:00", subjek: "PSV", kelas: "1S1" },
-        { hari: "Jumaat", masa: "09:00 - 10:00", subjek: "PSV", kelas: "1S2" }
-      ]
-    };
+    // Pembolehubah Global
+    let senaraiRekod = [];
+    let senaraiGambarBase64 = [];
+    let selectedRecordForSah = null;
+    let chartStatusInstance = null;
+    let chartPlatformInstance = null;
 
-    // Bersihkan storan lama dan tetapkan versi 4 rujukan tunggal Siri 6
-    const STORAGE_KEY = 'smkka_jadual_siri6_v4';
-    localStorage.removeItem('smkka_jadual_guru');
-    localStorage.removeItem('smkka_jadual_guru_v3');
+    // Inisialisasi
+    window.addEventListener('DOMContentLoaded', () => {
+      isiPilihanGuru();
+      setTarikhHariIni();
+      initCharts();
+      initSignatureCanvas();
+      muatSemulaData();
+    });
 
-    let pentadbirList = JSON.parse(localStorage.getItem('smkka_pentadbir_list')) || DEFAULT_PENTADBIR;
-    let jadualData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || JADUAL_SIRI_6_TEPAT;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
-
-    let records = [];
-    let compressedImages = [];
-    const HARI_MAP = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
-
-    let sigCanvas, sigCtx;
-    let isDrawing = false;
-    let hasDrawnSignature = false;
-
-    window.onload = function() {
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('tarikhInput').value = todayStr;
-      document.getElementById('reportStartDate').value = todayStr;
-      document.getElementById('reportEndDate').value = todayStr;
-      
-      populateTeacherDropdown();
-      populatePentadbirDropdowns();
-      initSignaturePad();
-      updateHariLabel();
-      refreshData();
-    };
-
-    function populateTeacherDropdown() {
-      const guruSelect = document.getElementById('guruSelect');
-      guruSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
-      Object.keys(jadualData).sort().forEach(nama => {
+    function isiPilihanGuru() {
+      const select = document.getElementById('guruSelect');
+      SENARAI_GURU.forEach(guru => {
         const opt = document.createElement('option');
-        opt.value = nama;
-        opt.textContent = nama;
-        guruSelect.appendChild(opt);
+        opt.value = guru;
+        opt.textContent = guru;
+        select.appendChild(opt);
       });
-
-      const adminTeacherSelect = document.getElementById('adminTeacherSelect');
-      if (adminTeacherSelect) {
-        adminTeacherSelect.innerHTML = '';
-        Object.keys(jadualData).sort().forEach(nama => {
-          const opt = document.createElement('option');
-          opt.value = nama;
-          opt.textContent = nama;
-          adminTeacherSelect.appendChild(opt);
-        });
-        renderAdminTeacherSlots();
-      }
     }
 
-    function populatePentadbirDropdowns() {
-      const sel = document.getElementById('selectPentadbirVerify');
-      sel.innerHTML = '<option value="">-- Pilih Pentadbir --</option>';
-      pentadbirList.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.nama;
-        opt.dataset.jawatan = p.jawatan;
-        opt.textContent = `${p.nama} (${p.jawatan})`;
-        sel.appendChild(opt);
-      });
-      renderAdminPentadbirTable();
+    function setTarikhHariIni() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const tarikhStr = `${yyyy}-${mm}-${dd}`;
+      document.getElementById('tarikhInput').value = tarikhStr;
+      document.getElementById('tarikhFilterSekolah').value = tarikhStr;
+      kemaskiniHariDanSlot();
     }
 
-    function onPentadbirDropdownChange() {
-      const sel = document.getElementById('selectPentadbirVerify');
-      const opt = sel.options[sel.selectedIndex];
-      document.getElementById('jawatanPentadbirInput').value = opt ? (opt.dataset.jawatan || "") : "";
+    function kemaskiniHariDanSlot() {
+      const tarikhVal = document.getElementById('tarikhInput').value;
+      if (!tarikhVal) return;
+      const date = new Date(tarikhVal);
+      const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+      const hari = days[date.getDay()];
+      document.getElementById('hariInput').value = hari;
+      kemaskiniSlotHarian();
     }
 
-    function updateHariLabel() {
-      const dateVal = document.getElementById('tarikhInput').value;
-      if (dateVal) {
-        const d = new Date(dateVal);
-        const dayName = HARI_MAP[d.getDay()];
-        document.getElementById('hariDisplay').value = dayName;
-        return dayName;
-      }
-      return "Isnin";
-    }
-
-    function onTeacherOrDateChange() {
-      const dayName = updateHariLabel();
+    function kemaskiniSlotHarian() {
       const guru = document.getElementById('guruSelect').value;
-      const slotSelect = document.getElementById('jadualSlotSelect');
-      const badge = document.getElementById('slotCountBadge');
+      const hari = document.getElementById('hariInput').value;
+      const slotSelect = document.getElementById('slotSelect');
+      const badgeCount = document.getElementById('badgeSlotCount');
 
       slotSelect.innerHTML = '<option value="">-- Pilih Slot Mengajar Hari Ini --</option>';
 
-      if (guru && jadualData[guru]) {
-        const matchingSlots = jadualData[guru].filter(s => s.hari === dayName);
-        badge.textContent = `${matchingSlots.length} Slot`;
-
-        matchingSlots.forEach(slot => {
-          const opt = document.createElement('option');
-          opt.value = JSON.stringify(slot);
-          opt.textContent = `[${slot.masa}]  ${slot.subjek} - Kelas ${slot.kelas}`;
-          slotSelect.appendChild(opt);
-        });
-
-        if (matchingSlots.length === 1) {
-          slotSelect.selectedIndex = 1;
-          onSlotSelected();
-        }
-      } else {
-        badge.textContent = "0 Slot";
-      }
-    }
-
-    function onSlotSelected() {
-      const slotVal = document.getElementById('jadualSlotSelect').value;
-      if (slotVal) {
-        const slot = JSON.parse(slotVal);
-        document.getElementById('masaInput').value = slot.masa;
-        document.getElementById('subjekInput').value = slot.subjek;
-        document.getElementById('kelasInput').value = slot.kelas;
-      }
-    }
-
-    // ================= MAMPATAN GAMBAR OPR =================
-    async function handleMultipleImages(e) {
-      const files = Array.from(e.target.files);
-      if (!files.length) return;
-
-      if (files.length > 4) {
-        Swal.fire('Had Maksimum', 'Anda hanya boleh memuat naik maksimum 4 keping gambar.', 'warning');
+      if (!guru || !hari || !JADUAL_SIRI_6[guru] || !JADUAL_SIRI_6[guru][hari] || JADUAL_SIRI_6[guru][hari].length === 0) {
+        badgeCount.textContent = '0 Slot';
+        const opt = document.createElement('option');
+        opt.value = 'custom';
+        opt.textContent = '+ Masukkan Slot Tambahan / Luar Jadual';
+        slotSelect.appendChild(opt);
         return;
       }
 
-      compressedImages = [];
-      const grid = document.getElementById('imagePreviewGrid');
-      grid.innerHTML = '';
-      grid.classList.remove('hidden');
+      const slots = JADUAL_SIRI_6[guru][hari];
+      badgeCount.textContent = `${slots.length} Slot`;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const compressedBase64 = await compressImageFile(file, 900, 0.7);
-        compressedImages.push(compressedBase64);
+      slots.forEach((s, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `Slot ${idx + 1}: ${s.masa} | ${s.subjek} (${s.kelas}) [${s.tempoh}]`;
+        slotSelect.appendChild(opt);
+      });
 
-        const thumb = document.createElement('div');
-        thumb.className = "relative border rounded-lg overflow-hidden bg-slate-100 aspect-square group";
-        thumb.innerHTML = `
-          <img src="${compressedBase64}" class="w-full h-full object-cover">
-          <span class="absolute top-1 left-1 bg-black/60 text-white text-[9px] px-1.5 py-0.2 rounded font-mono">#${i+1}</span>
-        `;
-        grid.appendChild(thumb);
-      }
-
-      document.getElementById('imgCountBadge').textContent = `${compressedImages.length} / 4 Gambar`;
+      const optCustom = document.createElement('option');
+      optCustom.value = 'custom';
+      optCustom.textContent = '+ Slot Tambahan / Luar Jadual';
+      slotSelect.appendChild(optCustom);
     }
 
-    function compressImageFile(file, maxDimension, quality) {
+    function pilihSlotJadual() {
+      const guru = document.getElementById('guruSelect').value;
+      const hari = document.getElementById('hariInput').value;
+      const val = document.getElementById('slotSelect').value;
+
+      if (val === '' || val === 'custom') {
+        if (val === 'custom') {
+          document.getElementById('masaInput').value = '';
+          document.getElementById('kelasInput').value = '';
+          document.getElementById('subjekInput').value = '';
+        }
+        return;
+      }
+
+      const slot = JADUAL_SIRI_6[guru][hari][parseInt(val)];
+      if (slot) {
+        document.getElementById('masaInput').value = slot.masa;
+        document.getElementById('kelasInput').value = slot.kelas;
+        document.getElementById('subjekInput').value = slot.subjek;
+      }
+    }
+
+    // =========================================================================
+    // 3. PEMAMPATAN IMEJ AUTONOMIK (AUTO-COMPRESSION KE BASE64 RINGKAS)
+    // =========================================================================
+    async function prosesMuatNaikGambar(e) {
+      const files = Array.from(e.target.files);
+      if (files.length + senaraiGambarBase64.length > 4) {
+        alert("Maksimum 4 gambar sahaja dibenarkan!");
+        return;
+      }
+
+      for (let file of files) {
+        if (senaraiGambarBase64.length >= 4) break;
+        const compressedBase64 = await compressImageFile(file, 640, 0.6);
+        senaraiGambarBase64.push(compressedBase64);
+      }
+      renderGambarPreview();
+    }
+
+    function compressImageFile(file, maxWidth, quality) {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = function(evt) {
@@ -1324,19 +924,10 @@
           img.onload = function() {
             let width = img.width;
             let height = img.height;
-
-            if (width > height) {
-              if (width > maxDimension) {
-                height = Math.round((height * maxDimension) / width);
-                width = maxDimension;
-              }
-            } else {
-              if (height > maxDimension) {
-                width = Math.round((width * maxDimension) / height);
-                height = maxDimension;
-              }
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
             }
-
             const canvas = document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
@@ -1350,868 +941,202 @@
       });
     }
 
-    // ================= PENGHANTARAN REKOD GURU =================
-    async function submitGuruRecord(e) {
+    function renderGambarPreview() {
+      const container = document.getElementById('gambarPreviewContainer');
+      const label = document.getElementById('labelGambarCount');
+      container.innerHTML = '';
+      label.textContent = `${senaraiGambarBase64.length} / 4 Gambar`;
+
+      senaraiGambarBase64.forEach((b64, idx) => {
+        const div = document.createElement('div');
+        div.className = 'relative group rounded-lg overflow-hidden border border-amber-300 h-16 shadow-sm';
+        div.innerHTML = `
+          <img src="${b64}" class="w-full h-full object-cover">
+          <button type="button" onclick="buangGambar(${idx})" class="absolute top-1 right-1 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center shadow">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function buangGambar(idx) {
+      senaraiGambarBase64.splice(idx, 1);
+      renderGambarPreview();
+    }
+
+    // =========================================================================
+    // 4. HANTAR BORANG & SIMPAN KE GOOGLE APPS SCRIPT
+    // =========================================================================
+    async function hantarBorang(e) {
       e.preventDefault();
 
-      if (compressedImages.length < 1) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Gambar OPR Diperlukan',
-          text: 'Sila muat naik sekurang-kurangnya 1 gambar bukti PdPR untuk menjana OPR.'
-        });
+      if (senaraiGambarBase64.length === 0) {
+        alert("Sila muat naik sekurang-kurangnya 1 keping gambar bukti pelaksanaan PdPR.");
         return;
       }
 
-      const btn = document.getElementById('btnSubmitGuru');
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Memproses & Menjana Rekod...`;
-
-      const recordId = "PDPR-" + Date.now().toString().slice(-6);
-
       const payload = {
-        action: 'addRecord',
-        recordId: recordId,
+        action: 'SIMPAN_REKOD',
         namaGuru: document.getElementById('guruSelect').value,
         tarikh: document.getElementById('tarikhInput').value,
+        hari: document.getElementById('hariInput').value,
         masa: document.getElementById('masaInput').value,
-        subjek: document.getElementById('subjekInput').value,
-        mataPelajaran: document.getElementById('subjekInput').value,
         kelas: document.getElementById('kelasInput').value,
+        mataPelajaran: document.getElementById('subjekInput').value,
         platform: document.getElementById('platformSelect').value,
         tajuk: document.getElementById('tajukInput').value,
         aktiviti: document.getElementById('aktivitiInput').value,
         dapatan: document.getElementById('dapatanInput').value,
-        status: document.getElementById('statusSelect').value,
-        bilMurid: parseInt(document.getElementById('muridInput').value) || 0,
-        oprImages: compressedImages,
-        localImagesCount: compressedImages.length
+        statusPelaksanaan: document.getElementById('statusSelect').value,
+        bilMurid: document.getElementById('muridInput').value,
+        gambar1: senaraiGambarBase64[0] || '',
+        gambar2: senaraiGambarBase64[1] || '',
+        gambar3: senaraiGambarBase64[2] || '',
+        gambar4: senaraiGambarBase64[3] || ''
       };
 
-      saveLocalRecordCache(payload);
-
-      try {
-        await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) {
-        try {
-          await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        } catch (inner) {}
-      }
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Rekod PdPR Dihantar!',
-        text: 'Laporan dan gambar OPR telah selamat disimpan.',
-        timer: 1800,
-        showConfirmButton: false
-      });
-
-      document.getElementById('tajukInput').value = '';
-      document.getElementById('aktivitiInput').value = '';
-      document.getElementById('dapatanInput').value = '';
-      compressedImages = [];
-      document.getElementById('imagePreviewGrid').innerHTML = '';
-      document.getElementById('imagePreviewGrid').classList.add('hidden');
-      document.getElementById('imgCountBadge').textContent = '0 / 4 Gambar';
-
-      btn.disabled = false;
-      btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Hantar Rekod PdPR`;
-
-      setTimeout(refreshData, 1200);
-    }
-
-    function saveLocalRecordCache(item) {
-      let localCache = JSON.parse(localStorage.getItem('smkka_pdpr_local_records')) || [];
-      localCache.unshift(item);
-      localStorage.setItem('smkka_pdpr_local_records', JSON.stringify(localCache.slice(0, 50)));
-    }
-
-    // ================= MUAT TURUN DATA & STATISTIK =================
-    async function refreshData() {
-      const icon = document.getElementById('refreshIcon');
-      icon.classList.add('fa-spin');
-
-      try {
-        const res = await fetch(`${API_URL}?action=getRecords`);
-        const json = await res.json();
-        if (json.status === "success" && Array.isArray(json.data)) {
-          records = json.data.reverse();
-          localStorage.setItem('smkka_pdpr_cache', JSON.stringify(records));
-        }
-      } catch (e) {
-        records = JSON.parse(localStorage.getItem('smkka_pdpr_cache')) || [];
-      }
-
-      icon.classList.remove('fa-spin');
-      renderGuruTable(records);
-      renderPemantauTable(records);
-      filterDateReportTable();
-      updateKpis();
-      renderCharts();
-    }
-
-    function updateKpis() {
-      const total = records.length;
-      const verified = records.filter(r => r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan")).length;
-      const pending = records.filter(r => !r["Status Pengesahan"] || r["Status Pengesahan"] === "Belum Disahkan").length;
-      const students = records.reduce((acc, curr) => acc + (parseInt(curr["Bil. Murid Terlibat"]) || 0), 0);
-
-      document.getElementById('statTotal').innerText = total;
-      document.getElementById('statVerified').innerText = verified;
-      document.getElementById('statPending').innerText = pending;
-      document.getElementById('statStudents').innerText = students.toLocaleString();
-
-      const badge = document.getElementById('pendingBadge');
-      if (pending > 0) {
-        badge.textContent = pending;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-    }
-
-    function renderGuruTable(dataList) {
-      const tbody = document.getElementById('guruTableBody');
-      tbody.innerHTML = '';
-
-      if (!dataList.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Tiada rekod PdPR dijumpai.</td></tr>`;
-        return;
-      }
-
-      dataList.slice(0, 30).forEach((r, idx) => {
-        const isVerified = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
-        const statusBadge = isVerified 
-          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i>Disahkan</span>`
-          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800"><i class="fa-regular fa-clock mr-1"></i>Menunggu</span>`;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 border-b border-slate-100";
-        tr.innerHTML = `
-          <td class="p-2.5 font-bold text-slate-400">${idx + 1}</td>
-          <td class="p-2.5 font-bold text-slate-900">${r["Nama Guru"] || '-'}</td>
-          <td class="p-2.5"><span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 font-semibold rounded">${r["Mata Pelajaran"] || '-'}</span> <span class="font-medium text-slate-600">${r["Kelas"] || ''}</span></td>
-          <td class="p-2.5 text-slate-600">${r["Hari / Tarikh PDPR"] || ''}<br><span class="text-[10px] text-slate-400">${r["Masa"] || ''}</span></td>
-          <td class="p-2.5 font-semibold text-indigo-600"><i class="fa-regular fa-images"></i> OPR</td>
-          <td class="p-2.5">${statusBadge}</td>
-          <td class="p-2.5 text-center">
-            <button onclick="openOprPrintModal('${r["ID Rekod"]}')" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-[11px] shadow transition flex items-center gap-1 mx-auto">
-              <i class="fa-solid fa-print"></i> Cetak OPR
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderPemantauTable(dataList) {
-      const tbody = document.getElementById('pemantauTableBody');
-      tbody.innerHTML = '';
-
-      if (!dataList.length) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">Tiada rekod untuk disemak.</td></tr>`;
-        return;
-      }
-
-      dataList.forEach(r => {
-        const isVerified = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
-        const statusBadge = isVerified 
-          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i>${r["Status Pengesahan"]}</span>`
-          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse"><i class="fa-regular fa-clock mr-1"></i>Menunggu</span>`;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-        tr.innerHTML = `
-          <td class="p-3 font-mono font-semibold text-slate-500 text-[11px]">${r["ID Rekod"] || '-'}</td>
-          <td class="p-3 font-bold text-slate-900">${r["Nama Guru"] || '-'}</td>
-          <td class="p-3"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 font-bold rounded">${r["Mata Pelajaran"] || '-'}</span> <span class="font-semibold text-slate-700">${r["Kelas"] || ''}</span></td>
-          <td class="p-3 text-slate-600">${r["Hari / Tarikh PDPR"] || ''}<br><span class="text-[10px] text-slate-400">${r["Masa"] || ''}</span></td>
-          <td class="p-3 max-w-xs truncate font-medium text-slate-800">${r["Tajuk / Topik Diajar"] || '-'}</td>
-          <td class="p-3 font-semibold text-indigo-600"><i class="fa-regular fa-images"></i> Bersedia</td>
-          <td class="p-3">${statusBadge}</td>
-          <td class="p-3 text-slate-600 font-medium">${r["Disemak Oleh"] ? `<strong>${r["Disemak Oleh"]}</strong><br><span class="text-[10px] text-slate-400">${r["Jawatan Pentadbir"] || ''}</span>` : '<span class="text-slate-300">-</span>'}</td>
-          <td class="p-3 text-center space-x-1 whitespace-nowrap">
-            <button onclick="openVerifyModal('${r["ID Rekod"]}')" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow transition inline-flex items-center gap-1">
-              <i class="fa-solid fa-signature"></i> ${isVerified ? 'Ulas Semula' : 'Sahkan'}
-            </button>
-            <button onclick="openOprPrintModal('${r["ID Rekod"]}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold inline-flex items-center gap-1">
-              <i class="fa-solid fa-print"></i> OPR
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // ================= PENJANAAN LAPORAN MENGIKUT TARIKH =================
-    function setReportDateToday() {
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('reportStartDate').value = todayStr;
-      document.getElementById('reportEndDate').value = todayStr;
-      filterDateReportTable();
-    }
-
-    function getFilteredRecordsByDate() {
-      const sDate = document.getElementById('reportStartDate').value;
-      const eDate = document.getElementById('reportEndDate').value;
-      const statFilter = document.getElementById('reportFilterStatus').value;
-
-      return records.filter(r => {
-        const rDate = (r["Hari / Tarikh PDPR"] || "").slice(0, 10);
-        let matchDate = true;
-        if (sDate && eDate) {
-          matchDate = rDate >= sDate && rDate <= eDate;
-        } else if (sDate) {
-          matchDate = rDate >= sDate;
-        } else if (eDate) {
-          matchDate = rDate <= eDate;
-        }
-
-        let matchStatus = true;
-        if (statFilter === "Disahkan") matchStatus = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
-        else if (statFilter === "Belum Disahkan") matchStatus = !r["Status Pengesahan"] || r["Status Pengesahan"] === "Belum Disahkan";
-
-        return matchDate && matchStatus;
-      });
-    }
-
-    function filterDateReportTable() {
-      const filtered = getFilteredRecordsByDate();
-      const tbody = document.getElementById('reportTableBody');
-      tbody.innerHTML = '';
-
-      const total = filtered.length;
-      const executed = filtered.filter(r => r["Status Pelaksanaan"] === "Dilaksanakan").length;
-      const rate = total > 0 ? Math.round((executed / total) * 100) : 0;
-      const students = filtered.reduce((acc, curr) => acc + (parseInt(curr["Bil. Murid Terlibat"]) || 0), 0);
-      const verified = filtered.filter(r => r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan")).length;
-
-      document.getElementById('repKpiTotal').textContent = total;
-      document.getElementById('repKpiExecuted').textContent = executed;
-      document.getElementById('repKpiRate').textContent = `${rate}%`;
-      document.getElementById('repKpiStudents').textContent = students.toLocaleString();
-      document.getElementById('repKpiVerified').textContent = verified;
-
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400">Tiada rekod PdPR dalam julat tarikh yang dipilih.</td></tr>`;
-        return;
-      }
-
-      filtered.forEach((r, idx) => {
-        const isVer = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 border-b border-slate-100";
-        tr.innerHTML = `
-          <td class="p-2.5 font-bold text-slate-400">${idx + 1}</td>
-          <td class="p-2.5 font-semibold text-slate-800 whitespace-nowrap">${r["Hari / Tarikh PDPR"] || '-'}<br><span class="text-[10px] text-slate-400">${r["Masa"] || ''}</span></td>
-          <td class="p-2.5 font-bold text-slate-900">${r["Nama Guru"] || '-'}</td>
-          <td class="p-2.5 font-medium"><span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 font-bold rounded">${r["Mata Pelajaran"] || '-'}</span> ${r["Kelas"] || ''}</td>
-          <td class="p-2.5 text-slate-600">${r["Platform PDPR"] || '-'}</td>
-          <td class="p-2.5 max-w-xs truncate text-slate-700">${r["Tajuk / Topik Diajar"] || '-'}</td>
-          <td class="p-2.5 font-bold text-slate-800">${r["Bil. Murid Terlibat"] || 0}</td>
-          <td class="p-2.5"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full text-[10px]">${r["Status Pelaksanaan"] || '-'}</span></td>
-          <td class="p-2.5 font-medium text-[11px]">${isVer ? `<span class="text-emerald-700 font-bold">${r["Disemak Oleh"]}</span>` : '<span class="text-amber-600 italic">Belum Sah</span>'}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function previewDateReport() {
-      const filtered = getFilteredRecordsByDate();
-      if (!filtered.length) {
-        Swal.fire('Tiada Rekod', 'Tiada rekod PdPR ditemui dalam julat tarikh yang dipilih.', 'warning');
-        return;
-      }
-
-      const sDate = document.getElementById('reportStartDate').value || '-';
-      const eDate = document.getElementById('reportEndDate').value || '-';
-      document.getElementById('printRepPeriodLabel').textContent = sDate === eDate ? sDate : `${sDate} HINGGA ${eDate}`;
-
-      const total = filtered.length;
-      const executed = filtered.filter(r => r["Status Pelaksanaan"] === "Dilaksanakan").length;
-      const rate = total > 0 ? Math.round((executed / total) * 100) : 0;
-      const students = filtered.reduce((acc, curr) => acc + (parseInt(curr["Bil. Murid Terlibat"]) || 0), 0);
-
-      document.getElementById('printRepTotal').textContent = total;
-      document.getElementById('printRepExecuted').textContent = executed;
-      document.getElementById('printRepRate').textContent = `${rate}%`;
-      document.getElementById('printRepStudents').textContent = students.toLocaleString();
-
-      const printTbody = document.getElementById('printRepTableBody');
-      printTbody.innerHTML = '';
-
-      filtered.forEach((r, idx) => {
-        const isVer = r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan");
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="border border-slate-900 p-1 text-center font-bold">${idx + 1}</td>
-          <td class="border border-slate-900 p-1 text-center">${r["Hari / Tarikh PDPR"] || '-'}<br>${r["Masa"] || ''}</td>
-          <td class="border border-slate-900 p-1 font-bold">${r["Nama Guru"] || '-'}</td>
-          <td class="border border-slate-900 p-1 font-semibold">${r["Mata Pelajaran"] || '-'} (${r["Kelas"] || ''})</td>
-          <td class="border border-slate-900 p-1">${r["Platform PDPR"] || '-'}</td>
-          <td class="border border-slate-900 p-1">${r["Tajuk / Topik Diajar"] || '-'}</td>
-          <td class="border border-slate-900 p-1 text-center font-bold">${r["Bil. Murid Terlibat"] || 0}</td>
-          <td class="border border-slate-900 p-1 text-center font-semibold">${r["Status Pelaksanaan"] || '-'}</td>
-          <td class="border border-slate-900 p-1">${isVer ? (r["Disemak Oleh"] || 'Disahkan') : 'Belum Sah'}</td>
-        `;
-        printTbody.appendChild(tr);
-      });
-
-      document.getElementById('dateReportPrintModal').classList.remove('hidden');
-    }
-
-    function closeDateReportPrintModal() {
-      document.getElementById('dateReportPrintModal').classList.add('hidden');
-    }
-
-    // ================= PAD TANDATANGAN PENTADBIR =================
-    function initSignaturePad() {
-      sigCanvas = document.getElementById('sigCanvas');
-      if (!sigCanvas) return;
-      sigCtx = sigCanvas.getContext('2d');
-      sigCtx.lineWidth = 2.5;
-      sigCtx.lineCap = 'round';
-      sigCtx.strokeStyle = '#0f172a';
-
-      function getPos(e) {
-        const rect = sigCanvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-          x: (clientX - rect.left) * (sigCanvas.width / rect.width),
-          y: (clientY - rect.top) * (sigCanvas.height / rect.height)
-        };
-      }
-
-      function startDraw(e) {
-        isDrawing = true;
-        hasDrawnSignature = true;
-        const pos = getPos(e);
-        sigCtx.beginPath();
-        sigCtx.moveTo(pos.x, pos.y);
-        if (e.cancelable) e.preventDefault();
-      }
-
-      function draw(e) {
-        if (!isDrawing) return;
-        const pos = getPos(e);
-        sigCtx.lineTo(pos.x, pos.y);
-        sigCtx.stroke();
-        if (e.cancelable) e.preventDefault();
-      }
-
-      function stopDraw() {
-        isDrawing = false;
-      }
-
-      sigCanvas.addEventListener('mousedown', startDraw);
-      sigCanvas.addEventListener('mousemove', draw);
-      sigCanvas.addEventListener('mouseup', stopDraw);
-      sigCanvas.addEventListener('mouseleave', stopDraw);
-
-      sigCanvas.addEventListener('touchstart', startDraw, { passive: false });
-      sigCanvas.addEventListener('touchmove', draw, { passive: false });
-      sigCanvas.addEventListener('touchend', stopDraw);
-    }
-
-    function clearSignaturePad() {
-      if (!sigCtx) return;
-      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-      hasDrawnSignature = false;
-    }
-
-    function openVerifyModal(recordId) {
-      const record = records.find(r => r["ID Rekod"] === recordId) || {};
-      document.getElementById('verifyRecordIdInput').value = recordId;
-      document.getElementById('modalRecordId').textContent = recordId;
-      document.getElementById('modalGuruName').textContent = record["Nama Guru"] || '-';
-      document.getElementById('modalSubjekKelas').textContent = `${record["Mata Pelajaran"] || ''} (${record["Kelas"] || ''})`;
-      document.getElementById('modalMasa').textContent = `${record["Hari / Tarikh PDPR"] || ''} | ${record["Masa"] || ''}`;
-      document.getElementById('modalTajuk').textContent = record["Tajuk / Topik Diajar"] || '-';
-      document.getElementById('modalAktiviti').textContent = record["Aktiviti Dijalankan"] || '-';
-      document.getElementById('modalDapatan').textContent = record["Dapatan / Hasil"] || '-';
-
-      const imgContainer = document.getElementById('modalImagesContainer');
-      imgContainer.innerHTML = '';
-      const localRecords = JSON.parse(localStorage.getItem('smkka_pdpr_local_records')) || [];
-      const matchedLocal = localRecords.find(l => l.recordId === recordId);
-
-      let imagesToShow = [];
-      if (matchedLocal && matchedLocal.oprImages) imagesToShow = matchedLocal.oprImages;
-      else if (record["Gambar OPR"] && record["Gambar OPR"].includes("http")) {
-        imagesToShow = record["Gambar OPR"].split(" | ");
-      }
-
-      imagesToShow.forEach(src => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.className = "w-full h-16 object-cover rounded border";
-        imgContainer.appendChild(img);
-      });
-
-      clearSignaturePad();
-      document.getElementById('verifyModal').classList.remove('hidden');
-    }
-
-    function closeVerifyModal() {
-      document.getElementById('verifyModal').classList.add('hidden');
-    }
-
-    async function submitVerification(e) {
-      e.preventDefault();
-      const sel = document.getElementById('selectPentadbirVerify');
-      if (!sel.value) {
-        Swal.fire('Peringatan', 'Sila pilih nama pentadbir.', 'warning');
-        return;
-      }
-
-      if (!hasDrawnSignature) {
-        Swal.fire('Tandatangan Diperlukan', 'Sila turunkan scribble tandatangan pentadbir.', 'warning');
-        return;
-      }
-
-      const sigBase64 = sigCanvas.toDataURL('image/png');
-      const btn = document.getElementById('btnSubmitVerify');
+      const btn = document.getElementById('btnHantar');
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
-
-      const recordId = document.getElementById('verifyRecordIdInput').value;
-      const payload = {
-        action: 'verifyRecord',
-        recordId: recordId,
-        disemakOleh: sel.value,
-        jawatanPentadbir: document.getElementById('jawatanPentadbirInput').value,
-        statusPengesahan: document.getElementById('statusVerifySelect').value,
-        catatanPentadbir: document.getElementById('catatanPentadbirInput').value,
-        signatureBase64: sigBase64
-      };
-
-      localStorage.setItem('sig_' + recordId, sigBase64);
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Menghantar ke Google Sheet...`;
 
       try {
-        await fetch(API_URL, {
+        const res = await fetch(GAS_API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-      } catch (err) {
-        try {
-          await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        } catch (inner) {}
-      }
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Pengesahan Berjaya!',
-        text: 'Laporan PdPR telah disahkan bersama tandatangan digital.',
-        timer: 1800,
-        showConfirmButton: false
-      });
-
-      closeVerifyModal();
-      btn.disabled = false;
-      btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Sahkan & Simpan`;
-      setTimeout(refreshData, 1200);
-    }
-
-    // ================= MODAL PRATONTON OPR =================
-    function openOprPrintModal(recordId) {
-      const record = records.find(r => r["ID Rekod"] === recordId) || {};
-      const localRecords = JSON.parse(localStorage.getItem('smkka_pdpr_local_records')) || [];
-      const matchedLocal = localRecords.find(l => l.recordId === recordId) || {};
-
-      document.getElementById('oprDocGuru').textContent = record["Nama Guru"] || matchedLocal.namaGuru || '-';
-      document.getElementById('oprDocTarikhHari').textContent = `${record["Hari / Tarikh PDPR"] || matchedLocal.tarikh || '-'} (${record["Hari"] || 'Hari Persekolahan'})`;
-      document.getElementById('oprDocMasa').textContent = record["Masa"] || matchedLocal.masa || '-';
-      document.getElementById('oprDocSubjek').textContent = record["Mata Pelajaran"] || matchedLocal.mataPelajaran || '-';
-      document.getElementById('oprDocKelas').textContent = record["Kelas"] || matchedLocal.kelas || '-';
-      document.getElementById('oprDocPlatform').textContent = record["Platform PDPR"] || matchedLocal.platform || '-';
-      document.getElementById('oprDocMurid').textContent = `${record["Bil. Murid Terlibat"] || matchedLocal.bilMurid || 0} orang`;
-      document.getElementById('oprDocStatus').textContent = record["Status Pelaksanaan"] || matchedLocal.status || 'Dilaksanakan';
-
-      document.getElementById('oprDocTajuk').textContent = record["Tajuk / Topik Diajar"] || matchedLocal.tajuk || '-';
-      document.getElementById('oprDocAktiviti').textContent = record["Aktiviti Dijalankan"] || matchedLocal.aktiviti || 'Murid melaksanakan tugasan dan aktiviti pembelajaran secara terpandu.';
-      document.getElementById('oprDocDapatan').textContent = record["Dapatan / Hasil"] || matchedLocal.dapatan || 'Objektif pembelajaran tercapai dengan baik.';
-
-      const grid = document.getElementById('oprDocImagesGrid');
-      grid.innerHTML = '';
-
-      let images = [];
-      if (matchedLocal.oprImages && matchedLocal.oprImages.length) {
-        images = matchedLocal.oprImages;
-      } else if (record["Gambar OPR"] && record["Gambar OPR"].includes("http")) {
-        images = record["Gambar OPR"].split(" | ");
-      }
-
-      if (images.length === 0) {
-        grid.innerHTML = `<div class="col-span-2 text-center text-slate-400 py-6 italic text-[11px]">Tiada rakaman gambar dimuat naik.</div>`;
-      } else {
-        images.slice(0, 4).forEach((imgSrc, idx) => {
-          const imgWrap = document.createElement('div');
-          imgWrap.className = "border border-slate-400 bg-white p-1 rounded";
-          imgWrap.innerHTML = `
-            <img src="${imgSrc}" class="w-full h-36 object-cover rounded">
-            <p class="text-[9px] text-center font-semibold text-slate-600 mt-1">Evidens #${idx+1} PdPR</p>
-          `;
-          grid.appendChild(imgWrap);
-        });
-      }
-
-      document.getElementById('oprDocCatatan').textContent = record["Catatan Pentadbir"] || "Pelaksanaan PdPR teratur dan menepati jadual waktu.";
-      document.getElementById('oprDocTarikhSah').textContent = record["Tarikh Pengesahan"] || new Date().toISOString().split('T')[0];
-      document.getElementById('oprDocNamaPentadbir').textContent = record["Disemak Oleh"] || "(BELUM DISAHKAN)";
-      document.getElementById('oprDocJawatanPentadbir').textContent = record["Jawatan Pentadbir"] || "Pentadbir SMK Kamarul Ariffin";
-
-      const sigContainer = document.getElementById('oprDocSigContainer');
-      const cachedSig = localStorage.getItem('sig_' + recordId);
-
-      if (cachedSig) {
-        sigContainer.innerHTML = `<img src="${cachedSig}" class="h-14 object-contain mx-auto" alt="Tandatangan Pentadbir">`;
-      } else if (record["Tandatangan Pentadbir"] && record["Tandatangan Pentadbir"].includes("http")) {
-        sigContainer.innerHTML = `<img src="${record["Tandatangan Pentadbir"]}" class="h-14 object-contain mx-auto" alt="Tandatangan">`;
-      } else {
-        sigContainer.innerHTML = `<span class="text-[10px] text-slate-400 italic">Tandatangan Digital Pentadbir</span>`;
-      }
-
-      document.getElementById('oprPrintModal').classList.remove('hidden');
-    }
-
-    function closeOprPrintModal() {
-      document.getElementById('oprPrintModal').classList.add('hidden');
-    }
-
-    // ================= HALAMAN ADMIN (KATA LALUAN: adminpdpr) =================
-    function promptAdminLogin() {
-      Swal.fire({
-        title: 'Akses Pentadbir Sistem',
-        text: 'Sila masukkan kata laluan admin untuk mengubah jadual atau senarai nama guru:',
-        input: 'password',
-        inputPlaceholder: 'Kata laluan admin',
-        showCancelButton: true,
-        confirmButtonText: 'Log Masuk',
-        confirmButtonColor: '#4338ca',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          if (result.value === 'adminpdpr') {
-            switchTab('admin');
-            Swal.fire({ icon: 'success', title: 'Berjaya Masuk', text: 'Selamat datang ke Panel Kawalan Admin e-pantau PdPr SMKKA', timer: 1500, showConfirmButton: false });
-          } else {
-            Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Kata laluan tidak tepat!' });
-          }
+        const result = await res.json();
+        
+        if (result.success) {
+          alert(result.message || "Rekod PdPR berjaya dihantar ke Google Sheets!");
+          document.getElementById('pdprForm').reset();
+          senaraiGambarBase64 = [];
+          renderGambarPreview();
+          setTarikhHariIni();
+          await muatSemulaData();
+        } else {
+          alert("Ralat penghantaran: " + result.error);
         }
-      });
-    }
-
-    function switchTab(tab) {
-      document.getElementById('viewGuru').classList.add('hidden');
-      document.getElementById('viewPemantau').classList.add('hidden');
-      document.getElementById('viewLaporan').classList.add('hidden');
-      document.getElementById('viewAdmin').classList.add('hidden');
-
-      document.getElementById('tabBtnGuru').className = "px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition";
-      document.getElementById('tabBtnPemantau').className = "px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition";
-      document.getElementById('tabBtnLaporan').className = "px-3.5 py-1.5 rounded-lg text-indigo-200 hover:text-white flex items-center gap-1.5 transition";
-      document.getElementById('tabBtnAdmin').className = "px-3.5 py-1.5 rounded-lg text-amber-300 hover:text-white flex items-center gap-1.5 transition";
-
-      if (tab === 'guru') {
-        document.getElementById('viewGuru').classList.remove('hidden');
-        document.getElementById('tabBtnGuru').className = "px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition";
-      } else if (tab === 'pemantau') {
-        document.getElementById('viewPemantau').classList.remove('hidden');
-        document.getElementById('tabBtnPemantau').className = "px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition";
-      } else if (tab === 'laporan') {
-        document.getElementById('viewLaporan').classList.remove('hidden');
-        document.getElementById('tabBtnLaporan').className = "px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow-sm flex items-center gap-1.5 transition";
-        filterDateReportTable();
-      } else if (tab === 'admin') {
-        document.getElementById('viewAdmin').classList.remove('hidden');
-        document.getElementById('tabBtnAdmin').className = "px-3.5 py-1.5 rounded-lg bg-amber-600 text-white shadow-sm flex items-center gap-1.5 transition";
-        renderAdminPentadbirTable();
-        renderAdminTeacherSlots();
+      } catch (err) {
+        console.error(err);
+        alert("Ralat sambungan: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Hantar Rekod PdPR`;
       }
     }
 
-    function logoutAdmin() {
-      switchTab('guru');
+    // =========================================================================
+    // 5. AMBIL DATA DARI GOOGLE APPS SCRIPT
+    // =========================================================================
+    async function muatSemulaData() {
+      try {
+        const res = await fetch(GAS_API_URL);
+        const data = await res.json();
+        if (data.success) {
+          senaraiRekod = data.records || [];
+          kemaskiniStatistikDanJadual();
+        }
+      } catch (err) {
+        console.warn("Ralat memuat data dari GAS:", err);
+      }
     }
 
-    function editCurrentTeacherName() {
-      const currentName = document.getElementById('adminTeacherSelect').value;
-      if (!currentName) {
-        Swal.fire('Peringatan', 'Sila pilih guru terlebih dahulu.', 'warning');
+    function kemaskiniStatistikDanJadual() {
+      const total = senaraiRekod.length;
+      const disahkan = senaraiRekod.filter(r => r['Status Pengesahan'] === 'Telah Disahkan').length;
+      const menunggu = total - disahkan;
+      const totalMurid = senaraiRekod.reduce((acc, curr) => acc + (Number(curr['Bil Murid Hadir']) || 0), 0);
+
+      document.getElementById('statJumlahPdpr').textContent = total;
+      document.getElementById('statDisahkan').textContent = disahkan;
+      document.getElementById('statMenunggu').textContent = menunggu;
+      document.getElementById('statJumlahMurid').textContent = totalMurid;
+
+      updateCharts();
+      tapisSenaraiRekod();
+    }
+
+    function tapisSenaraiRekod() {
+      const q = (document.getElementById('searchInput').value || '').toLowerCase();
+      const tbody = document.getElementById('rekodTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = senaraiRekod.filter(r => {
+        return (r['Nama Guru'] || '').toLowerCase().includes(q) ||
+               (r['Mata Pelajaran'] || '').toLowerCase().includes(q) ||
+               (r['Kelas'] || '').toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400 italic">Tiada rekod PdPR dijumpai.</td></tr>`;
         return;
       }
 
-      Swal.fire({
-        title: 'Betulkan Nama Guru',
-        text: `Nama semasa: ${currentName}`,
-        input: 'text',
-        inputValue: currentName,
-        inputPlaceholder: 'Masukkan ejaan / nama guru yang betul',
-        showCancelButton: true,
-        confirmButtonText: 'Simpan Nama Baharu',
-        confirmButtonColor: '#f59e0b',
-        cancelButtonText: 'Batal',
-        preConfirm: (newVal) => {
-          if (!newVal || !newVal.trim()) {
-            Swal.showValidationMessage('Nama guru tidak boleh dibiarkan kosong.');
-          }
-          return newVal.trim();
+      filtered.forEach((r, idx) => {
+        const isSah = r['Status Pengesahan'] === 'Telah Disahkan';
+        const badgeStatus = isSah
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">Disahkan</span>`
+          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Menunggu</span>`;
+
+        let thumbHtml = '-';
+        if (r['Gambar 1']) {
+          thumbHtml = `<img src="${r['Gambar 1']}" class="w-8 h-8 rounded object-cover mx-auto border shadow-sm">`;
         }
-      }).then(res => {
-        if (res.isConfirmed && res.value && res.value !== currentName) {
-          const newName = res.value;
 
-          jadualData[newName] = jadualData[currentName] || [];
-          delete jadualData[currentName];
-
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
-
-          populateTeacherDropdown();
-          document.getElementById('adminTeacherSelect').value = newName;
-          renderAdminTeacherSlots();
-
-          Swal.fire({
-            icon: 'success',
-            title: 'Nama Berjaya Dikemaskini!',
-            text: `Nama guru telah dibetulkan daripada "${currentName}" kepada "${newName}".`,
-            timer: 2000,
-            showConfirmButton: false
-          });
-        }
-      });
-    }
-
-    function deleteCurrentTeacher() {
-      const teacher = document.getElementById('adminTeacherSelect').value;
-      if (!teacher) return;
-
-      Swal.fire({
-        title: `Padam Guru?`,
-        text: `Adakah anda pasti mahu memadam rekod guru "${teacher}" dan semua slot jadualnya?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Padam Guru',
-        confirmButtonColor: '#e11d48'
-      }).then(res => {
-        if (res.isConfirmed) {
-          delete jadualData[teacher];
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
-          populateTeacherDropdown();
-          Swal.fire('Dipadam', `Guru ${teacher} telah dikeluarkan dari pangkalan data.`, 'success');
-        }
-      });
-    }
-
-    function renderAdminTeacherSlots() {
-      const teacher = document.getElementById('adminTeacherSelect').value;
-      const tbody = document.getElementById('adminSlotTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      if (teacher && jadualData[teacher]) {
-        jadualData[teacher].forEach((slot, sIdx) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="p-2 font-bold">${slot.hari}</td>
-            <td class="p-2">${slot.masa}</td>
-            <td class="p-2"><span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 font-bold rounded">${slot.subjek}</span></td>
-            <td class="p-2">${slot.kelas}</td>
-            <td class="p-2 text-center">
-              <button onclick="deleteSlot('${teacher}', ${sIdx})" class="text-rose-600 hover:text-rose-800 p-1 font-bold"><i class="fa-solid fa-trash-can"></i></button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-    }
-
-    function openAddTeacherModal() {
-      Swal.fire({
-        title: 'Tambah Guru Baharu',
-        input: 'text',
-        inputPlaceholder: 'Nama penuh guru...',
-        showCancelButton: true,
-        confirmButtonText: 'Tambah Guru'
-      }).then(res => {
-        if (res.isConfirmed && res.value.trim()) {
-          const newName = res.value.trim();
-          if (!jadualData[newName]) {
-            jadualData[newName] = [];
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
-            populateTeacherDropdown();
-            document.getElementById('adminTeacherSelect').value = newName;
-            renderAdminTeacherSlots();
-            Swal.fire('Berjaya', `Guru ${newName} telah ditambah ke sistem.`, 'success');
-          }
-        }
-      });
-    }
-
-    function openAddSlotModal() {
-      const teacher = document.getElementById('adminTeacherSelect').value;
-      if (!teacher) return Swal.fire('Peringatan', 'Sila pilih guru terlebih dahulu.', 'warning');
-
-      Swal.fire({
-        title: `Tambah Slot Waktu: ${teacher}`,
-        html: `
-          <select id="slotHari" class="swal2-input text-xs">
-            <option value="Isnin">Isnin</option>
-            <option value="Selasa">Selasa</option>
-            <option value="Rabu">Rabu</option>
-            <option value="Khamis">Khamis</option>
-            <option value="Jumaat">Jumaat</option>
-          </select>
-          <input id="slotMasa" class="swal2-input text-xs" placeholder="Masa (cth: 08:30 - 09:30)">
-          <input id="slotSubjek" class="swal2-input text-xs" placeholder="Mata Pelajaran (cth: ASK/RBT)">
-          <input id="slotKelas" class="swal2-input text-xs" placeholder="Kelas (cth: 2S1/2S2)">
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Simpan Slot',
-        preConfirm: () => {
-          return {
-            hari: document.getElementById('slotHari').value,
-            masa: document.getElementById('slotMasa').value.trim(),
-            subjek: document.getElementById('slotSubjek').value.trim(),
-            kelas: document.getElementById('slotKelas').value.trim()
-          };
-        }
-      }).then(res => {
-        if (res.isConfirmed && res.value.masa && res.value.subjek) {
-          jadualData[teacher].push(res.value);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
-          renderAdminTeacherSlots();
-          Swal.fire('Berjaya', 'Slot jadual berjaya disimpan!', 'success');
-        }
-      });
-    }
-
-    function deleteSlot(teacher, slotIdx) {
-      jadualData[teacher].splice(slotIdx, 1);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
-      renderAdminTeacherSlots();
-    }
-
-    function resetDefaultJadual() {
-      Swal.fire({
-        title: 'Set Semula Jadual?',
-        text: 'Jadual guru akan dikembalikan kepada susunan rasmi Jadual Waktu Siri 6.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Kembalikan ke Asal'
-      }).then(res => {
-        if (res.isConfirmed) {
-          jadualData = JSON.parse(JSON.stringify(JADUAL_SIRI_6_TEPAT));
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(jadualData));
-          populateTeacherDropdown();
-          renderAdminTeacherSlots();
-          Swal.fire('Selesai', 'Jadual Siri 6 telah diselaraskan semula.', 'success');
-        }
-      });
-    }
-
-    function renderAdminPentadbirTable() {
-      const tbody = document.getElementById('adminPentadbirTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      pentadbirList.forEach((p, idx) => {
         const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
         tr.innerHTML = `
-          <td class="p-2 font-bold text-slate-800">${p.nama}</td>
-          <td class="p-2 text-slate-600">${p.jawatan}</td>
-          <td class="p-2 text-center">
-            <button onclick="deletePentadbir(${idx})" class="text-rose-600 hover:text-rose-800 p-1 font-bold"><i class="fa-solid fa-trash-can"></i></button>
+          <td class="py-3 px-3 font-semibold">${idx + 1}</td>
+          <td class="py-3 px-3 font-bold text-slate-900">${r['Nama Guru']}</td>
+          <td class="py-3 px-3"><span class="font-semibold text-indigo-700">${r['Mata Pelajaran']}</span> <span class="text-slate-400">(${r['Kelas']})</span></td>
+          <td class="py-3 px-3"><div>${r['Tarikh PdPR']}</div><div class="text-[10px] text-slate-400">${r['Masa Mengajar']}</div></td>
+          <td class="py-3 px-3 text-center">${thumbHtml}</td>
+          <td class="py-3 px-3 text-center">${badgeStatus}</td>
+          <td class="py-3 px-3 text-center space-x-1">
+            <button onclick="paparOPR('${r['ID']}')" class="px-2 py-1 rounded bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-[11px] transition shadow-sm" title="Cetak OPR">
+              <i class="fa-solid fa-print mr-1"></i> OPR
+            </button>
+            <button onclick="bukaModalSah('${r['ID']}')" class="px-2 py-1 rounded ${isSah ? 'bg-slate-100 text-slate-500' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'} font-bold text-[11px] transition shadow-sm" title="Pengesahan Pentadbir">
+              <i class="fa-solid fa-signature"></i>
+            </button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function openAddPentadbirModal() {
-      Swal.fire({
-        title: 'Tambah Pentadbir',
-        html: `
-          <input id="swalPentadbirNama" class="swal2-input text-xs" placeholder="Nama Penuh Pentadbir">
-          <input id="swalPentadbirJawatan" class="swal2-input text-xs" placeholder="Jawatan (cth: GKMP Sains)">
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Simpan',
-        preConfirm: () => {
-          const nama = document.getElementById('swalPentadbirNama').value.trim();
-          const jawatan = document.getElementById('swalPentadbirJawatan').value.trim();
-          if (!nama || !jawatan) {
-            Swal.showValidationMessage('Sila lengkapkan nama dan jawatan.');
-          }
-          return { nama, jawatan };
-        }
-      }).then(res => {
-        if (res.isConfirmed) {
-          pentadbirList.push({ id: Date.now(), nama: res.value.nama, jawatan: res.value.jawatan });
-          localStorage.setItem('smkka_pentadbir_list', JSON.stringify(pentadbirList));
-          populatePentadbirDropdowns();
-          Swal.fire('Berjaya', 'Pentadbir baharu telah ditambah.', 'success');
-        }
-      });
-    }
-
-    function deletePentadbir(idx) {
-      pentadbirList.splice(idx, 1);
-      localStorage.setItem('smkka_pentadbir_list', JSON.stringify(pentadbirList));
-      populatePentadbirDropdowns();
-    }
-
-    // ================= CARTA ANALISIS =================
-    let chartStatusInst = null;
-    let chartPlatformInst = null;
-
-    function renderCharts() {
-      const statusCounts = { "Dilaksanakan": 0, "Tidak Dilaksanakan": 0, "Ditangguhkan": 0, "Lain-lain": 0 };
-      records.forEach(r => {
-        if (statusCounts[r["Status Pelaksanaan"]] !== undefined) statusCounts[r["Status Pelaksanaan"]]++;
-        else statusCounts["Lain-lain"]++;
-      });
-
-      if (chartStatusInst) chartStatusInst.destroy();
+    // =========================================================================
+    // 6. CARTA CHART.JS
+    // =========================================================================
+    function initCharts() {
       const ctxStatus = document.getElementById('chartStatus').getContext('2d');
-      chartStatusInst = new Chart(ctxStatus, {
+      chartStatusInstance = new Chart(ctxStatus, {
         type: 'doughnut',
         data: {
-          labels: Object.keys(statusCounts),
+          labels: ['Dilaksanakan', 'Tidak Dilaksanakan', 'Ditangguhkan', 'Lain-lain'],
           datasets: [{
-            data: Object.values(statusCounts),
-            backgroundColor: ['#10b981', '#f43f5e', '#f59e0b', '#94a3b8'],
+            data: [0, 0, 0, 0],
+            backgroundColor: ['#10B981', '#F43F5E', '#F59E0B', '#94A3B8'],
             borderWidth: 2
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+          plugins: { legend: { display: false } },
+          cutout: '70%'
         }
       });
 
-      const platformMap = {};
-      records.forEach(r => {
-        const plat = r["Platform PDPR"] || "Lain-lain";
-        platformMap[plat] = (platformMap[plat] || 0) + 1;
-      });
-
-      if (chartPlatformInst) chartPlatformInst.destroy();
-      const ctxPlat = document.getElementById('chartPlatform').getContext('2d');
-      chartPlatformInst = new Chart(ctxPlat, {
+      const ctxPlatform = document.getElementById('chartPlatform').getContext('2d');
+      chartPlatformInstance = new Chart(ctxPlatform, {
         type: 'bar',
         data: {
-          labels: Object.keys(platformMap),
+          labels: ['Delima GC', 'Meet', 'WhatsApp', 'Quizizz', 'Lain'],
           datasets: [{
-            data: Object.values(platformMap),
-            backgroundColor: '#4f46e5',
+            data: [0, 0, 0, 0, 0],
+            backgroundColor: '#6366F1',
             borderRadius: 6
           }]
         },
@@ -2220,36 +1145,233 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { font: { size: 9 } } },
-            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } } }
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { ticks: { font: { size: 10 } } }
           }
         }
       });
     }
 
-    function filterGuruTable() {
-      const q = document.getElementById('searchGuruInput').value.toLowerCase();
-      const filtered = records.filter(r => 
-        (r["Nama Guru"] && r["Nama Guru"].toLowerCase().includes(q)) ||
-        (r["Mata Pelajaran"] && r["Mata Pelajaran"].toLowerCase().includes(q))
-      );
-      renderGuruTable(filtered);
+    function updateCharts() {
+      if (!chartStatusInstance || !chartPlatformInstance) return;
+
+      const c1 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Dilaksanakan').length;
+      const c2 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Tidak Dilaksanakan').length;
+      const c3 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Ditangguhkan').length;
+      const c4 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Lain-lain').length;
+      chartStatusInstance.data.datasets[0].data = [c1, c2, c3, c4];
+      chartStatusInstance.update();
+
+      const pDelima = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('Delima')).length;
+      const pMeet = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('Meet')).length;
+      const pWa = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('WhatsApp')).length;
+      const pQuiz = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('Quizizz')).length;
+      const pOther = senaraiRekod.length - (pDelima + pMeet + pWa + pQuiz);
+
+      chartPlatformInstance.data.datasets[0].data = [pDelima, pMeet, pWa, pQuiz, Math.max(0, pOther)];
+      chartPlatformInstance.update();
     }
 
-    function filterPemantauTable() {
-      const q = document.getElementById('searchPemantauInput').value.toLowerCase();
-      const stat = document.getElementById('filterStatusVerify').value;
+    // =========================================================================
+    // 7. PENJANA OPR GURU (SATU HALAMAN A4)
+    // =========================================================================
+    function paparOPR(id) {
+      const r = senaraiRekod.find(item => item['ID'] === id);
+      if (!r) return;
 
-      const filtered = records.filter(r => {
-        const matchText = (r["Nama Guru"] && r["Nama Guru"].toLowerCase().includes(q)) ||
-                          (r["Mata Pelajaran"] && r["Mata Pelajaran"].toLowerCase().includes(q));
-        if (stat === "ALL") return matchText;
-        if (stat === "Belum Disahkan") return matchText && (!r["Status Pengesahan"] || r["Status Pengesahan"] === "Belum Disahkan");
-        if (stat === "Disahkan") return matchText && (r["Status Pengesahan"] && r["Status Pengesahan"].includes("Disahkan"));
-        return matchText;
+      document.getElementById('oprNama').textContent = r['Nama Guru'];
+      document.getElementById('oprTarikh').textContent = `${r['Tarikh PdPR']} (${r['Hari']})`;
+      document.getElementById('oprSubjek').textContent = r['Mata Pelajaran'];
+      document.getElementById('oprMasa').textContent = r['Masa Mengajar'];
+      document.getElementById('oprKelas').textContent = r['Kelas'];
+      document.getElementById('oprPlatform').textContent = r['Platform PdPR'];
+      document.getElementById('oprMurid').textContent = `${r['Bil Murid Hadir']} Orang`;
+      document.getElementById('oprStatus').textContent = r['Status Pelaksanaan'];
+      document.getElementById('oprTajuk').textContent = r['Tajuk / Topik'] || '-';
+      document.getElementById('oprAktiviti').textContent = r['Aktiviti'] || '-';
+      document.getElementById('oprDapatan').textContent = r['Dapatan / Refleksi'] || '-';
+      document.getElementById('oprSignGuruNama').textContent = r['Nama Guru'];
+
+      const grid = document.getElementById('oprGambarGrid');
+      grid.innerHTML = '';
+      const imgs = [r['Gambar 1'], r['Gambar 2'], r['Gambar 3'], r['Gambar 4']].filter(Boolean);
+      imgs.forEach(imgSrc => {
+        const d = document.createElement('div');
+        d.className = 'border rounded-lg overflow-hidden bg-slate-100 aspect-video';
+        d.innerHTML = `<img src="${imgSrc}" class="w-full h-full object-cover">`;
+        grid.appendChild(d);
       });
-      renderPemantauTable(filtered);
+
+      const signDisplay = document.getElementById('oprSignatureDisplay');
+      if (r['Status Pengesahan'] === 'Telah Disahkan' && r['Tandatangan Pentadbir (Base64)']) {
+        signDisplay.innerHTML = `<img src="${r['Tandatangan Pentadbir (Base64)']}" class="h-10 object-contain">`;
+        document.getElementById('oprSignPentadbirNama').textContent = r['Nama Pentadbir'] || 'Pentadbir';
+        document.getElementById('oprSignPentadbirJawatan').textContent = r['Jawatan Pentadbir'] || 'SMK Kamarul Ariffin';
+      } else {
+        signDisplay.innerHTML = `<span class="text-amber-600 italic text-[11px]">Belum disahkan oleh Pentadbir</span>`;
+        document.getElementById('oprSignPentadbirNama').textContent = 'PENTADBIR SEKOLAH';
+        document.getElementById('oprSignPentadbirJawatan').textContent = 'SMK Kamarul Ariffin';
+      }
+
+      bukaModal('oprModal');
     }
+
+    // =========================================================================
+    // 8. TANDATANGAN SCRIBBLE & PENGESAHAN
+    // =========================================================================
+    let canvas, ctx, isDrawing = false;
+
+    function initSignatureCanvas() {
+      canvas = document.getElementById('signaturePad');
+      ctx = canvas.getContext('2d');
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#0F172A';
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+
+      function startDraw(e) {
+        isDrawing = true;
+        document.getElementById('signPlaceholder').style.display = 'none';
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+
+      function stopDraw() {
+        isDrawing = false;
+      }
+
+      canvas.addEventListener('mousedown', startDraw);
+      canvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDraw);
+
+      canvas.addEventListener('touchstart', startDraw, { passive: false });
+      canvas.addEventListener('touchmove', draw, { passive: false });
+      window.addEventListener('touchend', stopDraw);
+    }
+
+    function padamSignature() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById('signPlaceholder').style.display = 'flex';
+    }
+
+    function bukaModalSah(id) {
+      selectedRecordForSah = id;
+      padamSignature();
+      bukaModal('sahModal');
+    }
+
+    async function simpanPengesahanPentadbir() {
+      const nama = document.getElementById('sahNamaPentadbir').value.trim();
+      const jawatan = document.getElementById('sahJawatanPentadbir').value;
+      const ulasan = document.getElementById('sahUlasan').value.trim();
+
+      if (!nama) {
+        alert("Sila masukkan Nama Pentadbir yang membuat pengesahan.");
+        return;
+      }
+
+      const signBase64 = canvas.toDataURL('image/png');
+      const btn = document.getElementById('btnSimpanSah');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengesahkan...`;
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'SAHKAN_PENTADBIR',
+            id: selectedRecordForSah,
+            namaPentadbir: nama,
+            jawatanPentadbir: jawatan,
+            ulasanPentadbir: ulasan,
+            tandatanganBase64: signBase64
+          })
+        });
+        const result = await res.json();
+        alert(result.message || "Laporan PdPR telah berjaya disahkan!");
+        tutupModal('sahModal');
+        await muatSemulaData();
+      } catch (err) {
+        alert("Ralat semasa pengesahan: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check-double mr-1.5"></i> Sahkan & Turunkan Tandatangan`;
+      }
+    }
+
+    // =========================================================================
+    // 9. LAPORAN PELAKSANAAN HARIAN SEKOLAH
+    // =========================================================================
+    function bukaModalLaporanSekolah() {
+      janaLaporanSekolah();
+      bukaModal('laporanSekolahModal');
+    }
+
+    function janaLaporanSekolah() {
+      const tarikh = document.getElementById('tarikhFilterSekolah').value;
+      document.getElementById('laporanSekolahTarikhText').textContent = `Tarikh Pelaksanaan: ${tarikh}`;
+
+      const filtered = senaraiRekod.filter(r => r['Tarikh PdPR'] === tarikh);
+      const total = filtered.length;
+      const dilaksana = filtered.filter(r => r['Status Pelaksanaan'] === 'Dilaksanakan').length;
+      const tidak = filtered.filter(r => r['Status Pelaksanaan'] === 'Tidak Dilaksanakan').length;
+      const murid = filtered.reduce((a, c) => a + (Number(c['Bil Murid Hadir']) || 0), 0);
+
+      document.getElementById('sekJumlah').textContent = total;
+      document.getElementById('sekDilaksana').textContent = dilaksana;
+      document.getElementById('sekTidak').textContent = tidak;
+      document.getElementById('sekMurid').textContent = murid;
+
+      const tbody = document.getElementById('sekTbody');
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400 italic">Tiada rekod PdPR pada tarikh ini.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 border-b';
+        tr.innerHTML = `
+          <td class="p-2.5">${i + 1}</td>
+          <td class="p-2.5 font-bold">${r['Nama Guru']}</td>
+          <td class="p-2.5">${r['Masa Mengajar']}</td>
+          <td class="p-2.5">${r['Kelas']}</td>
+          <td class="p-2.5 font-semibold text-indigo-700">${r['Mata Pelajaran']}</td>
+          <td class="p-2.5">${r['Platform PdPR']}</td>
+          <td class="p-2.5 text-center font-bold">${r['Bil Murid Hadir']}</td>
+          <td class="p-2.5 text-center">${r['Status Pelaksanaan']}</td>
+          <td class="p-2.5 text-center font-semibold ${r['Status Pengesahan'] === 'Telah Disahkan' ? 'text-emerald-600' : 'text-amber-500'}">
+            ${r['Status Pengesahan']}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Modal Helper
+    function bukaModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function tutupModal(id) { document.getElementById(id).classList.add('hidden'); }
   </script>
 </body>
 </html>
