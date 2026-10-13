@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-    /* KETETAPAN CETAKAN A4 MANDATORI TEPAT 1 MUKA SURAT */
+    /* KETETAPAN CETAKAN A4 MANDATORI 1 MUKA SURAT */
     @page {
       size: A4 portrait;
       margin: 10mm;
@@ -100,7 +100,7 @@
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
     <!-- ========================================================================= -->
-    <!-- HALAMAN 1: BORANG LAPORAN PDPR (LUAS & SELESA) -->
+    <!-- HALAMAN 1: BORANG LAPORAN PDPR (1 PAGE PENUH & SELESA) -->
     <!-- ========================================================================= -->
     <section id="halamanBorang" class="space-y-6 max-w-4xl mx-auto">
       <!-- BANNER MOD KEMASKINI -->
@@ -167,7 +167,7 @@
               <option value="">-- Pilih Slot Mengajar Hari Ini --</option>
             </select>
             <p class="text-[11px] text-indigo-700 italic">
-              *Pilih slot mengajar untuk auto-isi masa, kelas, dan mata pelajaran mengikut waktu rasmi sekolah.
+              *Pilih slot mengajar untuk auto-isi masa, kelas, dan mata pelajaran mengikut jadual rasmi sekolah.
             </p>
           </div>
 
@@ -183,7 +183,7 @@
             </div>
           </div>
 
-          <!-- Mata Pelajaran & Platform -->
+          <!-- Mata Pelajaran & Platform (Dengan Sokongan 'Lain-lain') -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Mata Pelajaran</label>
@@ -191,14 +191,19 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Platform PdPR</label>
-              <select id="platformSelect" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
+              <select id="platformSelect" onchange="togglePlatformLain()" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
                 <option value="Delima Google Classroom">Delima Google Classroom</option>
                 <option value="Google Meet">Google Meet</option>
                 <option value="WhatsApp / Telegram">WhatsApp / Telegram</option>
                 <option value="Quizizz / Wordwall">Quizizz / Wordwall</option>
                 <option value="YouTube / Video">YouTube / Video</option>
                 <option value="Modul Luar Talian">Modul Luar Talian</option>
+                <option value="Lain-lain">Lain-lain</option>
               </select>
+              <!-- Medan input jika pilih 'Lain-lain' -->
+              <div id="platformLainContainer" class="hidden mt-2">
+                <input type="text" id="platformLainInput" placeholder="Sila nyatakan platform PdPR lain..." class="w-full text-xs rounded-xl border border-indigo-300 px-3 py-2 bg-indigo-50/50 outline-none focus:border-indigo-600">
+              </div>
             </div>
           </div>
 
@@ -208,13 +213,13 @@
             <input type="text" id="tajukInput" required placeholder="Standard Kandungan / Topik Pembelajaran" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
           </div>
 
-          <!-- Aktiviti yang Dijalankan (Ruang Luas) -->
+          <!-- Aktiviti yang Dijalankan (Luas) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Aktiviti yang Dijalankan</label>
             <textarea id="aktivitiInput" rows="4" required placeholder="Nyatakan aktiviti pembelajaran secara terperinci..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
           </div>
 
-          <!-- Dapatan / Refleksi (Ruang Luas) -->
+          <!-- Dapatan / Refleksi (Luas) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Dapatan / Hasil Pembelajaran / Refleksi</label>
             <textarea id="dapatanInput" rows="4" placeholder="Nyatakan refleksi pencapaian objektif pembelajaran dan maklum balas murid..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
@@ -369,7 +374,7 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: ONE PAGE REPORT (OPR) MANDATORI 1 HALAMAN A4 -->
+  <!-- MODAL: ONE PAGE REPORT (OPR) MANDATORI 1 HALAMAN A4 (TAJUK: Laporan Pelaksanaan PdPr) -->
   <!-- ========================================================================= -->
   <div id="oprModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl max-h-[96vh] flex flex-col overflow-hidden">
@@ -506,9 +511,11 @@
     </div>
   </div>
 
-  <!-- MODAL: LAPORAN PELAKSANAAN PDPR SEKOLAH -->
+  <!-- ========================================================================= -->
+  <!-- MODAL: LAPORAN PELAKSANAAN PDPR SEKOLAH (STRUKTUR RASMI JADUAL & SEMAKAN SILANG) -->
+  <!-- ========================================================================= -->
   <div id="laporanSekolahModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl max-h-[94vh] flex flex-col overflow-hidden">
+    <div class="bg-white w-full max-w-6xl rounded-2xl shadow-2xl max-h-[95vh] flex flex-col overflow-hidden">
       <div class="p-3 sm:p-4 bg-slate-900 text-white flex justify-between items-center no-print">
         <div class="flex items-center space-x-2">
           <i class="fa-solid fa-school text-indigo-400"></i>
@@ -524,28 +531,17 @@
         </div>
       </div>
 
+      <!-- KAWALAN TARIKH -->
       <div class="p-4 bg-slate-100 border-b border-slate-200 flex flex-wrap items-center gap-3 text-xs no-print">
-        <span class="font-bold text-slate-700">Pilih Jenis Sela Masa:</span>
-        <div class="flex bg-white rounded-xl border border-slate-200 p-1 space-x-1 font-semibold">
-          <button onclick="setModLaporan('HARIAN')" id="btnModHarian" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white">Harian</button>
-          <button onclick="setModLaporan('MINGGUAN')" id="btnModMingguan" class="px-3 py-1.5 rounded-lg hover:bg-slate-50 text-slate-600">Mingguan</button>
-          <button onclick="setModLaporan('JULAT')" id="btnModJulat" class="px-3 py-1.5 rounded-lg hover:bg-slate-50 text-slate-600">Julat Pilihan</button>
+        <span class="font-bold text-slate-700">Pilih Tarikh Pelaksanaan:</span>
+        <div class="flex items-center space-x-2">
+          <input type="date" id="lapTarikhTunggal" onchange="janaLaporanSekolah()" class="border border-slate-300 rounded-xl px-3 py-1.5 bg-white font-semibold outline-none focus:border-indigo-600 shadow-sm">
         </div>
-
-        <div id="filterHarianDiv" class="flex items-center space-x-2">
-          <label class="text-slate-600">Tarikh:</label>
-          <input type="date" id="lapTarikhTunggal" onchange="janaLaporanSekolah()" class="border rounded-lg px-2.5 py-1 bg-white outline-none">
-        </div>
-
-        <div id="filterJulatDiv" class="flex items-center space-x-2 hidden">
-          <label class="text-slate-600">Dari:</label>
-          <input type="date" id="lapTarikhMula" onchange="janaLaporanSekolah()" class="border rounded-lg px-2.5 py-1 bg-white outline-none">
-          <label class="text-slate-600">Hingga:</label>
-          <input type="date" id="lapTarikhAkhir" onchange="janaLaporanSekolah()" class="border rounded-lg px-2.5 py-1 bg-white outline-none">
-        </div>
+        <span class="text-[11px] text-slate-500 italic">*Semua slot waktu mengajar rasmi guru pada hari ini disenaraikan secara automatik.</span>
       </div>
 
       <div class="p-6 overflow-y-auto custom-scrollbar space-y-5 bg-white text-slate-900">
+        <!-- HEADER LAPORAN SEKOLAH -->
         <div class="flex items-center justify-center space-x-4 border-b pb-3">
           <img src="logo.pnd" onerror="this.onerror=null; this.src='logo.png';" alt="Logo Sekolah" class="w-14 h-14 object-contain">
           <div class="text-center sm:text-left">
@@ -555,37 +551,47 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-4 gap-3 text-center text-xs">
+        <!-- RUMUSAN STATISTIK HARIAN -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
           <div class="p-3 bg-slate-50 border rounded-xl">
-            <span class="text-slate-500 block">Jumlah Sesi PdPR</span>
-            <span id="sekJumlah" class="text-2xl font-black text-slate-900 mt-0.5 block">0</span>
+            <span class="text-slate-500 block font-semibold">Jumlah Slot Rasmi</span>
+            <span id="sekJumlahSlot" class="text-2xl font-black text-slate-900 mt-0.5 block">0</span>
           </div>
           <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
-            <span class="text-emerald-700 block">Dilaksanakan</span>
+            <span class="text-emerald-700 block font-semibold">Dilaksanakan</span>
             <span id="sekDilaksana" class="text-2xl font-black text-emerald-700 mt-0.5 block">0</span>
           </div>
           <div class="p-3 bg-rose-50 border border-rose-100 rounded-xl">
-            <span class="text-rose-700 block">Tidak Dilaksanakan</span>
+            <span class="text-rose-700 block font-semibold">Tidak Dilaksanakan</span>
             <span id="sekTidak" class="text-2xl font-black text-rose-700 mt-0.5 block">0</span>
           </div>
           <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
-            <span class="text-indigo-700 block">Jumlah Murid Terlibat</span>
-            <span id="sekMurid" class="text-2xl font-black text-indigo-700 mt-0.5 block">0</span>
+            <span class="text-indigo-700 block font-semibold">Peratus Pelaksanaan</span>
+            <span id="sekPeratus" class="text-2xl font-black text-indigo-700 mt-0.5 block">0%</span>
+          </div>
+          <div class="p-3 bg-purple-50 border border-purple-100 rounded-xl col-span-2 sm:col-span-1">
+            <span class="text-purple-700 block font-semibold">Murid Terlibat</span>
+            <span id="sekMurid" class="text-2xl font-black text-purple-700 mt-0.5 block">0</span>
           </div>
         </div>
 
+        <!-- JADUAL STRUKTUR RASMI PELAPORAN SEKOLAH -->
         <div class="overflow-x-auto border border-slate-200 rounded-xl">
           <table class="w-full text-left text-xs">
-            <thead class="bg-slate-100 font-bold border-b text-slate-700">
+            <thead class="bg-slate-100 font-bold border-b text-slate-700 uppercase tracking-wider text-[11px]">
               <tr>
                 <th class="p-2.5">Bil</th>
-                <th class="p-2.5">Nama Guru</th>
-                <th class="p-2.5">Tarikh / Masa</th>
-                <th class="p-2.5">Kelas / Subjek</th>
-                <th class="p-2.5">Platform</th>
-                <th class="p-2.5 text-center">Hadir</th>
-                <th class="p-2.5 text-center">Status</th>
-                <th class="p-2.5 text-center">Pengesahan</th>
+                <th class="p-2.5">Tarikh</th>
+                <th class="p-2.5">Slot-slot Guru</th>
+                <th class="p-2.5">Masa Slot Guru</th>
+                <th class="p-2.5">Kelas</th>
+                <th class="p-2.5">Mata Pelajaran</th>
+                <th class="p-2.5">Platform PdPr</th>
+                <th class="p-2.5">Tajuk / Topik Diajar</th>
+                <th class="p-2.5 text-center">Status Pelaksanaan</th>
+                <th class="p-2.5 text-center">Bil. Murid Terlibat</th>
+                <th class="p-2.5">Catatan Pemantau</th>
+                <th class="p-2.5">Disahkan Oleh</th>
               </tr>
             </thead>
             <tbody id="sekTbody" class="divide-y divide-slate-100"></tbody>
@@ -768,16 +774,26 @@
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    // 1. FUNGSI PENORMALAN TARIKH MALAYSIA (MEMBETULKAN ISO UTC 2026-10-11T16:00:00.000Z)
+    // KAWALAN PLATFORM LAIN-LAIN
+    function togglePlatformLain() {
+      const select = document.getElementById('platformSelect');
+      const container = document.getElementById('platformLainContainer');
+      if (select.value === 'Lain-lain') {
+        container.classList.remove('hidden');
+        document.getElementById('platformLainInput').focus();
+      } else {
+        container.classList.add('hidden');
+      }
+    }
+
+    // 1. FUNGSI PENORMALAN TARIKH MALAYSIA
     function formatTarikhMY(raw) {
       if (!raw) return '';
       let s = String(raw).trim();
       
-      // Jika format ISO UTC daripada Google Sheet / Apps Script
       if (s.includes('T') || s.endsWith('Z')) {
         let d = new Date(s);
         if (!isNaN(d.getTime())) {
-          // Selaraskan offset ke zon waktu Malaysia GMT+8
           let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
           let myTime = new Date(utc + (3600000 * 8));
           let y = myTime.getFullYear();
@@ -789,13 +805,11 @@
       
       if (s.includes(' ')) s = s.split(' ')[0];
       
-      // Padankan DD/MM/YYYY
       let dmy = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
       if (dmy) {
         return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
       }
       
-      // Padankan YYYY-MM-DD
       let ymd = s.match(/^(\d{4})[/.-](\d{1,2})[/.-](\d{1,2})$/);
       if (ymd) {
         return `${ymd[1]}-${ymd[2].padStart(2, '0')}-${ymd[3].padStart(2, '0')}`;
@@ -1504,7 +1518,6 @@
     let selectedRecordForSah = null;
     let chartStatusInstance = null;
     let chartPlatformInstance = null;
-    let modLaporanSemasa = 'HARIAN';
 
     window.addEventListener('DOMContentLoaded', () => {
       const fav = document.getElementById('faviconTag');
@@ -1518,6 +1531,7 @@
       muatSemulaData();
     });
 
+    // PENGURUSAN HALAMAN (TAB BORANG VS TAB DASHBOARD)
     function tukarHalaman(page) {
       const pBorang = document.getElementById('halamanBorang');
       const pDash = document.getElementById('halamanDashboard');
@@ -1546,8 +1560,6 @@
       const tarikhStr = `${yyyy}-${mm}-${dd}`;
       document.getElementById('tarikhInput').value = tarikhStr;
       document.getElementById('lapTarikhTunggal').value = tarikhStr;
-      document.getElementById('lapTarikhMula').value = tarikhStr;
-      document.getElementById('lapTarikhAkhir').value = tarikhStr;
       kemaskiniHariDanSlot();
     }
 
@@ -1636,7 +1648,7 @@
     }
 
     // =========================================================================
-    // KEMASKINI REKOD OPR (TIADA DATA HILANG)
+    // KEMASKINI REKOD OPR (TIADA DATA HILANG & TARIKH KEKAL TEPAT)
     // =========================================================================
     function editRekodPdpr(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
@@ -1650,7 +1662,6 @@
       document.getElementById('formHeaderTitle').textContent = "Kemaskini Rekod Pelaksanaan PdPr";
       document.getElementById('btnHantarLabel').textContent = "Simpan Perubahan Rekod";
 
-      // Muatkan nilai dengan penormalan format yang tepat
       document.getElementById('guruSelect').value = r['Nama Guru'];
       document.getElementById('tarikhInput').value = formatTarikhMY(r['Tarikh PdPR']);
       document.getElementById('hariInput').value = r['Hari'];
@@ -1659,7 +1670,21 @@
       document.getElementById('masaInput').value = formatMasaMalaysia(r['Masa Mengajar']);
       document.getElementById('kelasInput').value = r['Kelas'];
       document.getElementById('subjekInput').value = r['Mata Pelajaran'];
-      document.getElementById('platformSelect').value = r['Platform PdPR'];
+
+      // Tetapkan Platform PdPR termasuk 'Lain-lain'
+      const platformVal = r['Platform PdPR'] || '';
+      const platformSelect = document.getElementById('platformSelect');
+      const standardPlatforms = ["Delima Google Classroom", "Google Meet", "WhatsApp / Telegram", "Quizizz / Wordwall", "YouTube / Video", "Modul Luar Talian"];
+
+      if (standardPlatforms.includes(platformVal)) {
+        platformSelect.value = platformVal;
+        document.getElementById('platformLainContainer').classList.add('hidden');
+      } else {
+        platformSelect.value = "Lain-lain";
+        document.getElementById('platformLainContainer').classList.remove('hidden');
+        document.getElementById('platformLainInput').value = platformVal;
+      }
+
       document.getElementById('tajukInput').value = r['Tajuk / Topik'] || '';
       document.getElementById('aktivitiInput').value = r['Aktiviti'] || '';
       document.getElementById('dapatanInput').value = r['Dapatan / Refleksi'] || '';
@@ -1678,6 +1703,7 @@
       document.getElementById('formHeaderTitle').textContent = "Borang Laporan Pelaksanaan PdPr";
       document.getElementById('btnHantarLabel').textContent = "Hantar Rekod PdPR";
       document.getElementById('pdprForm').reset();
+      document.getElementById('platformLainContainer').classList.add('hidden');
       senaraiGambarBase64 = [];
       renderGambarPreview();
       setTarikhHariIni();
@@ -1756,6 +1782,13 @@
       const editId = document.getElementById('editRecordId').value;
       const isEditing = Boolean(editId);
 
+      // Tentukan nilai Platform PdPR
+      let platformFinal = document.getElementById('platformSelect').value;
+      if (platformFinal === 'Lain-lain') {
+        const customPlatform = document.getElementById('platformLainInput').value.trim();
+        platformFinal = customPlatform ? customPlatform : 'Lain-lain';
+      }
+
       const payload = {
         action: isEditing ? 'KEMASKINI_REKOD' : 'SIMPAN_REKOD',
         id: editId || '',
@@ -1765,7 +1798,7 @@
         masa: formatMasaMalaysia(document.getElementById('masaInput').value),
         kelas: document.getElementById('kelasInput').value,
         mataPelajaran: document.getElementById('subjekInput').value,
-        platform: document.getElementById('platformSelect').value,
+        platform: platformFinal,
         tajuk: document.getElementById('tajukInput').value,
         aktiviti: document.getElementById('aktivitiInput').value,
         dapatan: document.getElementById('dapatanInput').value,
@@ -1804,21 +1837,19 @@
     }
 
     // =========================================================================
-    // PEMANGGILAN DATA DENGAN INTEGRITI TINGGI (TIADA REKOD BERTINDIH)
+    // PEMANGGILAN DATA GOOGLE SHEET (DEDUP & CLEANING)
     // =========================================================================
     async function muatSemulaData() {
       try {
         const res = await fetch(GAS_API_URL);
         const data = await res.json();
         if (data.success) {
-          // Elakkan duplikasi data berasaskan ID unik
           const seen = new Set();
           const cleanRecords = [];
           
           (data.records || []).forEach(r => {
             if (r['ID'] && !seen.has(r['ID'])) {
               seen.add(r['ID']);
-              // Bersihkan tarikh & masa ke format piawai Malaysia
               r['Tarikh PdPR'] = formatTarikhMY(r['Tarikh PdPR']);
               r['Masa Mengajar'] = formatMasaMalaysia(r['Masa Mengajar']);
               cleanRecords.push(r);
@@ -1911,7 +1942,7 @@
     }
 
     // =========================================================================
-    // PAPAR OPR MANDATORI TEPAT 1 MUKA A4 (SEIMBANG)
+    // PAPAR OPR MANDATORI TEPAT 1 MUKA A4 (SEIMBANG & RESPONSIF)
     // =========================================================================
     function paparOPR(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
@@ -1920,7 +1951,7 @@
       document.getElementById('oprNama').textContent = r['Nama Guru'];
       document.getElementById('oprTarikh').textContent = `${r['Tarikh PdPR']} (${r['Hari']})`;
       document.getElementById('oprSubjek').textContent = r['Mata Pelajaran'];
-      document.getElementById('oprMasa').textContent = r['Masa Mengajar'];
+      document.getElementById('oprMasa').textContent = formatMasaMalaysia(r['Masa Mengajar']);
       document.getElementById('oprKelas').textContent = r['Kelas'];
       document.getElementById('oprPlatform').textContent = r['Platform PdPR'];
       document.getElementById('oprMurid').textContent = `${r['Bil Murid Hadir']} Orang`;
@@ -1999,111 +2030,153 @@
     }
 
     // =========================================================================
-    // LAPORAN PELAKSANAAN SEKOLAH (DENGAN PENORMALAN TARIKH)
+    // JANA LAPORAN PELAKSANAAN PDPR SEKOLAH (SEMAKAN SILANG DENGAN JADUAL WAKTU)
     // =========================================================================
     function bukaModalLaporanSekolah() {
+      // Autoperiksa tarikh: utamakan tarikh rekod terkini jika hari ini tiada rekod
       const currentInputDate = document.getElementById('lapTarikhTunggal').value;
       const hasRecordToday = senaraiRekod.some(r => r['Tarikh PdPR'] === currentInputDate);
-      
-      // Jika tiada rekod pada tarikh input hari ini, automatik selaraskan ke tarikh rekod terkini
       if (!hasRecordToday && senaraiRekod.length > 0) {
         document.getElementById('lapTarikhTunggal').value = senaraiRekod[0]['Tarikh PdPR'];
       }
-      
       janaLaporanSekolah();
       bukaModal('laporanSekolahModal');
     }
 
-    function setModLaporan(mod) {
-      modLaporanSemasa = mod;
-      const btnHarian = document.getElementById('btnModHarian');
-      const btnMingguan = document.getElementById('btnModMingguan');
-      const btnJulat = document.getElementById('btnModJulat');
-      const divHarian = document.getElementById('filterHarianDiv');
-      const divJulat = document.getElementById('filterJulatDiv');
-
-      btnHarian.className = "px-3 py-1.5 rounded-lg hover:bg-slate-50 text-slate-600";
-      btnMingguan.className = "px-3 py-1.5 rounded-lg hover:bg-slate-50 text-slate-600";
-      btnJulat.className = "px-3 py-1.5 rounded-lg hover:bg-slate-50 text-slate-600";
-
-      if (mod === 'HARIAN') {
-        btnHarian.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold";
-        divHarian.classList.remove('hidden');
-        divJulat.classList.add('hidden');
-      } else if (mod === 'MINGGUAN') {
-        btnMingguan.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold";
-        divHarian.classList.add('hidden');
-        divJulat.classList.remove('hidden');
-        const curr = new Date();
-        const first = curr.getDate() - curr.getDay() + 1;
-        const last = first + 4;
-        const firstday = new Date(curr.setDate(first)).toISOString().slice(0, 10);
-        const lastday = new Date(curr.setDate(last)).toISOString().slice(0, 10);
-        document.getElementById('lapTarikhMula').value = firstday;
-        document.getElementById('lapTarikhAkhir').value = lastday;
-      } else {
-        btnJulat.className = "px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold";
-        divHarian.classList.add('hidden');
-        divJulat.classList.remove('hidden');
-      }
-      janaLaporanSekolah();
-    }
-
     function janaLaporanSekolah() {
-      let filtered = [];
-      let labelTempoh = '';
+      const tarikhPilih = formatTarikhMY(document.getElementById('lapTarikhTunggal').value);
+      if (!tarikhPilih) return;
 
-      if (modLaporanSemasa === 'HARIAN') {
-        const t = formatTarikhMY(document.getElementById('lapTarikhTunggal').value);
-        labelTempoh = `Tarikh: ${t}`;
-        filtered = senaraiRekod.filter(r => r['Tarikh PdPR'] === t);
-      } else {
-        const tm = formatTarikhMY(document.getElementById('lapTarikhMula').value);
-        const ta = formatTarikhMY(document.getElementById('lapTarikhAkhir').value);
-        labelTempoh = `Sela Masa: ${tm} hingga ${ta}`;
-        filtered = senaraiRekod.filter(r => {
-          return r['Tarikh PdPR'] >= tm && r['Tarikh PdPR'] <= ta;
+      // Cari hari bagi tarikh yang dipilih
+      const parts = tarikhPilih.split('-');
+      const d = new Date(parts[0], parseInt(parts[1]) - 1, parts[2]);
+      const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+      const hariPilih = days[d.getDay()];
+
+      document.getElementById('laporanSekolahTempohText').textContent = `Tarikh: ${tarikhPilih} (${hariPilih})`;
+
+      // Ambil rekod OPR yang telah dihantar pada tarikh ini
+      const submittedOnDate = senaraiRekod.filter(r => r['Tarikh PdPR'] === tarikhPilih);
+
+      // Kumpul SEMUA slot rasmi mengikut jadual guru pada hari tersebut
+      let barisLaporan = [];
+      let usedOprIds = new Set();
+
+      // 1. Semak setiap guru dalam Jadual Waktu Rasmi Siri 6
+      const senaraiSemuaGuru = Object.keys(JADUAL_SIRI_6).sort();
+
+      senaraiSemuaGuru.forEach(guru => {
+        const slotsGuruHariIni = (JADUAL_SIRI_6[guru] && JADUAL_SIRI_6[guru][hariPilih]) ? JADUAL_SIRI_6[guru][hariPilih] : [];
+
+        slotsGuruHariIni.forEach(slot => {
+          // Cari adakah guru ini telah menghantar OPR yang sepadan dengan slot ini
+          const padananOpr = submittedOnDate.find(r => {
+            if (usedOprIds.has(r['ID'])) return false;
+            if (r['Nama Guru'].trim().toUpperCase() !== guru.trim().toUpperCase()) return false;
+            
+            // Padanan subjek & kelas atau padanan masa
+            const matchSubjek = r['Mata Pelajaran'].trim().toLowerCase().includes(slot.subjek.trim().toLowerCase()) ||
+                                slot.subjek.trim().toLowerCase().includes(r['Mata Pelajaran'].trim().toLowerCase());
+            const matchKelas = r['Kelas'].trim().toLowerCase() === slot.kelas.trim().toLowerCase();
+            return matchSubjek && matchKelas;
+          });
+
+          if (padananOpr) {
+            usedOprIds.add(padananOpr['ID']);
+            barisLaporan.push({
+              tarikh: tarikhPilih,
+              guru: guru,
+              masa: formatMasaMalaysia(padananOpr['Masa Mengajar'] || slot.masa),
+              kelas: padananOpr['Kelas'] || slot.kelas,
+              subjek: padananOpr['Mata Pelajaran'] || slot.subjek,
+              platform: padananOpr['Platform PdPR'] || '-',
+              tajuk: padananOpr['Tajuk / Topik'] || '-',
+              status: "Dilaksanakan", // Automatik dilaksanakan jika ada OPR
+              murid: Number(padananOpr['Bil Murid Hadir'] || 0),
+              catatan: padananOpr['Ulasan Pentadbir'] || padananOpr['Dapatan / Refleksi'] || '-',
+              disahkan: padananOpr['Nama Pentadbir'] ? `${padananOpr['Nama Pentadbir']} (${padananOpr['Jawatan Pentadbir'] || ''})` : 'Menunggu Sah'
+            });
+          } else {
+            // Tiada borang PdPR dihantar untuk slot ini -> Automatik Tidak Dilaksanakan
+            barisLaporan.push({
+              tarikh: tarikhPilih,
+              guru: guru,
+              masa: formatMasaMalaysia(slot.masa),
+              kelas: slot.kelas,
+              subjek: slot.subjek,
+              platform: "-",
+              tajuk: "Tiada Laporan PdPR",
+              status: "Tidak Dilaksanakan",
+              murid: 0,
+              catatan: "-",
+              disahkan: "-"
+            });
+          }
         });
-      }
+      });
 
-      document.getElementById('laporanSekolahTempohText').textContent = labelTempoh;
+      // 2. Jika ada OPR tambahan/luar jadual yang dihantar pada tarikh tersebut
+      submittedOnDate.forEach(r => {
+        if (!usedOprIds.has(r['ID'])) {
+          barisLaporan.push({
+            tarikh: tarikhPilih,
+            guru: r['Nama Guru'],
+            masa: formatMasaMalaysia(r['Masa Mengajar']),
+            kelas: r['Kelas'],
+            subjek: r['Mata Pelajaran'],
+            platform: r['Platform PdPR'],
+            tajuk: r['Tajuk / Topik'],
+            status: "Dilaksanakan (Tambahan)",
+            murid: Number(r['Bil Murid Hadir'] || 0),
+            catatan: r['Ulasan Pentadbir'] || '-',
+            disahkan: r['Nama Pentadbir'] || 'Menunggu Sah'
+          });
+        }
+      });
 
-      const total = filtered.length;
-      const dilaksana = filtered.filter(r => r['Status Pelaksanaan'] === 'Dilaksanakan').length;
-      const tidak = filtered.filter(r => r['Status Pelaksanaan'] === 'Tidak Dilaksanakan').length;
-      const murid = filtered.reduce((a, c) => a + (Number(c['Bil Murid Hadir']) || 0), 0);
+      // 3. Kira Statistik Rumusan Laporan
+      const totalSlot = barisLaporan.length;
+      const totalDilaksana = barisLaporan.filter(b => b.status.includes('Dilaksanakan')).length;
+      const totalTidak = totalSlot - totalDilaksana;
+      const peratus = totalSlot > 0 ? Math.round((totalDilaksana / totalSlot) * 100) : 0;
+      const totalMurid = barisLaporan.reduce((acc, curr) => acc + curr.murid, 0);
 
-      document.getElementById('sekJumlah').textContent = total;
-      document.getElementById('sekDilaksana').textContent = dilaksana;
-      document.getElementById('sekTidak').textContent = tidak;
-      document.getElementById('sekMurid').textContent = murid;
+      document.getElementById('sekJumlahSlot').textContent = totalSlot;
+      document.getElementById('sekDilaksana').textContent = totalDilaksana;
+      document.getElementById('sekTidak').textContent = totalTidak;
+      document.getElementById('sekPeratus').textContent = `${peratus}%`;
+      document.getElementById('sekMurid').textContent = totalMurid;
 
+      // 4. Render Jadual Laporan
       const tbody = document.getElementById('sekTbody');
       tbody.innerHTML = '';
 
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400 italic">Tiada rekod PdPR dijumpai bagi sela masa ini.</td></tr>`;
+      if (barisLaporan.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-6 text-slate-400 italic">Tiada slot jadual guru pada hari ${hariPilih}.</td></tr>`;
         return;
       }
 
-      filtered.forEach((r, i) => {
+      barisLaporan.forEach((b, idx) => {
+        const isDilaksana = b.status.includes('Dilaksanakan');
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50 border-b';
+        tr.className = `hover:bg-slate-50 border-b ${isDilaksana ? '' : 'bg-rose-50/30'}`;
         tr.innerHTML = `
-          <td class="p-2.5 font-bold">${i + 1}</td>
-          <td class="p-2.5 font-bold text-slate-900">${r['Nama Guru']}</td>
-          <td class="p-2.5"><div>${r['Tarikh PdPR']}</div><div class="text-[10px] text-slate-400">${r['Masa Mengajar']}</div></td>
-          <td class="p-2.5"><span class="font-bold text-indigo-700">${r['Mata Pelajaran']}</span> (${r['Kelas']})</td>
-          <td class="p-2.5">${r['Platform PdPR']}</td>
-          <td class="p-2.5 text-center font-bold text-slate-800">${r['Bil Murid Hadir']}</td>
+          <td class="p-2.5 font-bold">${idx + 1}</td>
+          <td class="p-2.5 whitespace-nowrap">${b.tarikh}</td>
+          <td class="p-2.5 font-bold text-slate-900">${b.guru}</td>
+          <td class="p-2.5 whitespace-nowrap">${b.masa}</td>
+          <td class="p-2.5 font-semibold text-slate-700">${b.kelas}</td>
+          <td class="p-2.5 font-bold text-indigo-700">${b.subjek}</td>
+          <td class="p-2.5">${b.platform}</td>
+          <td class="p-2.5 max-w-xs truncate" title="${b.tajuk}">${b.tajuk}</td>
           <td class="p-2.5 text-center">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r['Status Pelaksanaan'] === 'Dilaksanakan' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
-              ${r['Status Pelaksanaan']}
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isDilaksana ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              ${b.status}
             </span>
           </td>
-          <td class="p-2.5 text-center font-semibold text-[11px] ${r['Status Pengesahan'] === 'Telah Disahkan' ? 'text-emerald-600' : 'text-amber-500'}">
-            ${r['Status Pengesahan']}
-          </td>
+          <td class="p-2.5 text-center font-bold ${b.murid > 0 ? 'text-indigo-700' : 'text-slate-400'}">${b.murid}</td>
+          <td class="p-2.5 text-slate-600">${b.catatan}</td>
+          <td class="p-2.5 text-slate-600 font-medium">${b.disahkan}</td>
         `;
         tbody.appendChild(tr);
       });
