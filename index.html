@@ -20,7 +20,7 @@
     /* ========================================================================= */
     @page {
       size: A4 portrait;
-      margin: 10mm;
+      margin: 0; /* Matikan margin lalai pelayar untuk elak muka surat kedua */
     }
 
     @media print {
@@ -28,9 +28,14 @@
         display: none !important;
       }
 
-      /* 1. KETETAPAN CETAK OPR (A4 MANDATORI TEPAT 1 MUKA SURAT) */
+      /* 1. KETETAPAN CETAK OPR (MANDATORI TEPAT 1 MUKA SURAT A4) */
       body.print-opr-mode {
         background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
         overflow: hidden !important;
       }
       body.print-opr-mode * {
@@ -41,14 +46,13 @@
         visibility: visible !important;
       }
       body.print-opr-mode #printableArea {
-        position: fixed !important;
+        position: absolute !important;
         left: 0 !important;
         top: 0 !important;
-        width: 190mm !important;
-        height: 277mm !important;
-        max-height: 277mm !important;
-        padding: 0 !important;
-        margin: 0 !important;
+        width: 210mm !important;
+        height: 294mm !important; /* Had 294mm menghalang limpahan ke muka surat 2 */
+        max-height: 294mm !important;
+        padding: 8mm 12mm !important;
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
@@ -56,11 +60,22 @@
         overflow: hidden !important;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
-        background: white !important;
+        background: #ffffff !important;
         z-index: 999999 !important;
       }
+      body.print-opr-mode #oprGambarContainer {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: 95mm !important; /* Hadkan tinggi maksimum gambar agar tidak tolak teks ke bawah */
+        overflow: hidden !important;
+      }
+      body.print-opr-mode #oprGambarContainer img {
+        max-height: 100% !important;
+        max-width: 100% !important;
+        object-fit: contain !important;
+      }
 
-      /* 2. KETETAPAN CETAK LAPORAN SEKOLAH (TEKS BERSTRUKTUR - TIADA TERPOTONG) */
+      /* 2. KETETAPAN CETAK LAPORAN SEKOLAH (TEKS BERSTRUKTUR - TIDAK TERPOTONG) */
       body.print-sekolah-mode {
         background: #ffffff !important;
         color: #000000 !important;
@@ -73,7 +88,7 @@
       body.print-sekolah-mode #halamanLaporanSekolah {
         display: block !important;
         width: 100% !important;
-        padding: 0 !important;
+        padding: 10mm !important;
         margin: 0 !important;
       }
       body.print-sekolah-mode .print-clean-card {
@@ -266,7 +281,7 @@
               </span>
               <span id="labelGambarCount" class="text-[11px] px-2.5 py-0.5 bg-amber-200 text-amber-900 font-bold rounded-full">0 / 4 Gambar</span>
             </div>
-            <p class="text-[11px] text-amber-800">Muat naik minimum <strong>1 gambar</strong> dan maksimum <strong>4 gambar</strong>.</p>
+            <p class="text-[11px] text-amber-800">Muat naik minimum <strong>1 gambar</strong> dan maksimum <strong>4 gambar</strong>. Susunan gambar diselaraskan tepat dalam sempadan 1 muka surat A4.</p>
             <input type="file" id="gambarInput" multiple accept="image/*" onchange="prosesMuatNaikGambar(event)" class="text-xs text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-700 cursor-pointer">
             <div id="gambarPreviewContainer" class="grid grid-cols-4 gap-2 pt-2 empty:hidden"></div>
           </div>
@@ -387,7 +402,7 @@
     </section>
 
     <!-- ========================================================================= -->
-    <!-- HALAMAN 3: LAPORAN PELAKSANAAN PDPR SEKOLAH (TEKS BERSTRUKTUR & GRAFIK KEMAS) -->
+    <!-- HALAMAN 3: LAPORAN PELAKSANAAN PDPR SEKOLAH (TEKS BERSTRUKTUR & GRAFIK) -->
     <!-- ========================================================================= -->
     <section id="halamanLaporanSekolah" class="space-y-6 hidden">
       <!-- KAWALAN TARIKH & BUTANG TINDAKAN (NO PRINT) -->
@@ -427,7 +442,7 @@
           </div>
         </div>
 
-        <!-- RUMUSAN STATISTIK DENGAN GRAFIK BAR RINGKAS -->
+        <!-- RUMUSAN STATISTIK DENGAN GRAFIK BAR -->
         <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
           <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
             <div class="p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm">
@@ -459,10 +474,8 @@
           </div>
         </div>
 
-        <!-- SENARAI PELAKSANAAN TEKS BERSTRUKTUR (KEMAS, CANTIK & TIDAK TERPOTONG) -->
-        <div class="space-y-3" id="sekSenaraiContainer">
-          <!-- Kad-kad slot guru dimuatkan secara dinamik -->
-        </div>
+        <!-- SENARAI PELAKSANAAN TEKS BERSTRUKTUR (KEMAS & TIDAK TERPOTONG) -->
+        <div class="space-y-3" id="sekSenaraiContainer"></div>
 
         <!-- RUANG PENGESAHAN KESELURUHAN PENTADBIR SEKOLAH -->
         <div id="sekPengesahanDisplay" class="border-t-2 border-slate-300 pt-4 mt-6">
@@ -553,7 +566,7 @@
           </div>
         </div>
 
-        <!-- RUANG GAMBAR BUKTI (FLEX-1 MENGISI BAKI RUANG TANPA PECAH A4) -->
+        <!-- RUANG GAMBAR BUKTI (FLEX-1 MENGISI BAKI RUANG TANPA LIMPAHAN KE MUKA SURAT 2) -->
         <div class="flex-1 min-h-0 flex flex-col justify-center my-2">
           <span class="font-bold text-[10px] text-slate-600 block mb-1 uppercase tracking-wide">Gambar Bukti Pelaksanaan:</span>
           <div id="oprGambarContainer" class="w-full flex-1 min-h-0 overflow-hidden flex items-center justify-center"></div>
@@ -849,71 +862,11 @@
     SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
   </footer>
 
-  <!-- JAVASCRIPT: LOGIK UTAMA & PEMBETULAN PENUH -->
+  <!-- JAVASCRIPT: LOGIK UTAMA & DATA TEPAT FORMAT MALAYSIA -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    // KAWALAN CETAKAN KHAS (MENGELAKKAN CETAKAN TERPOTONG / KOSONG)
-    function cetakOPR() {
-      document.body.classList.remove('print-sekolah-mode');
-      document.body.classList.add('print-opr-mode');
-      window.print();
-    }
-
-    function cetakLaporanSekolah() {
-      document.body.classList.remove('print-opr-mode');
-      document.body.classList.add('print-sekolah-mode');
-      window.print();
-    }
-
-    window.onafterprint = function() {
-      document.body.classList.remove('print-opr-mode', 'print-sekolah-mode');
-    };
-
-    // KAWALAN PLATFORM LAIN-LAIN
-    function togglePlatformLain() {
-      const select = document.getElementById('platformSelect');
-      const container = document.getElementById('platformLainContainer');
-      if (select.value === 'Lain-lain') {
-        container.classList.remove('hidden');
-        document.getElementById('platformLainInput').focus();
-      } else {
-        container.classList.add('hidden');
-      }
-    }
-
-    // 1. FUNGSI PENORMALAN TARIKH MALAYSIA
-    function formatTarikhMY(raw) {
-      if (!raw) return '';
-      let s = String(raw).trim();
-      
-      if (s.includes('T') || s.endsWith('Z')) {
-        let d = new Date(s);
-        if (!isNaN(d.getTime())) {
-          let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-          let myTime = new Date(utc + (3600000 * 8));
-          let y = myTime.getFullYear();
-          let m = String(myTime.getMonth() + 1).padStart(2, '0');
-          let day = String(myTime.getDate()).padStart(2, '0');
-          return `${y}-${m}-${day}`;
-        }
-      }
-      
-      if (s.includes(' ')) s = s.split(' ')[0];
-      
-      let dmy = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
-      if (dmy) {
-        return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
-      }
-      
-      let ymd = s.match(/^(\d{4})[/.-](\d{1,2})[/.-](\d{1,2})$/);
-      if (ymd) {
-        return `${ymd[1]}-${ymd[2].padStart(2, '0')}-${ymd[3].padStart(2, '0')}`;
-      }
-      return s;
-    }
-
-    // 2. FUNGSI PENORMALAN FORMAT MASA MALAYSIA
+    // FUNGSI NORMALISASI MASA MALAYSIA (STANDARDIZED MALAYSIAN TIME DISPLAY)
     function formatMasaMalaysia(raw) {
       if (!raw) return '';
       let s = String(raw).trim();
@@ -957,7 +910,7 @@
       return { jam: jam, min: min, fasa: fasa };
     }
 
-    // PANGKALAN DATA RASMI 26 GURU
+    // PANGKALAN DATA RASMI 26 GURU DALAM FORMAT WAKTU MALAYSIA
     let JADUAL_SIRI_6 = {
       "ABD HADI BIN ADMAN": {
         "Isnin": [
