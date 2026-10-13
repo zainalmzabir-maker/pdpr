@@ -11,16 +11,14 @@
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     /* ========================================================================= */
-    /* KAWALAN CETAKAN: ASINGKAN CETAKAN OPR & CETAKAN LAPORAN SEKOLAH          */
+    /* KAWALAN CETAKAN A4: ASINGKAN OPR & LAPORAN SEKOLAH                       */
     /* ========================================================================= */
     @page {
       size: A4 portrait;
-      margin: 0; /* Matikan margin lalai pelayar untuk elak muka surat kedua */
+      margin: 0;
     }
 
     @media print {
@@ -28,7 +26,7 @@
         display: none !important;
       }
 
-      /* 1. KETETAPAN CETAK OPR (MANDATORI TEPAT 1 MUKA SURAT A4) */
+      /* 1. CETAKAN OPR (MANDATORI TEPAT 1 MUKA SURAT A4) */
       body.print-opr-mode {
         background: #ffffff !important;
         margin: 0 !important;
@@ -50,8 +48,8 @@
         left: 0 !important;
         top: 0 !important;
         width: 210mm !important;
-        height: 294mm !important; /* Had 294mm menghalang limpahan ke muka surat 2 */
-        max-height: 294mm !important;
+        height: 292mm !important; /* Had 292mm menghalang limpahan ke muka surat 2 */
+        max-height: 292mm !important;
         padding: 8mm 12mm !important;
         box-sizing: border-box !important;
         display: flex !important;
@@ -66,7 +64,7 @@
       body.print-opr-mode #oprGambarContainer {
         flex: 1 1 auto !important;
         min-height: 0 !important;
-        max-height: 95mm !important; /* Hadkan tinggi maksimum gambar agar tidak tolak teks ke bawah */
+        max-height: 90mm !important;
         overflow: hidden !important;
       }
       body.print-opr-mode #oprGambarContainer img {
@@ -75,7 +73,7 @@
         object-fit: contain !important;
       }
 
-      /* 2. KETETAPAN CETAK LAPORAN SEKOLAH (TEKS BERSTRUKTUR - TIDAK TERPOTONG) */
+      /* 2. CETAKAN LAPORAN SEKOLAH (TEKS BERSTRUKTUR - TIDAK TERPOTONG) */
       body.print-sekolah-mode {
         background: #ffffff !important;
         color: #000000 !important;
@@ -94,14 +92,14 @@
       body.print-sekolah-mode .print-clean-card {
         border: 1px solid #cbd5e1 !important;
         page-break-inside: avoid !important;
-        margin-bottom: 8px !important;
-        padding: 8px 12px !important;
+        margin-bottom: 6px !important;
+        padding: 6px 10px !important;
         background: #ffffff !important;
       }
     }
 
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
@@ -337,31 +335,22 @@
         </div>
       </div>
 
+      <!-- VISUAL RINGAN STATUS & PLATFORM (TANPA CHART.JS BERAT) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
           <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-2">
             <i class="fa-solid fa-chart-pie text-indigo-500"></i>
-            <span>Status Pelaksanaan</span>
+            <span>Pecahan Status Pelaksanaan</span>
           </h3>
-          <div class="relative h-44 w-full mt-2 flex items-center justify-center">
-            <canvas id="chartStatus"></canvas>
-          </div>
-          <div class="flex justify-center space-x-3 text-[11px] font-medium text-slate-500 mt-2">
-            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block"></span><span>Dilaksana</span></span>
-            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-rose-500 rounded-full inline-block"></span><span>Tidak</span></span>
-            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span><span>Tangguh</span></span>
-            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 bg-slate-400 rounded-full inline-block"></span><span>Lain</span></span>
-          </div>
+          <div class="space-y-2 pt-1" id="dashStatusList"></div>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
           <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-2">
             <i class="fa-solid fa-chart-column text-emerald-500"></i>
-            <span>Platform PdPR</span>
+            <span>Platform PdPR Popular</span>
           </h3>
-          <div class="relative h-48 w-full mt-2">
-            <canvas id="chartPlatform"></canvas>
-          </div>
+          <div class="space-y-2 pt-1" id="dashPlatformList"></div>
         </div>
       </div>
 
@@ -417,12 +406,10 @@
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <!-- BUTANG PENGESAHAN LAPORAN SEKOLAH -->
           <button onclick="bukaModalPengesahanSekolah()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5">
             <i class="fa-solid fa-signature"></i>
             <span>Pengesahan Laporan</span>
           </button>
-          <!-- BUTANG CETAK LAPORAN SEKOLAH -->
           <button onclick="cetakLaporanSekolah()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5">
             <i class="fa-solid fa-print"></i>
             <span>Cetak Laporan</span>
@@ -466,7 +453,6 @@
               <span id="sekMurid" class="text-xl font-black text-purple-700 block mt-0.5">0</span>
             </div>
           </div>
-          <!-- Bar Kemajuan Visual -->
           <div>
             <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
               <div id="sekProgressBar" class="bg-emerald-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
@@ -862,7 +848,7 @@
     SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
   </footer>
 
-  <!-- JAVASCRIPT: LOGIK UTAMA & DATA TEPAT FORMAT MALAYSIA -->
+  <!-- JAVASCRIPT LOGIK SISTEM (RINGAN & BEBAS CRASH) -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
@@ -870,11 +856,9 @@
     function formatMasaMalaysia(raw) {
       if (!raw) return '';
       let s = String(raw).trim();
-      
       if (/pagi|petang|tengah\s*hari|malam/i.test(s)) {
         return s.replace(/:/g, '.');
       }
-
       const parts = s.split(/[-–—]/);
       if (parts.length === 2) {
         let t1 = parseWaktuMY(parts[0].trim());
@@ -896,7 +880,6 @@
       let jam = parseInt(m[1]);
       let min = m[2];
       let fasa = 'pagi';
-
       if (jam >= 13) {
         jam = jam - 12;
         fasa = (jam >= 7) ? 'malam' : 'petang';
@@ -908,6 +891,33 @@
         fasa = 'pagi';
       }
       return { jam: jam, min: min, fasa: fasa };
+    }
+
+    // 1. FUNGSI PENORMALAN TARIKH MALAYSIA
+    function formatTarikhMY(raw) {
+      if (!raw) return '';
+      let s = String(raw).trim();
+      if (s.includes('T') || s.endsWith('Z')) {
+        let d = new Date(s);
+        if (!isNaN(d.getTime())) {
+          let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+          let myTime = new Date(utc + (3600000 * 8));
+          let y = myTime.getFullYear();
+          let m = String(myTime.getMonth() + 1).padStart(2, '0');
+          let day = String(myTime.getDate()).padStart(2, '0');
+          return `${y}-${m}-${day}`;
+        }
+      }
+      if (s.includes(' ')) s = s.split(' ')[0];
+      let dmy = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+      if (dmy) {
+        return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+      }
+      let ymd = s.match(/^(\d{4})[/.-](\d{1,2})[/.-](\d{1,2})$/);
+      if (ymd) {
+        return `${ymd[1]}-${ymd[2].padStart(2, '0')}-${ymd[3].padStart(2, '0')}`;
+      }
+      return s;
     }
 
     // PANGKALAN DATA RASMI 26 GURU DALAM FORMAT WAKTU MALAYSIA
@@ -1565,19 +1575,29 @@
     let senaraiRekod = [];
     let senaraiGambarBase64 = [];
     let selectedRecordForSah = null;
-    let chartStatusInstance = null;
-    let chartPlatformInstance = null;
 
+    // PEMULAAN LAMAN (LIGHTWEIGHT & RESILIENT)
     window.addEventListener('DOMContentLoaded', () => {
-      const fav = document.getElementById('faviconTag');
-      const testImg = new Image();
-      testImg.src = 'logo.pnd';
-      testImg.onerror = () => { fav.href = 'logo.png'; };
+      try {
+        const fav = document.getElementById('faviconTag');
+        const testImg = new Image();
+        testImg.src = 'logo.pnd';
+        testImg.onerror = () => { fav.href = 'logo.png'; };
+      } catch (e) {}
 
+      // 1. Muatkan dropdown & tarikh serta-merta tanpa tunggu internet
+      muatDropdownGuru();
       setTarikhHariIni();
-      initCharts();
-      initSignatureCanvas('signaturePad', 'signPlaceholder');
-      initSignatureCanvas('signaturePadSekolah', 'signPlaceholderSekolah');
+      
+      // 2. Inisialisasi kanvas tandatangan
+      try {
+        initSignatureCanvas('signaturePad', 'signPlaceholder');
+        initSignatureCanvas('signaturePadSekolah', 'signPlaceholderSekolah');
+      } catch (e) {
+        console.warn("Canvas init:", e);
+      }
+
+      // 3. Muatkan data dari Google Sheets
       muatSemulaData();
     });
 
@@ -1605,7 +1625,7 @@
       } else if (page === 'PAGE_DASHBOARD') {
         pDash.classList.remove('hidden');
         btnDash.className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-indigo-600 text-white shadow-sm transition";
-        updateCharts();
+        renderLightweightStats();
       } else if (page === 'PAGE_LAPORAN_SEKOLAH') {
         pSekolah.classList.remove('hidden');
         btnSekolah.className = "px-3.5 py-2 text-xs font-bold rounded-xl bg-emerald-600 text-white shadow-sm transition";
@@ -1708,7 +1728,7 @@
       }
     }
 
-    // FUNGSI ISI LAPORAN TERUS DARI SLOT
+    // FUNGSI ISI LAPORAN TERUS DARI SLOT SEKOLAH
     function isiLaporanDariJadual(guru, tarikh, masa, subjek, kelas) {
       tukarHalaman('PAGE_BORANG');
       batalKemaskini();
@@ -1724,7 +1744,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // KEMASKINI REKOD OPR
+    // KEMASKINI REKOD OPR (TIADA DATA HILANG)
     function editRekodPdpr(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
       if (!r) return;
@@ -1960,8 +1980,73 @@
       document.getElementById('statMenunggu').textContent = menunggu;
       document.getElementById('statJumlahMurid').textContent = totalMurid;
 
-      updateCharts();
+      renderLightweightStats();
       tapisSenaraiRekod();
+    }
+
+    // PAPARAN STATISTIK RINGAN (TANPA DEPENDENSI CHART.JS)
+    function renderLightweightStats() {
+      const total = senaraiRekod.length;
+      const c1 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Dilaksanakan').length;
+      const c2 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Tidak Dilaksanakan').length;
+      const c3 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Ditangguhkan').length;
+      const c4 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Lain-lain').length;
+
+      const pList = [
+        { label: 'Dilaksanakan', count: c1, color: 'bg-emerald-500' },
+        { label: 'Tidak Dilaksanakan', count: c2, color: 'bg-rose-500' },
+        { label: 'Ditangguhkan', count: c3, color: 'bg-amber-500' },
+        { label: 'Lain-lain', count: c4, color: 'bg-slate-400' }
+      ];
+
+      const dashStatus = document.getElementById('dashStatusList');
+      if (dashStatus) {
+        dashStatus.innerHTML = pList.map(item => {
+          const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+          return `
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span>${item.label}</span>
+                <span class="text-slate-500">${item.count} (${pct}%)</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2">
+                <div class="${item.color} h-2 rounded-full" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Platform Map
+      const pMap = {};
+      senaraiRekod.forEach(r => {
+        const plat = r['Platform PdPR'] || 'Lain-lain';
+        pMap[plat] = (pMap[plat] || 0) + 1;
+      });
+
+      const dashPlatform = document.getElementById('dashPlatformList');
+      if (dashPlatform) {
+        const keys = Object.keys(pMap);
+        if (keys.length === 0) {
+          dashPlatform.innerHTML = '<p class="text-xs text-slate-400 italic">Tiada data rekod.</p>';
+        } else {
+          dashPlatform.innerHTML = keys.slice(0, 4).map(k => {
+            const count = pMap[k];
+            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+            return `
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span class="truncate">${k}</span>
+                  <span class="text-slate-500">${count}</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div class="bg-indigo-500 h-2 rounded-full" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
     }
 
     function tapisSenaraiRekod() {
@@ -2209,7 +2294,7 @@
       document.getElementById('sekMurid').textContent = totalMurid;
       document.getElementById('sekProgressBar').style.width = `${peratus}%`;
 
-      // RENDER SENARAI TEKS BERSTRUKTUR (KEMAS, KELIHATAN CANTIK DAN TIDAK TERPOTONG LEBAR)
+      // Render Senarai Teks Berstruktur (Kemas, Cantik & Bebas Terpotong)
       const container = document.getElementById('sekSenaraiContainer');
       container.innerHTML = '';
 
@@ -2261,7 +2346,6 @@
             ${tindakanHtml}
           </div>
 
-          <!-- Butiran Teks Berstruktur -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
             <div>
               <span class="text-slate-500 font-semibold block text-[11px]">Waktu & Kelas:</span>
@@ -2366,71 +2450,8 @@
       document.body.removeChild(link);
     }
 
-    function initCharts() {
-      const ctxStatus = document.getElementById('chartStatus').getContext('2d');
-      chartStatusInstance = new Chart(ctxStatus, {
-        type: 'doughnut',
-        data: {
-          labels: ['Dilaksanakan', 'Tidak Dilaksanakan', 'Ditangguhkan', 'Lain-lain'],
-          datasets: [{
-            data: [0, 0, 0, 0],
-            backgroundColor: ['#10B981', '#F43F5E', '#F59E0B', '#94A3B8'],
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          cutout: '70%'
-        }
-      });
-
-      const ctxPlatform = document.getElementById('chartPlatform').getContext('2d');
-      chartPlatformInstance = new Chart(ctxPlatform, {
-        type: 'bar',
-        data: {
-          labels: ['Delima GC', 'Meet', 'WhatsApp', 'Quizizz', 'Lain'],
-          datasets: [{
-            data: [0, 0, 0, 0, 0],
-            backgroundColor: '#6366F1',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { stepSize: 1 } },
-            x: { ticks: { font: { size: 10 } } }
-          }
-        }
-      });
-    }
-
-    function updateCharts() {
-      if (!chartStatusInstance || !chartPlatformInstance) return;
-
-      const c1 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Dilaksanakan').length;
-      const c2 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Tidak Dilaksanakan').length;
-      const c3 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Ditangguhkan').length;
-      const c4 = senaraiRekod.filter(r => r['Status Pelaksanaan'] === 'Lain-lain').length;
-      chartStatusInstance.data.datasets[0].data = [c1, c2, c3, c4];
-      chartStatusInstance.update();
-
-      const pDelima = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('Delima')).length;
-      const pMeet = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('Meet')).length;
-      const pWa = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('WhatsApp')).length;
-      const pQuiz = senaraiRekod.filter(r => (r['Platform PdPR'] || '').includes('Quizizz')).length;
-      const pOther = senaraiRekod.length - (pDelima + pMeet + pWa + pQuiz);
-
-      chartPlatformInstance.data.datasets[0].data = [pDelima, pMeet, pWa, pQuiz, Math.max(0, pOther)];
-      chartPlatformInstance.update();
-    }
-
     // =========================================================================
-    // KANVAS SCRIBBLE SIGNATURE (GENERIC UTILITY)
+    // KANVAS SCRIBBLE SIGNATURE
     // =========================================================================
     function initSignatureCanvas(canvasId, placeholderId) {
       const canvas = document.getElementById(canvasId);
