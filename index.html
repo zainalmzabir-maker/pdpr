@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-    /* KETETAPAN CETAKAN A4 MANDATORI 1 MUKA SURAT SAHAJA */
+    /* KETETAPAN CETAKAN A4 MANDATORI TEPAT 1 MUKA SURAT */
     @page {
       size: A4 portrait;
       margin: 10mm;
@@ -123,7 +123,7 @@
             <span class="text-indigo-600 text-xl"><i class="fa-solid fa-feather-pointed"></i></span>
             <div>
               <h2 class="font-bold text-slate-900 text-base sm:text-lg" id="formHeaderTitle">Borang Laporan Pelaksanaan PdPr</h2>
-              <p class="text-xs text-slate-500">Pilih nama guru dan slot mengikut waktu rasmi harian</p>
+              <p class="text-xs text-slate-500">Pilih nama guru dan slot mengikut waktu rasmi harian sekolah</p>
             </div>
           </div>
           <span class="px-3 py-1 text-xs font-semibold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
@@ -159,7 +159,7 @@
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-indigo-900 flex items-center space-x-1.5">
                 <i class="fa-regular fa-calendar-check text-indigo-600"></i>
-                <span>Slot Waktu Mengajar Rasmi</span>
+                <span>Slot Waktu Mengajar Rasmi (Waktu Malaysia)</span>
               </span>
               <span id="badgeSlotCount" class="text-[11px] px-2 py-0.5 bg-indigo-200 text-indigo-800 font-bold rounded-full">0 Slot</span>
             </div>
@@ -167,7 +167,7 @@
               <option value="">-- Pilih Slot Mengajar Hari Ini --</option>
             </select>
             <p class="text-[11px] text-indigo-700 italic">
-              *Pilih slot mengajar untuk auto-isi masa, kelas, dan mata pelajaran.
+              *Pilih slot mengajar untuk auto-isi masa, kelas, dan mata pelajaran mengikut waktu rasmi sekolah.
             </p>
           </div>
 
@@ -208,13 +208,13 @@
             <input type="text" id="tajukInput" required placeholder="Standard Kandungan / Topik Pembelajaran" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
           </div>
 
-          <!-- Aktiviti yang Dijalankan (Luas) -->
+          <!-- Aktiviti yang Dijalankan (Ruang Luas) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Aktiviti yang Dijalankan</label>
             <textarea id="aktivitiInput" rows="4" required placeholder="Nyatakan aktiviti pembelajaran secara terperinci..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
           </div>
 
-          <!-- Dapatan / Refleksi (Luas) -->
+          <!-- Dapatan / Refleksi (Ruang Luas) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Dapatan / Hasil Pembelajaran / Refleksi</label>
             <textarea id="dapatanInput" rows="4" placeholder="Nyatakan refleksi pencapaian objektif pembelajaran dan maklum balas murid..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
@@ -764,62 +764,90 @@
     </div>
   </div>
 
-  <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-100 bg-white no-print">
-    SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
-  </footer>
-
-  <!-- JAVASCRIPT: LOGIK UTAMA & DATA TEPAT FORMAT MALAYSIA -->
+  <!-- JAVASCRIPT: LOGIK UTAMA & PEMBETULAN PENUH -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    // FUNGSI NORMALISASI MASA MALAYSIA (STANDARDIZED MALAYSIAN TIME DISPLAY)
+    // 1. FUNGSI PENORMALAN TARIKH MALAYSIA (MEMBETULKAN ISO UTC 2026-10-11T16:00:00.000Z)
+    function formatTarikhMY(raw) {
+      if (!raw) return '';
+      let s = String(raw).trim();
+      
+      // Jika format ISO UTC daripada Google Sheet / Apps Script
+      if (s.includes('T') || s.endsWith('Z')) {
+        let d = new Date(s);
+        if (!isNaN(d.getTime())) {
+          // Selaraskan offset ke zon waktu Malaysia GMT+8
+          let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+          let myTime = new Date(utc + (3600000 * 8));
+          let y = myTime.getFullYear();
+          let m = String(myTime.getMonth() + 1).padStart(2, '0');
+          let day = String(myTime.getDate()).padStart(2, '0');
+          return `${y}-${m}-${day}`;
+        }
+      }
+      
+      if (s.includes(' ')) s = s.split(' ')[0];
+      
+      // Padankan DD/MM/YYYY
+      let dmy = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+      if (dmy) {
+        return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+      }
+      
+      // Padankan YYYY-MM-DD
+      let ymd = s.match(/^(\d{4})[/.-](\d{1,2})[/.-](\d{1,2})$/);
+      if (ymd) {
+        return `${ymd[1]}-${ymd[2].padStart(2, '0')}-${ymd[3].padStart(2, '0')}`;
+      }
+      return s;
+    }
+
+    // 2. FUNGSI PENORMALAN FORMAT MASA MALAYSIA
     function formatMasaMalaysia(raw) {
       if (!raw) return '';
       let s = String(raw).trim();
       
-      // Jika sudah mengandungi pagi/petang/tengah hari, kemaskan tanda baca
-      if (/pagi|petang|tengah\s*hari|tgh\s*hari/i.test(s)) {
+      if (/pagi|petang|tengah\s*hari|malam/i.test(s)) {
         return s.replace(/:/g, '.');
       }
 
-      // Format biasa (cth: "08:30 - 09:30" atau "8.30-9.30" atau "13:30 - 14:30")
       const parts = s.split(/[-–—]/);
       if (parts.length === 2) {
-        let t1 = parseTimeToMsian(parts[0].trim());
-        let t2 = parseTimeToMsian(parts[1].trim());
+        let t1 = parseWaktuMY(parts[0].trim());
+        let t2 = parseWaktuMY(parts[1].trim());
         if (t1 && t2) {
-          // Jika kedua-duanya pagi, ringkaskan "8.30 - 9.30 pagi"
-          if (t1.period === t2.period) {
-            return `${t1.formatted} - ${t2.formatted} ${t2.period}`;
+          if (t1.fasa === t2.fasa) {
+            return `${t1.jam}.${t1.min} - ${t2.jam}.${t2.min} ${t2.fasa}`;
+          } else {
+            return `${t1.jam}.${t1.min} ${t1.fasa} - ${t2.jam}.${t2.min} ${t2.fasa}`;
           }
-          return `${t1.formatted} ${t1.period} - ${t2.formatted} ${t2.period}`;
         }
       }
       return s.replace(/:/g, '.');
     }
 
-    function parseTimeToMsian(timeStr) {
-      const match = timeStr.match(/^(\d{1,2})[:.](\d{2})$/);
-      if (!match) return null;
-      let h = parseInt(match[1]);
-      let m = match[2];
-      let period = 'pagi';
+    function parseWaktuMY(tStr) {
+      const m = tStr.match(/^(\d{1,2})[:.](\d{2})$/);
+      if (!m) return null;
+      let jam = parseInt(m[1]);
+      let min = m[2];
+      let fasa = 'pagi';
 
-      if (h >= 13) {
-        h = h - 12;
-        period = (h >= 7) ? 'malam' : 'petang';
-      } else if (h === 12) {
-        period = 'tengah hari';
-      } else if (h >= 1 && h <= 6) {
-        // Anggapan sesi persekolahan biasa (1.00 petang dan ke atas)
-        period = 'petang';
+      if (jam >= 13) {
+        jam = jam - 12;
+        fasa = (jam >= 7) ? 'malam' : 'petang';
+      } else if (jam === 12) {
+        fasa = 'tengah hari';
+      } else if (jam >= 1 && jam <= 6) {
+        fasa = 'petang';
       } else {
-        period = 'pagi';
+        fasa = 'pagi';
       }
-      return { formatted: `${h}.${m}`, period: period };
+      return { jam: jam, min: min, fasa: fasa };
     }
 
-    // PANGKALAN DATA RASMI 26 GURU DALAM FORMAT WAKTU MALAYSIA
+    // PANGKALAN DATA RASMI 26 GURU (FORMAT MASA MALAYSIA)
     let JADUAL_SIRI_6 = {
       "ABD HADI BIN ADMAN": {
         "Isnin": [
@@ -1541,9 +1569,13 @@
     function kemaskiniHariDanSlot() {
       const tarikhVal = document.getElementById('tarikhInput').value;
       if (!tarikhVal) return;
-      const date = new Date(tarikhVal);
-      const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
-      document.getElementById('hariInput').value = days[date.getDay()];
+      const cleanDateStr = formatTarikhMY(tarikhVal);
+      const parts = cleanDateStr.split('-');
+      if (parts.length === 3) {
+        const date = new Date(parts[0], parseInt(parts[1]) - 1, parts[2]);
+        const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+        document.getElementById('hariInput').value = days[date.getDay()];
+      }
       kemaskiniSlotHarian();
     }
 
@@ -1603,6 +1635,9 @@
       }
     }
 
+    // =========================================================================
+    // KEMASKINI REKOD OPR (TIADA DATA HILANG)
+    // =========================================================================
     function editRekodPdpr(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
       if (!r) return;
@@ -1611,12 +1646,13 @@
 
       document.getElementById('editRecordId').value = r['ID'];
       document.getElementById('editModeBanner').classList.remove('hidden');
-      document.getElementById('editModeDesc').textContent = `Menyunting Laporan PdPR bagi guru ${r['Nama Guru']} (${r['Tarikh PdPR']}).`;
+      document.getElementById('editModeDesc').textContent = `Menyunting Laporan PdPR bagi guru ${r['Nama Guru']} (${formatTarikhMY(r['Tarikh PdPR'])}).`;
       document.getElementById('formHeaderTitle').textContent = "Kemaskini Rekod Pelaksanaan PdPr";
       document.getElementById('btnHantarLabel').textContent = "Simpan Perubahan Rekod";
 
+      // Muatkan nilai dengan penormalan format yang tepat
       document.getElementById('guruSelect').value = r['Nama Guru'];
-      document.getElementById('tarikhInput').value = r['Tarikh PdPR'];
+      document.getElementById('tarikhInput').value = formatTarikhMY(r['Tarikh PdPR']);
       document.getElementById('hariInput').value = r['Hari'];
       kemaskiniSlotHarian();
 
@@ -1724,7 +1760,7 @@
         action: isEditing ? 'KEMASKINI_REKOD' : 'SIMPAN_REKOD',
         id: editId || '',
         namaGuru: document.getElementById('guruSelect').value,
-        tarikh: document.getElementById('tarikhInput').value,
+        tarikh: formatTarikhMY(document.getElementById('tarikhInput').value),
         hari: document.getElementById('hariInput').value,
         masa: formatMasaMalaysia(document.getElementById('masaInput').value),
         kelas: document.getElementById('kelasInput').value,
@@ -1767,21 +1803,28 @@
       }
     }
 
+    // =========================================================================
+    // PEMANGGILAN DATA DENGAN INTEGRITI TINGGI (TIADA REKOD BERTINDIH)
+    // =========================================================================
     async function muatSemulaData() {
       try {
         const res = await fetch(GAS_API_URL);
         const data = await res.json();
         if (data.success) {
-          // Normalisasikan rekod & elak duplikasi
+          // Elakkan duplikasi data berasaskan ID unik
           const seen = new Set();
           const cleanRecords = [];
+          
           (data.records || []).forEach(r => {
             if (r['ID'] && !seen.has(r['ID'])) {
               seen.add(r['ID']);
+              // Bersihkan tarikh & masa ke format piawai Malaysia
+              r['Tarikh PdPR'] = formatTarikhMY(r['Tarikh PdPR']);
               r['Masa Mengajar'] = formatMasaMalaysia(r['Masa Mengajar']);
               cleanRecords.push(r);
             }
           });
+          
           senaraiRekod = cleanRecords;
 
           if (data.customJadual && Object.keys(data.customJadual).length > 0) {
@@ -1867,6 +1910,9 @@
       });
     }
 
+    // =========================================================================
+    // PAPAR OPR MANDATORI TEPAT 1 MUKA A4 (SEIMBANG)
+    // =========================================================================
     function paparOPR(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
       if (!r) return;
@@ -1874,7 +1920,7 @@
       document.getElementById('oprNama').textContent = r['Nama Guru'];
       document.getElementById('oprTarikh').textContent = `${r['Tarikh PdPR']} (${r['Hari']})`;
       document.getElementById('oprSubjek').textContent = r['Mata Pelajaran'];
-      document.getElementById('oprMasa').textContent = formatMasaMalaysia(r['Masa Mengajar']);
+      document.getElementById('oprMasa').textContent = r['Masa Mengajar'];
       document.getElementById('oprKelas').textContent = r['Kelas'];
       document.getElementById('oprPlatform').textContent = r['Platform PdPR'];
       document.getElementById('oprMurid').textContent = `${r['Bil Murid Hadir']} Orang`;
@@ -1952,103 +1998,18 @@
       bukaModal('oprModal');
     }
 
-    let canvas, ctx, isDrawing = false;
-    function initSignatureCanvas() {
-      canvas = document.getElementById('signaturePad');
-      ctx = canvas.getContext('2d');
-      ctx.lineWidth = 2.5;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.strokeStyle = '#0F172A';
-
-      function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-          x: (clientX - rect.left) * (canvas.width / rect.width),
-          y: (clientY - rect.top) * (canvas.height / rect.height)
-        };
-      }
-
-      function startDraw(e) {
-        isDrawing = true;
-        document.getElementById('signPlaceholder').style.display = 'none';
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-      }
-
-      function draw(e) {
-        if (!isDrawing) return;
-        e.preventDefault();
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-      }
-
-      function stopDraw() { isDrawing = false; }
-
-      canvas.addEventListener('mousedown', startDraw);
-      canvas.addEventListener('mousemove', draw);
-      window.addEventListener('mouseup', stopDraw);
-      canvas.addEventListener('touchstart', startDraw, { passive: false });
-      canvas.addEventListener('touchmove', draw, { passive: false });
-      window.addEventListener('touchend', stopDraw);
-    }
-
-    function padamSignature() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      document.getElementById('signPlaceholder').style.display = 'flex';
-    }
-
-    function bukaModalSah(id) {
-      selectedRecordForSah = id;
-      padamSignature();
-      muatDropdownPentadbirSah();
-      bukaModal('sahModal');
-    }
-
-    async function simpanPengesahanPentadbir() {
-      const nama = document.getElementById('sahNamaPentadbir').value.trim();
-      const jawatan = document.getElementById('sahJawatanPentadbir').value.trim();
-      const ulasan = document.getElementById('sahUlasan').value.trim();
-
-      if (!nama) {
-        alert("Sila masukkan nama pegawai yang mengesahkan.");
-        return;
-      }
-
-      const signBase64 = canvas.toDataURL('image/png');
-      const btn = document.getElementById('btnSimpanSah');
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengesahkan...`;
-
-      try {
-        const res = await fetch(GAS_API_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: 'SAHKAN_PENTADBIR',
-            id: selectedRecordForSah,
-            namaPentadbir: nama,
-            jawatanPentadbir: jawatan,
-            ulasanPentadbir: ulasan,
-            tandatanganBase64: signBase64
-          })
-        });
-        const result = await res.json();
-        alert(result.message || "Laporan berjaya disahkan!");
-        tutupModal('sahModal');
-        await muatSemulaData();
-      } catch (err) {
-        alert("Ralat semasa pengesahan: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-check-double mr-1.5"></i> Sahkan Laporan`;
-      }
-    }
-
+    // =========================================================================
+    // LAPORAN PELAKSANAAN SEKOLAH (DENGAN PENORMALAN TARIKH)
+    // =========================================================================
     function bukaModalLaporanSekolah() {
+      const currentInputDate = document.getElementById('lapTarikhTunggal').value;
+      const hasRecordToday = senaraiRekod.some(r => r['Tarikh PdPR'] === currentInputDate);
+      
+      // Jika tiada rekod pada tarikh input hari ini, automatik selaraskan ke tarikh rekod terkini
+      if (!hasRecordToday && senaraiRekod.length > 0) {
+        document.getElementById('lapTarikhTunggal').value = senaraiRekod[0]['Tarikh PdPR'];
+      }
+      
       janaLaporanSekolah();
       bukaModal('laporanSekolahModal');
     }
@@ -2093,12 +2054,12 @@
       let labelTempoh = '';
 
       if (modLaporanSemasa === 'HARIAN') {
-        const t = document.getElementById('lapTarikhTunggal').value;
+        const t = formatTarikhMY(document.getElementById('lapTarikhTunggal').value);
         labelTempoh = `Tarikh: ${t}`;
         filtered = senaraiRekod.filter(r => r['Tarikh PdPR'] === t);
       } else {
-        const tm = document.getElementById('lapTarikhMula').value;
-        const ta = document.getElementById('lapTarikhAkhir').value;
+        const tm = formatTarikhMY(document.getElementById('lapTarikhMula').value);
+        const ta = formatTarikhMY(document.getElementById('lapTarikhAkhir').value);
         labelTempoh = `Sela Masa: ${tm} hingga ${ta}`;
         filtered = senaraiRekod.filter(r => {
           return r['Tarikh PdPR'] >= tm && r['Tarikh PdPR'] <= ta;
@@ -2234,6 +2195,108 @@
       chartPlatformInstance.update();
     }
 
+    // =========================================================================
+    // KANVAS TANDATANGAN PENGESAHAN
+    // =========================================================================
+    let canvas, ctx, isDrawing = false;
+    function initSignatureCanvas() {
+      canvas = document.getElementById('signaturePad');
+      ctx = canvas.getContext('2d');
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#0F172A';
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+
+      function startDraw(e) {
+        isDrawing = true;
+        document.getElementById('signPlaceholder').style.display = 'none';
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+
+      function stopDraw() { isDrawing = false; }
+
+      canvas.addEventListener('mousedown', startDraw);
+      canvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDraw);
+      canvas.addEventListener('touchstart', startDraw, { passive: false });
+      canvas.addEventListener('touchmove', draw, { passive: false });
+      window.addEventListener('touchend', stopDraw);
+    }
+
+    function padamSignature() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById('signPlaceholder').style.display = 'flex';
+    }
+
+    function bukaModalSah(id) {
+      selectedRecordForSah = id;
+      padamSignature();
+      muatDropdownPentadbirSah();
+      bukaModal('sahModal');
+    }
+
+    async function simpanPengesahanPentadbir() {
+      const nama = document.getElementById('sahNamaPentadbir').value.trim();
+      const jawatan = document.getElementById('sahJawatanPentadbir').value.trim();
+      const ulasan = document.getElementById('sahUlasan').value.trim();
+
+      if (!nama) {
+        alert("Sila masukkan nama pegawai yang mengesahkan.");
+        return;
+      }
+
+      const signBase64 = canvas.toDataURL('image/png');
+      const btn = document.getElementById('btnSimpanSah');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengesahkan...`;
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'SAHKAN_PENTADBIR',
+            id: selectedRecordForSah,
+            namaPentadbir: nama,
+            jawatanPentadbir: jawatan,
+            ulasanPentadbir: ulasan,
+            tandatanganBase64: signBase64
+          })
+        });
+        const result = await res.json();
+        alert(result.message || "Laporan berjaya disahkan!");
+        tutupModal('sahModal');
+        await muatSemulaData();
+      } catch (err) {
+        alert("Ralat semasa pengesahan: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check-double mr-1.5"></i> Sahkan Laporan`;
+      }
+    }
+
+    // =========================================================================
+    // PORTAL ADMIN
+    // =========================================================================
     function bukaModalLoginAdmin() {
       document.getElementById('adminPasswordInput').value = '';
       document.getElementById('adminErrorMsg').classList.add('hidden');
