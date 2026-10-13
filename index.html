@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-    /* KETETAPAN CETAKAN A4 MANDATORI 1 MUKA SURAT */
+    /* KETETAPAN CETAKAN A4 MANDATORI 1 MUKA SURAT SAHAJA */
     @page {
       size: A4 portrait;
       margin: 10mm;
@@ -87,7 +87,7 @@
         <button onclick="bukaModalLaporanSekolah()" class="px-3.5 py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition">
           <i class="fa-solid fa-school mr-1.5"></i>Laporan Sekolah
         </button>
-        <button onclick="bukaModalLoginAdmin()" class="px-3 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition">
+        <button onclick="bukaModalLoginAdmin()" class="px-3 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition" title="Portal Pentadbir">
           <i class="fa-solid fa-user-shield"></i>
         </button>
         <button onclick="muatSemulaData()" class="p-2 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition" title="Muat Semula">
@@ -103,7 +103,7 @@
     <!-- HALAMAN 1: BORANG LAPORAN PDPR (LUAS & SELESA) -->
     <!-- ========================================================================= -->
     <section id="halamanBorang" class="space-y-6 max-w-4xl mx-auto">
-      <!-- BANNER MOD KEMASKINI (MUNCUL APABILA EDIT REKOD) -->
+      <!-- BANNER MOD KEMASKINI -->
       <div id="editModeBanner" class="hidden p-4 bg-amber-500 text-white rounded-2xl shadow-sm flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <i class="fa-solid fa-pen-to-square text-lg"></i>
@@ -122,7 +122,7 @@
           <div class="flex items-center space-x-2">
             <span class="text-indigo-600 text-xl"><i class="fa-solid fa-feather-pointed"></i></span>
             <div>
-              <h2 class="font-bold text-slate-900 text-base sm:text-lg" id="formHeaderTitle">Borang Laporan Pelaksanaan PdPR</h2>
+              <h2 class="font-bold text-slate-900 text-base sm:text-lg" id="formHeaderTitle">Borang Laporan Pelaksanaan PdPr</h2>
               <p class="text-xs text-slate-500">Pilih nama guru dan slot mengikut waktu rasmi harian</p>
             </div>
           </div>
@@ -167,7 +167,7 @@
               <option value="">-- Pilih Slot Mengajar Hari Ini --</option>
             </select>
             <p class="text-[11px] text-indigo-700 italic">
-              *Pilih slot mengajar untuk mengisi masa, kelas, dan mata pelajaran secara automatik.
+              *Pilih slot mengajar untuk auto-isi masa, kelas, dan mata pelajaran.
             </p>
           </div>
 
@@ -175,7 +175,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Masa Mengajar</label>
-              <input type="text" id="masaInput" required placeholder="cth: 09:00 - 10:30" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
+              <input type="text" id="masaInput" required placeholder="cth: 9.00 - 10.30 pagi" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Kelas</label>
@@ -208,13 +208,13 @@
             <input type="text" id="tajukInput" required placeholder="Standard Kandungan / Topik Pembelajaran" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
           </div>
 
-          <!-- Aktiviti yang Dijalankan (Ruang Diperluas) -->
+          <!-- Aktiviti yang Dijalankan (Luas) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Aktiviti yang Dijalankan</label>
-            <textarea id="aktivitiInput" rows="4" required placeholder="Nyatakan aktiviti pembelajaran secara terperinci (cth: 1. Murid menonton video penerangan, 2. Sesi soal jawab di Telegram, 3. Latihan pengukuhan di Google Classroom)..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
+            <textarea id="aktivitiInput" rows="4" required placeholder="Nyatakan aktiviti pembelajaran secara terperinci..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
           </div>
 
-          <!-- Dapatan / Hasil Pembelajaran (Ruang Diperluas) -->
+          <!-- Dapatan / Refleksi (Luas) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Dapatan / Hasil Pembelajaran / Refleksi</label>
             <textarea id="dapatanInput" rows="4" placeholder="Nyatakan refleksi pencapaian objektif pembelajaran dan maklum balas murid..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
@@ -237,7 +237,7 @@
             </div>
           </div>
 
-          <!-- Muat Naik Gambar Bukti (1 hingga 4 Gambar) -->
+          <!-- Gambar Bukti OPR -->
           <div class="bg-amber-50/70 p-4 rounded-xl border border-dashed border-amber-300 space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
@@ -251,7 +251,6 @@
             <div id="gambarPreviewContainer" class="grid grid-cols-4 gap-2 pt-2 empty:hidden"></div>
           </div>
 
-          <!-- Butang Hantar / Kemaskini -->
           <button type="submit" id="btnHantar" class="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm flex items-center justify-center space-x-2 shadow-md hover:shadow-lg transition">
             <i class="fa-solid fa-cloud-arrow-up"></i>
             <span id="btnHantarLabel">Hantar Rekod PdPR</span>
@@ -264,7 +263,6 @@
     <!-- HALAMAN 2: DASHBOARD, RUMUSAN & SENARAI REKOD -->
     <!-- ========================================================================= -->
     <section id="halamanDashboard" class="space-y-6 hidden">
-      <!-- 4 KAD STATISTIK ATAS -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
@@ -304,7 +302,6 @@
         </div>
       </div>
 
-      <!-- CARTA STATISTIK -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-2">
@@ -333,7 +330,6 @@
         </div>
       </div>
 
-      <!-- SENARAI REKOD LENGKAP -->
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
@@ -341,7 +337,7 @@
               <i class="fa-solid fa-table-list text-indigo-600"></i>
               <span>Senarai Rekod PdPR Terkini</span>
             </h2>
-            <p class="text-xs text-slate-500">Setiap rekod boleh dicetak OPR, disahkan oleh pentadbir, atau dikemaskini semula.</p>
+            <p class="text-xs text-slate-500">Semua rekod dipaparkan dalam format masa rasmi Malaysia.</p>
           </div>
           <div class="flex items-center space-x-2">
             <input type="text" id="searchInput" oninput="tapisSenaraiRekod()" placeholder="Cari guru / subjek..." class="text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-2 w-full sm:w-52 outline-none focus:border-indigo-500 bg-slate-50">
@@ -392,10 +388,10 @@
         </div>
       </div>
 
-      <!-- KANDUNGAN A4 PRINTABLE (FLEX DINAMIK UNTUK TEPAT 1 MUKA SURAT A4) -->
+      <!-- KANDUNGAN A4 PRINTABLE (FLEX DINAMIK TEPAT 1 MUKA A4) -->
       <div id="printableArea" class="p-6 bg-white text-slate-900 flex flex-col justify-between overflow-hidden">
         
-        <!-- 1. HEADER SEKOLAH -->
+        <!-- HEADER OPR -->
         <div class="flex items-center justify-center space-x-4 border-b-2 border-slate-900 pb-2">
           <img src="logo.pnd" onerror="this.onerror=null; this.src='logo.png';" alt="Logo Sekolah" class="w-14 h-14 object-contain">
           <div class="text-center sm:text-left">
@@ -407,7 +403,7 @@
           </div>
         </div>
 
-        <!-- 2. MAKLUMAT JADUAL & KELAS (KOMPAK) -->
+        <!-- MAKLUMAT PDPR -->
         <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] border border-slate-300 p-2.5 rounded-lg bg-slate-50/50 my-1.5">
           <div><span class="font-bold text-slate-600">Nama Guru:</span> <span id="oprNama" class="font-semibold text-slate-900"></span></div>
           <div><span class="font-bold text-slate-600">Tarikh / Hari:</span> <span id="oprTarikh" class="font-semibold text-slate-900"></span></div>
@@ -419,7 +415,7 @@
           <div><span class="font-bold text-slate-600">Status Pelaksanaan:</span> <span id="oprStatus" class="font-semibold text-slate-900"></span></div>
         </div>
 
-        <!-- 3. TEKS AKTIVITI & REFLEKSI (SKALA AUTOMATIK) -->
+        <!-- TEKS AKTIVITI & REFLEKSI -->
         <div class="space-y-1.5 text-[11px]">
           <div class="p-2 rounded border border-slate-200">
             <span class="font-bold text-slate-700 block text-[10px] uppercase">Tajuk / Topik:</span>
@@ -435,15 +431,13 @@
           </div>
         </div>
 
-        <!-- 4. RUANG GAMBAR BUKTI (FLEX-1 MENGISI BAKI RUANG TANPA PECAH A4) -->
+        <!-- RUANG GAMBAR BUKTI (FLEX-1 MENGISI BAKI RUANG TANPA PECAH A4) -->
         <div class="flex-1 min-h-0 flex flex-col justify-center my-2">
           <span class="font-bold text-[10px] text-slate-600 block mb-1 uppercase tracking-wide">Gambar Bukti Pelaksanaan:</span>
-          <div id="oprGambarContainer" class="w-full flex-1 min-h-0 overflow-hidden flex items-center justify-center">
-            <!-- Grid gambar dimasukkan secara dinamik mengikut kuantiti 1-4 gambar -->
-          </div>
+          <div id="oprGambarContainer" class="w-full flex-1 min-h-0 overflow-hidden flex items-center justify-center"></div>
         </div>
 
-        <!-- 5. RUANG PENGESAHAN & TANDATANGAN (BAHAGIAN BAWAH) -->
+        <!-- RUANG PENGESAHAN & TANDATANGAN -->
         <div class="grid grid-cols-2 gap-6 pt-2 border-t-2 border-slate-300 text-[11px]">
           <div>
             <p class="font-semibold text-slate-600 mb-8">Disediakan oleh:</p>
@@ -464,7 +458,7 @@
     </div>
   </div>
 
-  <!-- MODAL: PENGESAHAN PENTADBIR & SCRIBBLE -->
+  <!-- MODAL: PENGESAHAN PENTADBIR -->
   <div id="sahModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
       <div class="p-4 bg-indigo-700 text-white flex justify-between items-center">
@@ -684,7 +678,7 @@
           <div class="flex items-center justify-between">
             <div>
               <h4 class="text-sm font-bold text-slate-900">Senarai Pentadbir & Pegawai Pemantau Sekolah</h4>
-              <p class="text-xs text-slate-500">Admin boleh menyunting (*edit*) nama dan jawatan pemantau sedia ada.</p>
+              <p class="text-xs text-slate-500">Admin boleh menyunting nama dan jawatan pemantau sedia ada.</p>
             </div>
             <button onclick="bukaModalTambahPemantau()" class="px-3 py-1.5 text-xs font-bold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow">
               <i class="fa-solid fa-user-plus mr-1"></i> Tambah Pemantau
@@ -728,8 +722,8 @@
           </select>
         </div>
         <div>
-          <label class="block font-semibold mb-1">Masa Mengajar (cth: 09:00 - 10:30)</label>
-          <input type="text" id="editSlotMasa" placeholder="cth: 09:00 - 10:30" class="w-full border rounded-xl p-2 outline-none">
+          <label class="block font-semibold mb-1">Masa Mengajar (cth: 9.00 - 10.30 pagi)</label>
+          <input type="text" id="editSlotMasa" placeholder="cth: 9.00 - 10.30 pagi" class="w-full border rounded-xl p-2 outline-none">
         </div>
         <div>
           <label class="block font-semibold mb-1">Mata Pelajaran</label>
@@ -774,647 +768,694 @@
     SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
   </footer>
 
-  <!-- JAVASCRIPT LOGIK SISTEM -->
+  <!-- JAVASCRIPT: LOGIK UTAMA & DATA TEPAT FORMAT MALAYSIA -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
-    // PANGKALAN DATA RASMI 26 GURU (WAKTU TEPAT JADUAL SIRI 6)
+    // FUNGSI NORMALISASI MASA MALAYSIA (STANDARDIZED MALAYSIAN TIME DISPLAY)
+    function formatMasaMalaysia(raw) {
+      if (!raw) return '';
+      let s = String(raw).trim();
+      
+      // Jika sudah mengandungi pagi/petang/tengah hari, kemaskan tanda baca
+      if (/pagi|petang|tengah\s*hari|tgh\s*hari/i.test(s)) {
+        return s.replace(/:/g, '.');
+      }
+
+      // Format biasa (cth: "08:30 - 09:30" atau "8.30-9.30" atau "13:30 - 14:30")
+      const parts = s.split(/[-–—]/);
+      if (parts.length === 2) {
+        let t1 = parseTimeToMsian(parts[0].trim());
+        let t2 = parseTimeToMsian(parts[1].trim());
+        if (t1 && t2) {
+          // Jika kedua-duanya pagi, ringkaskan "8.30 - 9.30 pagi"
+          if (t1.period === t2.period) {
+            return `${t1.formatted} - ${t2.formatted} ${t2.period}`;
+          }
+          return `${t1.formatted} ${t1.period} - ${t2.formatted} ${t2.period}`;
+        }
+      }
+      return s.replace(/:/g, '.');
+    }
+
+    function parseTimeToMsian(timeStr) {
+      const match = timeStr.match(/^(\d{1,2})[:.](\d{2})$/);
+      if (!match) return null;
+      let h = parseInt(match[1]);
+      let m = match[2];
+      let period = 'pagi';
+
+      if (h >= 13) {
+        h = h - 12;
+        period = (h >= 7) ? 'malam' : 'petang';
+      } else if (h === 12) {
+        period = 'tengah hari';
+      } else if (h >= 1 && h <= 6) {
+        // Anggapan sesi persekolahan biasa (1.00 petang dan ke atas)
+        period = 'petang';
+      } else {
+        period = 'pagi';
+      }
+      return { formatted: `${h}.${m}`, period: period };
+    }
+
+    // PANGKALAN DATA RASMI 26 GURU DALAM FORMAT WAKTU MALAYSIA
     let JADUAL_SIRI_6 = {
       "ABD HADI BIN ADMAN": {
         "Isnin": [
-          { masa: "10:30 - 11:30", subjek: "PSV", kelas: "3S2" },
-          { masa: "12:30 - 01:30", subjek: "ASK/RBT", kelas: "1S1/1S2" }
+          { masa: "10.30 - 11.30 pagi", subjek: "PSV", kelas: "3S2" },
+          { masa: "12.30 tengah hari - 1.30 petang", subjek: "ASK/RBT", kelas: "1S1/1S2" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "ASK/RBT", kelas: "1S1/1S2" }
         ],
         "Rabu": [], "Khamis": [], "Jumaat": []
       },
       "MASNON BIN AMAT": {
         "Isnin": [
-          { masa: "11:30 - 12:30", subjek: "MM", kelas: "3S2" },
-          { masa: "01:30 - 02:30", subjek: "MM", kelas: "5S3" }
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "MM", kelas: "3S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "MM", kelas: "5S3" }
         ],
         "Selasa": [
-          { masa: "09:00 - 10:00", subjek: "MM", kelas: "3S2" },
-          { masa: "11:30 - 12:30", subjek: "MM", kelas: "5S3" }
+          { masa: "9.00 - 10.00 pagi", subjek: "MM", kelas: "3S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "MM", kelas: "5S3" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "MM", kelas: "5S3" }
+          { masa: "9.00 - 10.00 pagi", subjek: "MM", kelas: "5S3" }
         ],
         "Khamis": [
-          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S3" },
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "3S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "MM", kelas: "5S3" },
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "3S2" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S3" },
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "3S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "MM", kelas: "5S3" },
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "3S2" }
         ]
       },
       "OSKASMAZILA BINTI OSMAN": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "MM", kelas: "1S1" },
-          { masa: "01:30 - 02:30", subjek: "MM", kelas: "1S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "MM", kelas: "1S1" },
+          { masa: "1.30 - 2.30 petang", subjek: "MM", kelas: "1S2" }
         ],
         "Selasa": [
-          { masa: "09:30 - 10:30", subjek: "MM", kelas: "1S2" }
+          { masa: "9.30 - 10.30 pagi", subjek: "MM", kelas: "1S2" }
         ],
         "Rabu": [
-          { masa: "09:30 - 10:30", subjek: "MM", kelas: "1S1" },
-          { masa: "01:30 - 02:30", subjek: "PIM", kelas: "4S1/4S2/4S3" }
+          { masa: "9.30 - 10.30 pagi", subjek: "MM", kelas: "1S1" },
+          { masa: "1.30 - 2.30 petang", subjek: "PIM", kelas: "4S1/4S2/4S3" }
         ],
         "Khamis": [
-          { masa: "09:30 - 10:30", subjek: "MM", kelas: "1S1" },
-          { masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2" },
-          { masa: "01:30 - 02:30", subjek: "PIM", kelas: "4S1/4S2/4S3" }
+          { masa: "9.30 - 10.30 pagi", subjek: "MM", kelas: "1S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "MM", kelas: "1S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "PIM", kelas: "4S1/4S2/4S3" }
         ],
         "Jumaat": [
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "1S1" },
-          { masa: "11:30 - 12:30", subjek: "MM", kelas: "1S2" }
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "1S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "MM", kelas: "1S2" }
         ]
       },
       "ZAINAL BIN MOHD ZABIR": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-          { masa: "10:30 - 11:30", subjek: "ASK/RBT", kelas: "1S1/1S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "ASK/RBT", kelas: "2S1/2S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "ASK/RBT", kelas: "1S1/1S2" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
         ],
         "Rabu": [
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "1S1/1S2" },
-          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-          { masa: "11:00 - 12:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "ASK/RBT", kelas: "1S1/1S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "ASK/RBT", kelas: "3S1/3S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
         ],
         "Khamis": [
-          { masa: "10:00 - 11:30", subjek: "ASK/RBT", kelas: "3S1/3S2" }
+          { masa: "10.00 - 11.30 pagi", subjek: "ASK/RBT", kelas: "3S1/3S2" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "2S1/2S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "ASK/RBT", kelas: "2S1/2S2" }
         ]
       },
       "MOHD NIZAM BIN SUBANI": {
         "Isnin": [
-          { masa: "08:00 - 09:00", subjek: "MM", kelas: "3S1" },
-          { masa: "09:00 - 10:00", subjek: "MM", kelas: "2S1" },
-          { masa: "11:00 - 12:00", subjek: "PK", kelas: "4S1/4S2/4S3" }
+          { masa: "8.00 - 9.00 pagi", subjek: "MM", kelas: "3S1" },
+          { masa: "9.00 - 10.00 pagi", subjek: "MM", kelas: "2S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PK", kelas: "4S1/4S2/4S3" }
         ],
         "Selasa": [
-          { masa: "08:00 - 09:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-          { masa: "09:00 - 09:30", subjek: "PJ", kelas: "4S1/4S2/4S3" },
-          { masa: "12:00 - 01:00", subjek: "MM", kelas: "2S1" }
+          { masa: "8.00 - 9.00 pagi", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
+          { masa: "9.00 - 9.30 pagi", subjek: "PJ", kelas: "4S1/4S2/4S3" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "MM", kelas: "2S1" }
         ],
         "Rabu": [
-          { masa: "08:00 - 09:00", subjek: "MM", kelas: "3S1" },
-          { masa: "09:00 - 10:00", subjek: "MM", kelas: "2S1" },
-          { masa: "11:00 - 12:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "MM", kelas: "3S1" },
+          { masa: "9.00 - 10.00 pagi", subjek: "MM", kelas: "2S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
         ],
         "Khamis": [
-          { masa: "10:00 - 11:00", subjek: "MM", kelas: "2S1" },
-          { masa: "11:30 - 12:30", subjek: "MM", kelas: "3S1" }
+          { masa: "10.00 - 11.00 pagi", subjek: "MM", kelas: "2S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "MM", kelas: "3S1" }
         ],
         "Jumaat": [
-          { masa: "09:30 - 10:30", subjek: "MM", kelas: "2S1" },
-          { masa: "11:00 - 12:00", subjek: "MM", kelas: "3S1" }
+          { masa: "9.30 - 10.30 pagi", subjek: "MM", kelas: "2S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "MM", kelas: "3S1" }
         ]
       },
       "MOHD RIDUWAN BIN MOHD YASAN": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "FIZ", kelas: "5S1" },
-          { masa: "09:30 - 10:30", subjek: "MM", kelas: "2S2" },
-          { masa: "01:30 - 02:30", subjek: "MT", kelas: "5S1" }
+          { masa: "8.30 - 9.30 pagi", subjek: "FIZ", kelas: "5S1" },
+          { masa: "9.30 - 10.30 pagi", subjek: "MM", kelas: "2S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "MT", kelas: "5S1" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "FIZ", kelas: "4S1" },
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "2S2" },
-          { masa: "01:30 - 02:30", subjek: "MT", kelas: "5S1" }
+          { masa: "8.30 - 9.30 pagi", subjek: "FIZ", kelas: "4S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "2S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "MT", kelas: "5S1" }
         ],
         "Rabu": [
-          { masa: "11:00 - 12:00", subjek: "MM", kelas: "2S2" }
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "MM", kelas: "2S2" }
         ],
         "Khamis": [
-          { masa: "11:30 - 12:30", subjek: "MM", kelas: "2S2" }
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "MM", kelas: "2S2" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "FIZ", kelas: "5S1" },
-          { masa: "09:30 - 10:30", subjek: "FIZ", kelas: "4S1" },
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "2S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "FIZ", kelas: "5S1" },
+          { masa: "9.30 - 10.30 pagi", subjek: "FIZ", kelas: "4S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "2S2" }
         ]
       },
       "ROHANA BINTI JASMIN": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "BM", kelas: "2S1" },
-          { masa: "11:00 - 12:00", subjek: "BM", kelas: "5S3" },
-          { masa: "01:30 - 02:30", subjek: "BM", kelas: "4S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BM", kelas: "2S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BM", kelas: "5S3" },
+          { masa: "1.30 - 2.30 petang", subjek: "BM", kelas: "4S2" }
         ],
         "Selasa": [
-          { masa: "09:00 - 10:00", subjek: "BM", kelas: "5S3" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BM", kelas: "5S3" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "BM", kelas: "5S3" },
-          { masa: "11:30 - 12:30", subjek: "BM", kelas: "2S1" },
-          { masa: "12:30 - 01:30", subjek: "BM", kelas: "4S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BM", kelas: "5S3" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "BM", kelas: "2S1" },
+          { masa: "12.30 - 1.30 petang", subjek: "BM", kelas: "4S2" }
         ],
         "Khamis": [
-          { masa: "09:00 - 10:00", subjek: "BM", kelas: "2S1" },
-          { masa: "10:00 - 11:00", subjek: "BM", kelas: "5S3" },
-          { masa: "11:30 - 12:30", subjek: "BM", kelas: "4S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BM", kelas: "2S1" },
+          { masa: "10.00 - 11.00 pagi", subjek: "BM", kelas: "5S3" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "BM", kelas: "4S2" }
         ],
         "Jumaat": [
-          { masa: "09:00 - 10:00", subjek: "BM", kelas: "5S3" },
-          { masa: "11:00 - 12:00", subjek: "BM", kelas: "4S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BM", kelas: "5S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BM", kelas: "4S2" }
         ]
       },
       "MOHAMAAD FADZELI BIN AZAM": {
         "Isnin": [
-          { masa: "12:30 - 01:30", subjek: "PSV", kelas: "4S3" }
+          { masa: "12.30 - 1.30 petang", subjek: "PSV", kelas: "4S3" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "GEO", kelas: "3S1" },
-          { masa: "11:00 - 12:00", subjek: "GEO", kelas: "3S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "GEO", kelas: "3S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "GEO", kelas: "3S2" }
         ],
         "Rabu": [
-          { masa: "08:30 - 09:30", subjek: "PJ", kelas: "2S2/2S1" },
-          { masa: "12:30 - 01:30", subjek: "PSV", kelas: "4S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "PJ", kelas: "2S2/2S1" },
+          { masa: "12.30 - 1.30 petang", subjek: "PSV", kelas: "4S2" }
         ],
         "Khamis": [
-          { masa: "08:00 - 09:00", subjek: "PSV", kelas: "4S3" },
-          { masa: "09:00 - 09:30", subjek: "GEO", kelas: "3S1" },
-          { masa: "09:30 - 10:00", subjek: "GEO", kelas: "3S2" },
-          { masa: "11:00 - 12:00", subjek: "PSV", kelas: "4S3" }
+          { masa: "8.00 - 9.00 pagi", subjek: "PSV", kelas: "4S3" },
+          { masa: "9.00 - 9.30 pagi", subjek: "GEO", kelas: "3S1" },
+          { masa: "9.30 - 10.00 pagi", subjek: "GEO", kelas: "3S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PSV", kelas: "4S3" }
         ],
         "Jumaat": [
-          { masa: "08:00 - 09:00", subjek: "PSV", kelas: "4S2" },
-          { masa: "10:30 - 11:30", subjek: "PK", kelas: "2S1/2S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "PSV", kelas: "4S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "PK", kelas: "2S1/2S2" }
         ]
       },
       "ZAIMAH BINTI SAMAD": {
         "Isnin": [
-          { masa: "08:00 - 09:00", subjek: "PP", kelas: "1S1" },
-          { masa: "09:00 - 10:00", subjek: "PP", kelas: "1S1" },
-          { masa: "11:30 - 12:30", subjek: "GEO", kelas: "1S1" }
+          { masa: "8.00 - 9.00 pagi", subjek: "PP", kelas: "1S1" },
+          { masa: "9.00 - 10.00 pagi", subjek: "PP", kelas: "1S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "GEO", kelas: "1S1" }
         ],
         "Selasa": [
-          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "5S3" },
-          { masa: "11:00 - 12:00", subjek: "GEO", kelas: "1S1" },
-          { masa: "12:00 - 01:00", subjek: "SEJ", kelas: "4S1" }
+          { masa: "10.00 - 11.00 pagi", subjek: "SEJ", kelas: "5S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "GEO", kelas: "1S1" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "SEJ", kelas: "4S1" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "GEO", kelas: "1S2" },
-          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "5S3" },
-          { masa: "12:30 - 01:00", subjek: "LM", kelas: "1S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "GEO", kelas: "1S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "SEJ", kelas: "5S3" },
+          { masa: "12.30 - 1.00 petang", subjek: "LM", kelas: "1S2" }
         ],
         "Khamis": [
-          { masa: "09:00 - 10:00", subjek: "GEO", kelas: "1S2" },
-          { masa: "10:30 - 11:30", subjek: "SEJ", kelas: "5S3" },
-          { masa: "12:00 - 01:00", subjek: "SEJ", kelas: "4S1" }
+          { masa: "9.00 - 10.00 pagi", subjek: "GEO", kelas: "1S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "SEJ", kelas: "5S3" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "SEJ", kelas: "4S1" }
         ],
         "Jumaat": [
-          { masa: "08:00 - 09:00", subjek: "LM", kelas: "1S1" },
-          { masa: "11:00 - 12:00", subjek: "PP", kelas: "4S1" }
+          { masa: "8.00 - 9.00 pagi", subjek: "LM", kelas: "1S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PP", kelas: "4S1" }
         ]
       },
       "NORUL HAFIDZAH BINTI HASSAN": {
         "Isnin": [],
         "Selasa": [
-          { masa: "01:30 - 02:30", subjek: "KK", kelas: "5S3" }
+          { masa: "1.30 - 2.30 petang", subjek: "KK", kelas: "5S3" }
         ],
         "Rabu": [], "Khamis": [], "Jumaat": []
       },
       "JESSICA CHAN LAI PENG": {
         "Isnin": [
-          { masa: "09:00 - 10:30", subjek: "SC", kelas: "5S3" },
-          { masa: "10:30 - 11:30", subjek: "SC", kelas: "4S2" }
+          { masa: "9.00 - 10.30 pagi", subjek: "SC", kelas: "5S3" },
+          { masa: "10.30 - 11.30 pagi", subjek: "SC", kelas: "4S2" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
-          { masa: "09:30 - 10:30", subjek: "SC", kelas: "1S1" },
-          { masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2" },
-          { masa: "12:30 - 01:30", subjek: "SC", kelas: "5S3" },
-          { masa: "02:00 - 02:30", subjek: "KBSM1", kelas: "4S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BIO/AK/PP", kelas: "5S1/5S2" },
+          { masa: "9.30 - 10.30 pagi", subjek: "SC", kelas: "1S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "BI", kelas: "3S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "SC", kelas: "5S3" },
+          { masa: "2.00 - 2.30 petang", subjek: "KBSM1", kelas: "4S2" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-          { masa: "11:00 - 12:00", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BIO/AK/PP", kelas: "5S1/5S2" }
         ],
         "Khamis": [
-          { masa: "08:30 - 09:30", subjek: "SC", kelas: "1S1" },
-          { masa: "09:30 - 10:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-          { masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2" },
-          { masa: "11:30 - 12:30", subjek: "SC", kelas: "5S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SC", kelas: "1S1" },
+          { masa: "9.30 - 10.30 pagi", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "BI", kelas: "3S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "SC", kelas: "5S3" }
         ],
         "Jumaat": [
-          { masa: "09:30 - 10:30", subjek: "SC", kelas: "4S2" },
-          { masa: "10:30 - 11:30", subjek: "BI", kelas: "3S2" }
+          { masa: "9.30 - 10.30 pagi", subjek: "SC", kelas: "4S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "BI", kelas: "3S2" }
         ]
       },
       "LAVANYA A/P VEJAYAN": {
         "Isnin": [
-          { masa: "08:00 - 09:00", subjek: "BI", kelas: "5S3" },
-          { masa: "09:00 - 10:00", subjek: "BI", kelas: "4S1/4S2" },
-          { masa: "11:00 - 12:00", subjek: "BI", kelas: "5S1/5S2" },
-          { masa: "12:30 - 01:30", subjek: "BI", kelas: "2S1" },
-          { masa: "01:30 - 02:30", subjek: "BI", kelas: "4S3" }
+          { masa: "8.00 - 9.00 pagi", subjek: "BI", kelas: "5S3" },
+          { masa: "9.00 - 10.00 pagi", subjek: "BI", kelas: "4S1/4S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BI", kelas: "5S1/5S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "BI", kelas: "2S1" },
+          { masa: "1.30 - 2.30 petang", subjek: "BI", kelas: "4S3" }
         ],
         "Selasa": [
-          { masa: "10:00 - 11:00", subjek: "BI", kelas: "3S1" },
-          { masa: "11:30 - 12:30", subjek: "BI", kelas: "5S3" },
-          { masa: "01:00 - 02:00", subjek: "BI", kelas: "2S1" },
-          { masa: "02:00 - 03:00", subjek: "BI", kelas: "4S3" }
+          { masa: "10.00 - 11.00 pagi", subjek: "BI", kelas: "3S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "BI", kelas: "5S3" },
+          { masa: "1.00 - 2.00 petang", subjek: "BI", kelas: "2S1" },
+          { masa: "2.00 - 3.00 petang", subjek: "BI", kelas: "4S3" }
         ],
         "Rabu": [
-          { masa: "08:30 - 09:30", subjek: "BI", kelas: "5S1/5S2" },
-          { masa: "11:00 - 12:00", subjek: "BI", kelas: "4S1/4S2" },
-          { masa: "12:30 - 01:30", subjek: "BI", kelas: "4S3" },
-          { masa: "01:30 - 02:30", subjek: "BI", kelas: "5S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BI", kelas: "5S1/5S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BI", kelas: "4S1/4S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "BI", kelas: "4S3" },
+          { masa: "1.30 - 2.30 petang", subjek: "BI", kelas: "5S3" }
         ],
         "Khamis": [
-          { masa: "07:30 - 08:30", subjek: "BI", kelas: "4S1/4S2" },
-          { masa: "08:30 - 09:30", subjek: "BI", kelas: "3S1" },
-          { masa: "10:30 - 11:30", subjek: "BI", kelas: "2S1" },
-          { masa: "11:30 - 12:30", subjek: "BI", kelas: "4S3" }
+          { masa: "7.30 - 8.30 pagi", subjek: "BI", kelas: "4S1/4S2" },
+          { masa: "8.30 - 9.30 pagi", subjek: "BI", kelas: "3S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "BI", kelas: "2S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "BI", kelas: "4S3" }
         ],
         "Jumaat": [
-          { masa: "08:00 - 09:00", subjek: "BI", kelas: "3S1" },
-          { masa: "09:00 - 10:00", subjek: "BI", kelas: "5S1/5S2" },
-          { masa: "01:00 - 01:30", subjek: "LET", kelas: "Semua" }
+          { masa: "8.00 - 9.00 pagi", subjek: "BI", kelas: "3S1" },
+          { masa: "9.00 - 10.00 pagi", subjek: "BI", kelas: "5S1/5S2" },
+          { masa: "1.00 - 1.30 petang", subjek: "LET", kelas: "Semua" }
         ]
       },
       "MUHAMMAD AMIRUL AIMAN BIN ZAKARIA": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "1S1" },
-          { masa: "09:30 - 10:30", subjek: "GEO", kelas: "2S2" },
-          { masa: "11:00 - 12:00", subjek: "PK", kelas: "4S1/4S2/4S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SEJ", kelas: "1S1" },
+          { masa: "9.30 - 10.30 pagi", subjek: "GEO", kelas: "2S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PK", kelas: "4S1/4S2/4S3" }
         ],
         "Selasa": [
-          { masa: "08:00 - 09:00", subjek: "GEO", kelas: "2S1" },
-          { masa: "09:00 - 10:00", subjek: "PJ", kelas: "4S1/4S2/4S3" },
-          { masa: "11:00 - 12:00", subjek: "SEJ", kelas: "1S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "GEO", kelas: "2S1" },
+          { masa: "9.00 - 10.00 pagi", subjek: "PJ", kelas: "4S1/4S2/4S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "SEJ", kelas: "1S2" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "PJ", kelas: "5S1/5S2/5S3" },
-          { masa: "10:00 - 11:00", subjek: "PK", kelas: "3S1/3S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "PJ", kelas: "5S1/5S2/5S3" },
+          { masa: "10.00 - 11.00 pagi", subjek: "PK", kelas: "3S1/3S2" }
         ],
         "Khamis": [
-          { masa: "07:30 - 08:30", subjek: "PJ", kelas: "3S1/3S2" },
-          { masa: "09:00 - 10:00", subjek: "GEO", kelas: "2S1" },
-          { masa: "10:00 - 11:00", subjek: "PK", kelas: "5S1/5S2/5S3" },
-          { masa: "11:00 - 12:00", subjek: "GEO", kelas: "2S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "PJ", kelas: "3S1/3S2" },
+          { masa: "9.00 - 10.00 pagi", subjek: "GEO", kelas: "2S1" },
+          { masa: "10.00 - 11.00 pagi", subjek: "PK", kelas: "5S1/5S2/5S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "GEO", kelas: "2S2" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "1S1" },
-          { masa: "09:30 - 10:00", subjek: "GEO", kelas: "1S2" },
-          { masa: "10:00 - 10:30", subjek: "SEJ", kelas: "2S1" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SEJ", kelas: "1S1" },
+          { masa: "9.30 - 10.00 pagi", subjek: "GEO", kelas: "1S2" },
+          { masa: "10.00 - 10.30 pagi", subjek: "SEJ", kelas: "2S1" }
         ]
       },
       "MUHAMMAD SYADZA BIN YUSOF": {
         "Isnin": [
-          { masa: "08:00 - 09:00", subjek: "SEJ", kelas: "3S2" },
-          { masa: "09:00 - 10:00", subjek: "ASK/RBT", kelas: "2S1/2S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "SEJ", kelas: "3S2" },
+          { masa: "9.00 - 10.00 pagi", subjek: "ASK/RBT", kelas: "2S1/2S2" }
         ],
         "Selasa": [
-          { masa: "07:30 - 08:30", subjek: "PJ", kelas: "1S1/1S2" },
-          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "2S2" },
-          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "3S1" },
-          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "3S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "PJ", kelas: "1S1/1S2" },
+          { masa: "8.30 - 9.30 pagi", subjek: "SEJ", kelas: "2S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "SEJ", kelas: "3S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "SEJ", kelas: "3S2" }
         ],
         "Rabu": [
-          { masa: "08:30 - 09:30", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-          { masa: "09:30 - 10:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-          { masa: "11:00 - 12:00", subjek: "PK", kelas: "1S1/1S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
+          { masa: "9.30 - 10.30 pagi", subjek: "ASK/RBT", kelas: "3S1/3S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PK", kelas: "1S1/1S2" }
         ],
         "Khamis": [
-          { masa: "08:00 - 09:00", subjek: "SEJ", kelas: "2S2" },
-          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "3S1/3S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "SEJ", kelas: "2S2" },
+          { masa: "9.00 - 10.00 pagi", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "ASK/RBT", kelas: "3S1/3S2" }
         ],
         "Jumaat": [
-          { masa: "08:00 - 09:00", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-          { masa: "09:00 - 10:00", subjek: "SEJ", kelas: "3S1" },
-          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "2S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "ASK/RBT", kelas: "2S1/2S2" },
+          { masa: "9.00 - 10.00 pagi", subjek: "SEJ", kelas: "3S1" },
+          { masa: "10.00 - 11.00 pagi", subjek: "SEJ", kelas: "2S2" }
         ]
       },
       "NORFAIZAH BINTI ISMAIL": {
         "Isnin": [
-          { masa: "07:30 - 08:30", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-          { masa: "10:00 - 11:00", subjek: "ASK/RBT", kelas: "1S1/1S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "ASK/RBT", kelas: "2S1/2S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "ASK/RBT", kelas: "1S1/1S2" }
         ],
         "Selasa": [
-          { masa: "08:00 - 09:00", subjek: "DDM", kelas: "Semua" },
-          { masa: "09:00 - 10:00", subjek: "DDM", kelas: "Semua" },
-          { masa: "10:30 - 11:30", subjek: "DDM", kelas: "Semua" }
+          { masa: "8.00 - 9.00 pagi", subjek: "DDM", kelas: "Semua" },
+          { masa: "9.00 - 10.00 pagi", subjek: "DDM", kelas: "Semua" },
+          { masa: "10.30 - 11.30 pagi", subjek: "DDM", kelas: "Semua" }
         ],
         "Rabu": [
-          { masa: "07:30 - 08:30", subjek: "ASK/RBT", kelas: "1S1/1S2" },
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "3S1/3S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "ASK/RBT", kelas: "1S1/1S2" },
+          { masa: "8.30 - 9.30 pagi", subjek: "ASK/RBT", kelas: "3S1/3S2" }
         ],
         "Khamis": [
-          { masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-          { masa: "08:30 - 09:30", subjek: "ASK/RBT", kelas: "3S1/3S2" },
-          { masa: "10:00 - 11:00", subjek: "PSV", kelas: "5S2" },
-          { masa: "11:30 - 12:30", subjek: "PSV", kelas: "5S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "PIM", kelas: "5S1/5S2/5S3" },
+          { masa: "8.30 - 9.30 pagi", subjek: "ASK/RBT", kelas: "3S1/3S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "PSV", kelas: "5S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "PSV", kelas: "5S2" }
         ],
         "Jumaat": [
-          { masa: "07:30 - 08:30", subjek: "ASK/RBT", kelas: "2S1/2S2" },
-          { masa: "08:30 - 09:30", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-          { masa: "09:00 - 10:00", subjek: "DDM", kelas: "Semua" },
-          { masa: "01:00 - 02:00", subjek: "DDM", kelas: "Semua" }
+          { masa: "7.30 - 8.30 pagi", subjek: "ASK/RBT", kelas: "2S1/2S2" },
+          { masa: "8.30 - 9.30 pagi", subjek: "PIM", kelas: "5S1/5S2/5S3" },
+          { masa: "9.00 - 10.00 pagi", subjek: "DDM", kelas: "Semua" },
+          { masa: "1.00 - 2.00 petang", subjek: "DDM", kelas: "Semua" }
         ]
       },
       "NORHAYATI BT MD ZAIN": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "SC", kelas: "2S2" },
-          { masa: "10:00 - 11:00", subjek: "MM", kelas: "5S1" },
-          { masa: "11:30 - 12:30", subjek: "SC", kelas: "2S1" },
-          { masa: "01:00 - 02:00", subjek: "SC", kelas: "5S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SC", kelas: "2S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "MM", kelas: "5S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "SC", kelas: "2S1" },
+          { masa: "1.00 - 2.00 petang", subjek: "SC", kelas: "5S2" }
         ],
         "Selasa": [
-          { masa: "12:00 - 01:00", subjek: "SC", kelas: "5S2" },
-          { masa: "01:30 - 02:30", subjek: "MM", kelas: "5S1" }
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "SC", kelas: "5S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "MM", kelas: "5S1" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "SC", kelas: "4S3" }
+          { masa: "9.00 - 10.00 pagi", subjek: "SC", kelas: "4S3" }
         ],
         "Khamis": [
-          { masa: "09:00 - 10:00", subjek: "SC", kelas: "2S2" },
-          { masa: "12:30 - 01:30", subjek: "SC", kelas: "2S1" },
-          { masa: "01:30 - 02:30", subjek: "MM", kelas: "5S1" }
+          { masa: "9.00 - 10.00 pagi", subjek: "SC", kelas: "2S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "SC", kelas: "2S1" },
+          { masa: "1.30 - 2.30 petang", subjek: "MM", kelas: "5S1" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "SC", kelas: "4S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SC", kelas: "4S3" }
         ]
       },
       "NORHAMIZAH BINTI SHAFIE": {
         "Isnin": [
-          { masa: "09:00 - 09:30", subjek: "BM", kelas: "4S3" },
-          { masa: "12:00 - 01:00", subjek: "BM", kelas: "2S2" }
+          { masa: "9.00 - 9.30 pagi", subjek: "BM", kelas: "4S3" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BM", kelas: "2S2" }
         ],
         "Selasa": [
-          { masa: "09:30 - 10:30", subjek: "BM", kelas: "2S2" },
-          { masa: "12:00 - 01:00", subjek: "BM", kelas: "4S3" },
-          { masa: "01:30 - 02:30", subjek: "BM", kelas: "5S2" }
+          { masa: "9.30 - 10.30 pagi", subjek: "BM", kelas: "2S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BM", kelas: "4S3" },
+          { masa: "1.30 - 2.30 petang", subjek: "BM", kelas: "5S2" }
         ],
         "Rabu": [
-          { masa: "10:30 - 11:30", subjek: "BM", kelas: "2S2" },
-          { masa: "12:00 - 01:00", subjek: "BM", kelas: "4S3" },
-          { masa: "12:30 - 01:30", subjek: "BM", kelas: "5S2" }
+          { masa: "10.30 - 11.30 pagi", subjek: "BM", kelas: "2S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BM", kelas: "4S3" },
+          { masa: "12.30 - 1.30 petang", subjek: "BM", kelas: "5S2" }
         ],
         "Khamis": [
-          { masa: "09:30 - 10:30", subjek: "BM", kelas: "4S3" },
-          { masa: "10:30 - 11:30", subjek: "BM", kelas: "5S2" },
-          { masa: "12:00 - 01:00", subjek: "PSV", kelas: "5S3" },
-          { masa: "02:00 - 03:00", subjek: "PSV", kelas: "5S3" }
+          { masa: "9.30 - 10.30 pagi", subjek: "BM", kelas: "4S3" },
+          { masa: "10.30 - 11.30 pagi", subjek: "BM", kelas: "5S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "PSV", kelas: "5S3" },
+          { masa: "2.00 - 3.00 petang", subjek: "PSV", kelas: "5S3" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "BM", kelas: "5S2" },
-          { masa: "10:00 - 11:00", subjek: "BM", kelas: "4S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BM", kelas: "5S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "BM", kelas: "4S3" }
         ]
       },
       "NORIHAN BINTI YUSOF": {
         "Isnin": [
-          { masa: "09:30 - 10:30", subjek: "TI", kelas: "5S2" },
-          { masa: "12:00 - 01:00", subjek: "BM", kelas: "3S1" },
-          { masa: "01:00 - 02:00", subjek: "BM", kelas: "3S2" }
+          { masa: "9.30 - 10.30 pagi", subjek: "TI", kelas: "5S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BM", kelas: "3S1" },
+          { masa: "1.00 - 2.00 petang", subjek: "BM", kelas: "3S2" }
         ],
         "Selasa": [
-          { masa: "12:00 - 01:00", subjek: "BM", kelas: "1S1" },
-          { masa: "01:00 - 02:00", subjek: "TI", kelas: "4S2" },
-          { masa: "02:00 - 03:00", subjek: "TI", kelas: "4S2" }
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BM", kelas: "1S1" },
+          { masa: "1.00 - 2.00 petang", subjek: "TI", kelas: "4S2" },
+          { masa: "2.00 - 3.00 petang", subjek: "TI", kelas: "4S2" }
         ],
         "Rabu": [
-          { masa: "09:30 - 10:30", subjek: "BM", kelas: "3S1" },
-          { masa: "11:00 - 12:00", subjek: "TI", kelas: "5S2" },
-          { masa: "12:00 - 01:00", subjek: "BM", kelas: "1S1" }
+          { masa: "9.30 - 10.30 pagi", subjek: "BM", kelas: "3S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "TI", kelas: "5S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BM", kelas: "1S1" }
         ],
         "Khamis": [
-          { masa: "09:00 - 10:00", subjek: "BM", kelas: "3S2" },
-          { masa: "12:00 - 01:00", subjek: "BM", kelas: "1S1" },
-          { masa: "01:00 - 02:00", subjek: "TI", kelas: "4S2" },
-          { masa: "02:00 - 03:00", subjek: "TI", kelas: "5S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BM", kelas: "3S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BM", kelas: "1S1" },
+          { masa: "1.00 - 2.00 petang", subjek: "TI", kelas: "4S2" },
+          { masa: "2.00 - 3.00 petang", subjek: "TI", kelas: "5S2" }
         ],
         "Jumaat": [
-          { masa: "09:30 - 10:30", subjek: "BM", kelas: "3S2" },
-          { masa: "11:00 - 12:00", subjek: "BM", kelas: "3S1" }
+          { masa: "9.30 - 10.30 pagi", subjek: "BM", kelas: "3S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BM", kelas: "3S1" }
         ]
       },
       "NUR FATIN NAZIRAH BINTI RASHIDI": {
         "Isnin": [
-          { masa: "09:00 - 10:00", subjek: "MT", kelas: "4S1" },
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "4S3" },
-          { masa: "12:30 - 01:30", subjek: "PIM", kelas: "3S1/3S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "MT", kelas: "4S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "4S3" },
+          { masa: "12.30 - 1.30 petang", subjek: "PIM", kelas: "3S1/3S2" }
         ],
         "Selasa": [
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "5S2" },
-          { masa: "11:30 - 12:30", subjek: "MM", kelas: "4S1/4S2" },
-          { masa: "12:30 - 01:30", subjek: "MM", kelas: "4S3" }
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "5S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "MM", kelas: "4S1/4S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "MM", kelas: "4S3" }
         ],
         "Rabu": [
-          { masa: "08:30 - 09:30", subjek: "MM", kelas: "4S1/4S2" },
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "4S3" },
-          { masa: "12:00 - 01:00", subjek: "PIM", kelas: "3S1/3S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "MM", kelas: "4S1/4S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "4S3" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "PIM", kelas: "3S1/3S2" }
         ],
         "Khamis": [
-          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S2" },
-          { masa: "09:30 - 10:30", subjek: "MM", kelas: "4S3" },
-          { masa: "11:00 - 12:00", subjek: "MM", kelas: "4S1/4S2" },
-          { masa: "12:00 - 01:00", subjek: "MT", kelas: "4S1" }
+          { masa: "8.30 - 9.30 pagi", subjek: "MM", kelas: "5S2" },
+          { masa: "9.30 - 10.30 pagi", subjek: "MM", kelas: "4S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "MM", kelas: "4S1/4S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "MT", kelas: "4S1" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "MM", kelas: "5S2" },
-          { masa: "10:30 - 11:30", subjek: "MM", kelas: "4S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "MM", kelas: "5S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "MM", kelas: "4S3" }
         ]
       },
       "NURUL HAMIZAH BINTI MD SAID": {
         "Isnin": [
-          { masa: "09:00 - 10:00", subjek: "SEJ", kelas: "4S2/4S3" },
-          { masa: "10:00 - 11:00", subjek: "BM", kelas: "4S1" },
-          { masa: "11:00 - 12:00", subjek: "BM", kelas: "4S1" },
-          { masa: "12:30 - 01:30", subjek: "PIM", kelas: "2S1/2S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "SEJ", kelas: "4S2/4S3" },
+          { masa: "10.00 - 11.00 pagi", subjek: "BM", kelas: "4S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BM", kelas: "4S1" },
+          { masa: "12.30 - 1.30 petang", subjek: "PIM", kelas: "2S1/2S2" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "4S2/4S3" },
-          { masa: "09:30 - 10:00", subjek: "SEJ", kelas: "2S1" },
-          { masa: "10:00 - 10:30", subjek: "SEJ", kelas: "2S1" },
-          { masa: "10:30 - 11:30", subjek: "BM", kelas: "5S1" },
-          { masa: "11:30 - 12:30", subjek: "BM", kelas: "4S1" },
-          { masa: "12:30 - 01:30", subjek: "PIM", kelas: "1S1/1S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SEJ", kelas: "4S2/4S3" },
+          { masa: "9.30 - 10.00 pagi", subjek: "SEJ", kelas: "2S1" },
+          { masa: "10.00 - 10.30 pagi", subjek: "SEJ", kelas: "2S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "BM", kelas: "5S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "BM", kelas: "4S1" },
+          { masa: "12.30 - 1.30 petang", subjek: "PIM", kelas: "1S1/1S2" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "SEJ", kelas: "4S3" },
-          { masa: "09:30 - 10:30", subjek: "PIM", kelas: "1S1/1S2" },
-          { masa: "11:00 - 12:00", subjek: "PIM", kelas: "2S1/2S2" },
-          { masa: "12:30 - 01:30", subjek: "BM", kelas: "5S1" }
+          { masa: "9.00 - 10.00 pagi", subjek: "SEJ", kelas: "4S3" },
+          { masa: "9.30 - 10.30 pagi", subjek: "PIM", kelas: "1S1/1S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PIM", kelas: "2S1/2S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "BM", kelas: "5S1" }
         ],
         "Khamis": [
-          { masa: "08:30 - 09:30", subjek: "BM", kelas: "5S1" },
-          { masa: "11:00 - 12:00", subjek: "SEJ", kelas: "4S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BM", kelas: "5S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "SEJ", kelas: "4S3" }
         ],
         "Jumaat": [
-          { masa: "08:00 - 09:00", subjek: "BM", kelas: "5S1" },
-          { masa: "09:00 - 10:00", subjek: "BM", kelas: "4S1" }
+          { masa: "8.00 - 9.00 pagi", subjek: "BM", kelas: "5S1" },
+          { masa: "9.00 - 10.00 pagi", subjek: "BM", kelas: "4S1" }
         ]
       },
       "NUR AINA NAJWA BINTI MOHD NOR": {
         "Isnin": [
-          { masa: "10:30 - 11:30", subjek: "SC", kelas: "1S2" },
-          { masa: "12:00 - 01:00", subjek: "SC", kelas: "3S1" },
-          { masa: "01:30 - 02:30", subjek: "KIM", kelas: "4S1" }
+          { masa: "10.30 - 11.30 pagi", subjek: "SC", kelas: "1S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "SC", kelas: "3S1" },
+          { masa: "1.30 - 2.30 petang", subjek: "KIM", kelas: "4S1" }
         ],
         "Selasa": [
-          { masa: "08:00 - 09:00", subjek: "SC", kelas: "1S2" },
-          { masa: "09:00 - 10:00", subjek: "SC", kelas: "3S2" },
-          { masa: "10:00 - 11:00", subjek: "PJ", kelas: "5S1/5S2/5S3" },
-          { masa: "11:30 - 12:30", subjek: "KIM", kelas: "5S1" },
-          { masa: "01:00 - 02:00", subjek: "SC", kelas: "3S1" }
+          { masa: "8.00 - 9.00 pagi", subjek: "SC", kelas: "1S2" },
+          { masa: "9.00 - 10.00 pagi", subjek: "SC", kelas: "3S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "PJ", kelas: "5S1/5S2/5S3" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "KIM", kelas: "5S1" },
+          { masa: "1.00 - 2.00 petang", subjek: "SC", kelas: "3S1" }
         ],
         "Rabu": [
-          { masa: "11:30 - 12:30", subjek: "PK", kelas: "5S1/5S2/5S3" },
-          { masa: "01:00 - 02:00", subjek: "KIM", kelas: "4S1" }
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "PK", kelas: "5S1/5S2/5S3" },
+          { masa: "1.00 - 2.00 petang", subjek: "KIM", kelas: "4S1" }
         ],
         "Khamis": [
-          { masa: "12:30 - 01:30", subjek: "KIM", kelas: "5S1" }
+          { masa: "12.30 - 1.30 petang", subjek: "KIM", kelas: "5S1" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "SC", kelas: "3S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SC", kelas: "3S2" }
         ]
       },
       "SITI HANIZA BINTI IMRAN": {
         "Isnin": [
-          { masa: "07:30 - 08:30", subjek: "IC", kelas: "4S1/4S2/4S3" },
-          { masa: "10:00 - 11:00", subjek: "IC", kelas: "5S1/5S2/5S3" },
-          { masa: "11:30 - 12:30", subjek: "PIM", kelas: "2S1/2S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "IC", kelas: "4S1/4S2/4S3" },
+          { masa: "10.00 - 11.00 pagi", subjek: "IC", kelas: "5S1/5S2/5S3" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "PIM", kelas: "2S1/2S2" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "IC", kelas: "5S1/5S2/5S3" },
-          { masa: "09:30 - 10:30", subjek: "IC", kelas: "4S1/4S2/4S3" },
-          { masa: "10:30 - 11:30", subjek: "IC", kelas: "2S1/2S2" },
-          { masa: "12:00 - 01:00", subjek: "PIM", kelas: "1S1/1S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "IC", kelas: "5S1/5S2/5S3" },
+          { masa: "9.30 - 10.30 pagi", subjek: "IC", kelas: "4S1/4S2/4S3" },
+          { masa: "10.30 - 11.30 pagi", subjek: "IC", kelas: "2S1/2S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "PIM", kelas: "1S1/1S2" }
         ],
         "Rabu": [
-          { masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-          { masa: "08:30 - 09:30", subjek: "IC", kelas: "2S1/2S2" },
-          { masa: "09:30 - 10:30", subjek: "IC", kelas: "1S2" },
-          { masa: "11:00 - 12:00", subjek: "PIM", kelas: "2S1/2S2" },
-          { masa: "01:00 - 02:00", subjek: "PIM", kelas: "4S1/4S2/4S3" }
+          { masa: "7.30 - 8.30 pagi", subjek: "PIM", kelas: "5S1/5S2/5S3" },
+          { masa: "8.30 - 9.30 pagi", subjek: "IC", kelas: "2S1/2S2" },
+          { masa: "9.30 - 10.30 pagi", subjek: "IC", kelas: "1S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PIM", kelas: "2S1/2S2" },
+          { masa: "1.00 - 2.00 petang", subjek: "PIM", kelas: "4S1/4S2/4S3" }
         ],
         "Khamis": [
-          { masa: "07:30 - 08:30", subjek: "IC", kelas: "1S1/1S2" },
-          { masa: "09:00 - 10:00", subjek: "IC", kelas: "1S2" },
-          { masa: "10:00 - 11:00", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-          { masa: "11:30 - 12:30", subjek: "IC", kelas: "1S1/1S2" },
-          { masa: "01:00 - 02:00", subjek: "PIM", kelas: "4S1/4S2/4S3" }
+          { masa: "7.30 - 8.30 pagi", subjek: "IC", kelas: "1S1/1S2" },
+          { masa: "9.00 - 10.00 pagi", subjek: "IC", kelas: "1S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "PIM", kelas: "5S1/5S2/5S3" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "IC", kelas: "1S1/1S2" },
+          { masa: "1.00 - 2.00 petang", subjek: "PIM", kelas: "4S1/4S2/4S3" }
         ],
         "Jumaat": []
       },
       "SITI NUR HAKIMAH BINTI MOHD NOOR": {
         "Isnin": [
-          { masa: "07:30 - 08:30", subjek: "PIM", kelas: "5S1/5S2/5S3" },
-          { masa: "08:30 - 09:00", subjek: "IC", kelas: "4S1/4S2/4S3" },
-          { masa: "09:00 - 10:30", subjek: "IC", kelas: "3S1/3S2" },
-          { masa: "10:30 - 11:30", subjek: "IC", kelas: "4S1/4S2/4S3" },
-          { masa: "12:00 - 01:00", subjek: "IC", kelas: "5S1/5S2/5S3" },
-          { masa: "01:30 - 02:30", subjek: "PIM", kelas: "3S1/3S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "PIM", kelas: "5S1/5S2/5S3" },
+          { masa: "8.30 - 9.00 pagi", subjek: "IC", kelas: "4S1/4S2/4S3" },
+          { masa: "9.00 - 10.30 pagi", subjek: "IC", kelas: "3S1/3S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "IC", kelas: "4S1/4S2/4S3" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "IC", kelas: "5S1/5S2/5S3" },
+          { masa: "1.30 - 2.30 petang", subjek: "PIM", kelas: "3S1/3S2" }
         ],
         "Selasa": [
-          { masa: "09:30 - 10:30", subjek: "IC", kelas: "5S1/5S2/5S3" },
-          { masa: "11:00 - 12:00", subjek: "PIM", kelas: "1S1/1S2" },
-          { masa: "12:30 - 01:30", subjek: "PIM", kelas: "3S1/3S2" },
-          { masa: "01:30 - 02:30", subjek: "PIM", kelas: "1S1/1S2" }
+          { masa: "9.30 - 10.30 pagi", subjek: "IC", kelas: "5S1/5S2/5S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PIM", kelas: "1S1/1S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "PIM", kelas: "3S1/3S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "PIM", kelas: "1S1/1S2" }
         ],
         "Rabu": [
-          { masa: "11:00 - 12:00", subjek: "IC", kelas: "1S1/1S2" },
-          { masa: "12:30 - 01:30", subjek: "IC", kelas: "3S1/3S2" },
-          { masa: "01:30 - 02:30", subjek: "PIM", kelas: "4S1/4S2/4S3" }
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "IC", kelas: "1S1/1S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "IC", kelas: "3S1/3S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "PIM", kelas: "4S1/4S2/4S3" }
         ],
         "Khamis": [
-          { masa: "01:30 - 02:30", subjek: "PIM", kelas: "4S1/4S2/4S3" }
+          { masa: "1.30 - 2.30 petang", subjek: "PIM", kelas: "4S1/4S2/4S3" }
         ],
         "Jumaat": [
-          { masa: "07:30 - 08:30", subjek: "IC", kelas: "1S1/1S2" },
-          { masa: "09:30 - 10:30", subjek: "PIM", kelas: "5S1/5S2/5S3" }
+          { masa: "7.30 - 8.30 pagi", subjek: "IC", kelas: "1S1/1S2" },
+          { masa: "9.30 - 10.30 pagi", subjek: "PIM", kelas: "5S1/5S2/5S3" }
         ]
       },
       "TAMILVANI A/P KRISHNAN": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "SEJ", kelas: "5S2" },
-          { masa: "09:30 - 10:30", subjek: "BI", kelas: "1S2" },
-          { masa: "11:00 - 12:00", subjek: "BI", kelas: "2S2" },
-          { masa: "12:30 - 01:30", subjek: "BI", kelas: "1S1" }
+          { masa: "8.30 - 9.30 pagi", subjek: "SEJ", kelas: "5S2" },
+          { masa: "9.30 - 10.30 pagi", subjek: "BI", kelas: "1S2" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BI", kelas: "2S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "BI", kelas: "1S1" }
         ],
         "Selasa": [
-          { masa: "09:00 - 10:00", subjek: "BI", kelas: "1S1" },
-          { masa: "10:30 - 11:30", subjek: "BI", kelas: "1S2" },
-          { masa: "11:30 - 12:30", subjek: "SEJ", kelas: "5S1" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BI", kelas: "1S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "BI", kelas: "1S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "SEJ", kelas: "5S1" }
         ],
         "Rabu": [
-          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-          { masa: "10:30 - 11:30", subjek: "SEJ", kelas: "5S1" },
-          { masa: "11:30 - 12:30", subjek: "BI", kelas: "2S2" },
-          { masa: "01:30 - 02:30", subjek: "SEJ", kelas: "5S2" }
+          { masa: "9.00 - 10.00 pagi", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "SEJ", kelas: "5S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "BI", kelas: "2S2" },
+          { masa: "1.30 - 2.30 petang", subjek: "SEJ", kelas: "5S2" }
         ],
         "Khamis": [
-          { masa: "07:30 - 08:30", subjek: "BI", kelas: "1S1" },
-          { masa: "09:00 - 10:00", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
-          { masa: "10:00 - 11:00", subjek: "SEJ", kelas: "5S1" },
-          { masa: "11:00 - 12:00", subjek: "BI", kelas: "2S2" },
-          { masa: "12:00 - 01:00", subjek: "BI", kelas: "1S2" }
+          { masa: "7.30 - 8.30 pagi", subjek: "BI", kelas: "1S1" },
+          { masa: "9.00 - 10.00 pagi", subjek: "BIO/AK/SEJ", kelas: "4S1/4S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "SEJ", kelas: "5S1" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BI", kelas: "2S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "BI", kelas: "1S2" }
         ],
         "Jumaat": [
-          { masa: "10:30 - 11:30", subjek: "BI", kelas: "1S1" },
-          { masa: "01:00 - 01:30", subjek: "LET", kelas: "Semua" }
+          { masa: "10.30 - 11.30 pagi", subjek: "BI", kelas: "1S1" },
+          { masa: "1.00 - 1.30 petang", subjek: "LET", kelas: "Semua" }
         ]
       },
       "TAN BEE KEAN": {
         "Isnin": [
-          { masa: "08:00 - 09:00", subjek: "IC", kelas: "4S1/4S2/4S3" },
-          { masa: "09:00 - 10:00", subjek: "IC", kelas: "5S1/5S2/5S3" },
-          { masa: "10:30 - 11:30", subjek: "IC", kelas: "1S1/1S2" },
-          { masa: "12:00 - 01:00", subjek: "IC", kelas: "5S1/5S2/5S3" }
+          { masa: "8.00 - 9.00 pagi", subjek: "IC", kelas: "4S1/4S2/4S3" },
+          { masa: "9.00 - 10.00 pagi", subjek: "IC", kelas: "5S1/5S2/5S3" },
+          { masa: "10.30 - 11.30 pagi", subjek: "IC", kelas: "1S1/1S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "IC", kelas: "5S1/5S2/5S3" }
         ],
         "Selasa": [
-          { masa: "08:00 - 09:00", subjek: "PJ", kelas: "3S1/3S2" },
-          { masa: "10:30 - 11:30", subjek: "PK", kelas: "5S1/5S2/5S3" },
-          { masa: "11:30 - 12:30", subjek: "IC", kelas: "2S1/2S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "PJ", kelas: "3S1/3S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "PK", kelas: "5S1/5S2/5S3" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "IC", kelas: "2S1/2S2" }
         ],
         "Rabu": [
-          { masa: "08:00 - 09:00", subjek: "IC", kelas: "3S1/3S2" },
-          { masa: "11:30 - 12:30", subjek: "IC", kelas: "4S1/4S2/4S3" }
+          { masa: "8.00 - 9.00 pagi", subjek: "IC", kelas: "3S1/3S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "IC", kelas: "4S1/4S2/4S3" }
         ],
         "Khamis": [
-          { masa: "08:00 - 09:00", subjek: "PJ", kelas: "2S2/2S1" },
-          { masa: "10:30 - 11:30", subjek: "PK", kelas: "3S1/3S2" },
-          { masa: "11:30 - 12:30", subjek: "IC", kelas: "3S1/3S2" }
+          { masa: "8.00 - 9.00 pagi", subjek: "PJ", kelas: "2S2/2S1" },
+          { masa: "10.30 - 11.30 pagi", subjek: "PK", kelas: "3S1/3S2" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "IC", kelas: "3S1/3S2" }
         ],
         "Jumaat": [
-          { masa: "08:30 - 09:30", subjek: "IC", kelas: "2S1/2S2" },
-          { masa: "09:30 - 10:30", subjek: "IC", kelas: "1S1/1S2" },
-          { masa: "10:30 - 11:30", subjek: "IC", kelas: "2S1/2S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "IC", kelas: "2S1/2S2" },
+          { masa: "9.30 - 10.30 pagi", subjek: "IC", kelas: "1S1/1S2" },
+          { masa: "10.30 - 11.30 pagi", subjek: "IC", kelas: "2S1/2S2" }
         ]
       },
       "TANTY BINTI RAMLI": {
         "Isnin": [
-          { masa: "08:30 - 09:30", subjek: "BM", kelas: "1S2" },
-          { masa: "10:00 - 11:00", subjek: "PSV", kelas: "3S1" },
-          { masa: "11:30 - 12:30", subjek: "PK", kelas: "4S1/4S2/4S3" }
+          { masa: "8.30 - 9.30 pagi", subjek: "BM", kelas: "1S2" },
+          { masa: "10.00 - 11.00 pagi", subjek: "PSV", kelas: "3S1" },
+          { masa: "11.30 pagi - 12.30 tengah hari", subjek: "PK", kelas: "4S1/4S2/4S3" }
         ],
         "Selasa": [
-          { masa: "08:30 - 09:30", subjek: "PJ", kelas: "1S1/1S2" },
-          { masa: "09:30 - 10:00", subjek: "PJ", kelas: "4S1/4S2/4S3" },
-          { masa: "11:00 - 12:00", subjek: "BM", kelas: "1S2" },
-          { masa: "12:30 - 01:30", subjek: "PSV", kelas: "2S2" }
+          { masa: "8.30 - 9.30 pagi", subjek: "PJ", kelas: "1S1/1S2" },
+          { masa: "9.30 - 10.00 pagi", subjek: "PJ", kelas: "4S1/4S2/4S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BM", kelas: "1S2" },
+          { masa: "12.30 - 1.30 petang", subjek: "PSV", kelas: "2S2" }
         ],
         "Rabu": [
-          { masa: "09:30 - 10:30", subjek: "PJ", kelas: "5S1/5S2/5S3" },
-          { masa: "11:00 - 12:00", subjek: "BM", kelas: "1S2" },
-          { masa: "12:00 - 01:00", subjek: "PK", kelas: "1S1/1S2" }
+          { masa: "9.30 - 10.30 pagi", subjek: "PJ", kelas: "5S1/5S2/5S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "BM", kelas: "1S2" },
+          { masa: "12.00 tengah hari - 1.00 petang", subjek: "PK", kelas: "1S1/1S2" }
         ],
         "Khamis": [
-          { masa: "08:00 - 09:00", subjek: "PSV", kelas: "2S1" },
-          { masa: "09:30 - 10:30", subjek: "PSV", kelas: "5S1/5S2/5S3" },
-          { masa: "11:00 - 12:00", subjek: "PK", kelas: "1S1" }
+          { masa: "8.00 - 9.00 pagi", subjek: "PSV", kelas: "2S1" },
+          { masa: "9.30 - 10.30 pagi", subjek: "PSV", kelas: "5S1/5S2/5S3" },
+          { masa: "11.00 pagi - 12.00 tengah hari", subjek: "PK", kelas: "1S1" }
         ],
         "Jumaat": [
-          { masa: "10:00 - 11:00", subjek: "PSV", kelas: "1S2" }
+          { masa: "10.00 - 11.00 pagi", subjek: "PSV", kelas: "1S2" }
         ]
       }
     };
@@ -1449,7 +1490,6 @@
       muatSemulaData();
     });
 
-    // PENGURUSAN HALAMAN / TABS
     function tukarHalaman(page) {
       const pBorang = document.getElementById('halamanBorang');
       const pDash = document.getElementById('halamanDashboard');
@@ -1530,7 +1570,8 @@
       slots.forEach((s, idx) => {
         const opt = document.createElement('option');
         opt.value = idx;
-        opt.textContent = `Slot ${idx + 1}: ${s.masa} | ${s.subjek} (${s.kelas})`;
+        const masaMsia = formatMasaMalaysia(s.masa);
+        opt.textContent = `Slot ${idx + 1}: ${masaMsia} | ${s.subjek} (${s.kelas})`;
         slotSelect.appendChild(opt);
       });
 
@@ -1556,36 +1597,30 @@
 
       const slot = JADUAL_SIRI_6[guru][hari][parseInt(val)];
       if (slot) {
-        document.getElementById('masaInput').value = slot.masa;
+        document.getElementById('masaInput').value = formatMasaMalaysia(slot.masa);
         document.getElementById('kelasInput').value = slot.kelas;
         document.getElementById('subjekInput').value = slot.subjek;
       }
     }
 
-    // =========================================================================
-    // KEMASKINI / EDIT REKOD PDPR
-    // =========================================================================
     function editRekodPdpr(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
       if (!r) return;
 
-      // Tukar ke Halaman Borang
       tukarHalaman('PAGE_BORANG');
 
-      // Tampilkan banner edit
       document.getElementById('editRecordId').value = r['ID'];
       document.getElementById('editModeBanner').classList.remove('hidden');
       document.getElementById('editModeDesc').textContent = `Menyunting Laporan PdPR bagi guru ${r['Nama Guru']} (${r['Tarikh PdPR']}).`;
-      document.getElementById('formHeaderTitle').textContent = "Kemaskini Rekod Pelaksanaan PdPR";
+      document.getElementById('formHeaderTitle').textContent = "Kemaskini Rekod Pelaksanaan PdPr";
       document.getElementById('btnHantarLabel').textContent = "Simpan Perubahan Rekod";
 
-      // Isi nilai medan borang
       document.getElementById('guruSelect').value = r['Nama Guru'];
       document.getElementById('tarikhInput').value = r['Tarikh PdPR'];
       document.getElementById('hariInput').value = r['Hari'];
       kemaskiniSlotHarian();
 
-      document.getElementById('masaInput').value = r['Masa Mengajar'];
+      document.getElementById('masaInput').value = formatMasaMalaysia(r['Masa Mengajar']);
       document.getElementById('kelasInput').value = r['Kelas'];
       document.getElementById('subjekInput').value = r['Mata Pelajaran'];
       document.getElementById('platformSelect').value = r['Platform PdPR'];
@@ -1595,7 +1630,6 @@
       document.getElementById('statusSelect').value = r['Status Pelaksanaan'] || 'Dilaksanakan';
       document.getElementById('muridInput').value = r['Bil Murid Hadir'] || 0;
 
-      // Ambil gambar sedia ada
       senaraiGambarBase64 = [r['Gambar 1'], r['Gambar 2'], r['Gambar 3'], r['Gambar 4']].filter(Boolean);
       renderGambarPreview();
 
@@ -1605,7 +1639,7 @@
     function batalKemaskini() {
       document.getElementById('editRecordId').value = '';
       document.getElementById('editModeBanner').classList.add('hidden');
-      document.getElementById('formHeaderTitle').textContent = "Borang Laporan Pelaksanaan PdPR";
+      document.getElementById('formHeaderTitle').textContent = "Borang Laporan Pelaksanaan PdPr";
       document.getElementById('btnHantarLabel').textContent = "Hantar Rekod PdPR";
       document.getElementById('pdprForm').reset();
       senaraiGambarBase64 = [];
@@ -1613,9 +1647,6 @@
       setTarikhHariIni();
     }
 
-    // =========================================================================
-    // PENGENDALIAN GAMBAR & FORM SUBMISSION
-    // =========================================================================
     async function prosesMuatNaikGambar(e) {
       const files = Array.from(e.target.files);
       if (files.length + senaraiGambarBase64.length > 4) {
@@ -1695,7 +1726,7 @@
         namaGuru: document.getElementById('guruSelect').value,
         tarikh: document.getElementById('tarikhInput').value,
         hari: document.getElementById('hariInput').value,
-        masa: document.getElementById('masaInput').value,
+        masa: formatMasaMalaysia(document.getElementById('masaInput').value),
         kelas: document.getElementById('kelasInput').value,
         mataPelajaran: document.getElementById('subjekInput').value,
         platform: document.getElementById('platformSelect').value,
@@ -1721,7 +1752,7 @@
         });
         const result = await res.json();
         if (result.success) {
-          alert(result.message || (isEditing ? "Rekod PdPR berjaya dikemaskini!" : "Rekod PdPR berjaya disimpan!"));
+          alert(result.message || "Rekod PdPR berjaya diproses!");
           batalKemaskini();
           await muatSemulaData();
           tukarHalaman('PAGE_DASHBOARD');
@@ -1741,7 +1772,18 @@
         const res = await fetch(GAS_API_URL);
         const data = await res.json();
         if (data.success) {
-          senaraiRekod = data.records || [];
+          // Normalisasikan rekod & elak duplikasi
+          const seen = new Set();
+          const cleanRecords = [];
+          (data.records || []).forEach(r => {
+            if (r['ID'] && !seen.has(r['ID'])) {
+              seen.add(r['ID']);
+              r['Masa Mengajar'] = formatMasaMalaysia(r['Masa Mengajar']);
+              cleanRecords.push(r);
+            }
+          });
+          senaraiRekod = cleanRecords;
+
           if (data.customJadual && Object.keys(data.customJadual).length > 0) {
             JADUAL_SIRI_6 = data.customJadual;
           }
@@ -1825,9 +1867,6 @@
       });
     }
 
-    // =========================================================================
-    // PENJANA OPR GURU (SEIMBANG & TEPAT 1 MUKA A4)
-    // =========================================================================
     function paparOPR(id) {
       const r = senaraiRekod.find(item => item['ID'] === id);
       if (!r) return;
@@ -1835,7 +1874,7 @@
       document.getElementById('oprNama').textContent = r['Nama Guru'];
       document.getElementById('oprTarikh').textContent = `${r['Tarikh PdPR']} (${r['Hari']})`;
       document.getElementById('oprSubjek').textContent = r['Mata Pelajaran'];
-      document.getElementById('oprMasa').textContent = r['Masa Mengajar'];
+      document.getElementById('oprMasa').textContent = formatMasaMalaysia(r['Masa Mengajar']);
       document.getElementById('oprKelas').textContent = r['Kelas'];
       document.getElementById('oprPlatform').textContent = r['Platform PdPR'];
       document.getElementById('oprMurid').textContent = `${r['Bil Murid Hadir']} Orang`;
@@ -1845,20 +1884,17 @@
       document.getElementById('oprDapatan').textContent = r['Dapatan / Refleksi'] || '-';
       document.getElementById('oprSignGuruNama').textContent = r['Nama Guru'];
 
-      // Susun Gambar Mengikut Bilangan Gambar Secara Seimbang
       const imgs = [r['Gambar 1'], r['Gambar 2'], r['Gambar 3'], r['Gambar 4']].filter(Boolean);
       const container = document.getElementById('oprGambarContainer');
       container.innerHTML = '';
 
       if (imgs.length === 1) {
-        // 1 Gambar: Penuhi Ruang Secara optimum
         container.innerHTML = `
           <div class="w-full h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
             <img src="${imgs[0]}" class="max-w-full max-h-full object-contain rounded">
           </div>
         `;
       } else if (imgs.length === 2) {
-        // 2 Gambar: Sebaris 2 petak bersebelahan
         container.innerHTML = `
           <div class="grid grid-cols-2 gap-2 w-full h-full">
             <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
@@ -1870,7 +1906,6 @@
           </div>
         `;
       } else if (imgs.length === 3) {
-        // 3 Gambar: Sebaris 3 petak seimbang
         container.innerHTML = `
           <div class="grid grid-cols-3 gap-2 w-full h-full">
             <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
@@ -1885,7 +1920,6 @@
           </div>
         `;
       } else if (imgs.length >= 4) {
-        // 4 Gambar: Grid 2x2 Seimbang
         container.innerHTML = `
           <div class="grid grid-cols-2 grid-rows-2 gap-2 w-full h-full">
             <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
@@ -1904,7 +1938,6 @@
         `;
       }
 
-      // Tandatangan Pengesahan
       const signDisplay = document.getElementById('oprSignatureDisplay');
       if (r['Status Pengesahan'] === 'Telah Disahkan' && r['Tandatangan Pentadbir (Base64)']) {
         signDisplay.innerHTML = `<img src="${r['Tandatangan Pentadbir (Base64)']}" class="h-8 object-contain">`;
@@ -1919,9 +1952,6 @@
       bukaModal('oprModal');
     }
 
-    // =========================================================================
-    // PENGESAHAN SCRIBBLE CANVAS
-    // =========================================================================
     let canvas, ctx, isDrawing = false;
     function initSignatureCanvas() {
       canvas = document.getElementById('signaturePad');
@@ -2018,9 +2048,6 @@
       }
     }
 
-    // =========================================================================
-    // LAPORAN PELAKSANAAN PDPR SEKOLAH
-    // =========================================================================
     function bukaModalLaporanSekolah() {
       janaLaporanSekolah();
       bukaModal('laporanSekolahModal');
@@ -2144,9 +2171,6 @@
       document.body.removeChild(link);
     }
 
-    // =========================================================================
-    // CARTA JS
-    // =========================================================================
     function initCharts() {
       const ctxStatus = document.getElementById('chartStatus').getContext('2d');
       chartStatusInstance = new Chart(ctxStatus, {
@@ -2210,9 +2234,6 @@
       chartPlatformInstance.update();
     }
 
-    // =========================================================================
-    // PORTAL ADMIN
-    // =========================================================================
     function bukaModalLoginAdmin() {
       document.getElementById('adminPasswordInput').value = '';
       document.getElementById('adminErrorMsg').classList.add('hidden');
@@ -2280,10 +2301,11 @@
           slotsHtml = '<p class="text-xs text-slate-400 italic">Tiada slot mengajar.</p>';
         } else {
           slots.forEach((s, idx) => {
+            const masaMsia = formatMasaMalaysia(s.masa);
             slotsHtml += `
               <div class="flex items-center justify-between bg-white border border-slate-200 p-2.5 rounded-lg text-xs">
                 <div>
-                  <span class="font-bold text-slate-800">${s.masa}</span> &bull; 
+                  <span class="font-bold text-slate-800">${masaMsia}</span> &bull; 
                   <span class="font-bold text-indigo-600">${s.subjek}</span> (${s.kelas})
                 </div>
                 <div class="space-x-1">
@@ -2353,7 +2375,7 @@
       document.getElementById('editSlotIndex').value = idx;
       document.getElementById('editSlotAsalHari').value = hari;
       document.getElementById('editSlotHari').value = hari;
-      document.getElementById('editSlotMasa').value = slot.masa;
+      document.getElementById('editSlotMasa').value = formatMasaMalaysia(slot.masa);
       document.getElementById('editSlotSubjek').value = slot.subjek;
       document.getElementById('editSlotKelas').value = slot.kelas;
       bukaModal('modalSlotEditor');
@@ -2364,7 +2386,7 @@
       const hari = document.getElementById('editSlotHari').value;
       const asalHari = document.getElementById('editSlotAsalHari').value;
       const idx = parseInt(document.getElementById('editSlotIndex').value);
-      const masa = document.getElementById('editSlotMasa').value.trim();
+      const masa = formatMasaMalaysia(document.getElementById('editSlotMasa').value.trim());
       const subjek = document.getElementById('editSlotSubjek').value.trim();
       const kelas = document.getElementById('editSlotKelas').value.trim();
 
