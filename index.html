@@ -142,18 +142,18 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Masa Mengajar</label>
-              <input type="text" id="masaInput" required placeholder="cth: 9.00 - 10.30 pagi" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
+              <input type="text" id="masaInput" required placeholder="cth: 8.30 - 9.30 pagi" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Kelas</label>
-              <input type="text" id="kelasInput" required placeholder="cth: 5S3" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
+              <input type="text" id="kelasInput" required placeholder="cth: 5S1/5S2" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Mata Pelajaran</label>
-              <input type="text" id="subjekInput" required placeholder="cth: SC" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
+              <input type="text" id="subjekInput" required placeholder="cth: BIO/AK/PP" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Platform PdPR</label>
@@ -187,7 +187,8 @@
             <textarea id="dapatanInput" rows="4" placeholder="Nyatakan refleksi pencapaian objektif pembelajaran..." class="w-full text-sm rounded-xl border border-slate-200 p-3 outline-none focus:border-indigo-500 bg-slate-50"></textarea>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- RUANG STATUS & KEHADIRAN (TERMASUK BILANGAN SEMUA MURID) -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Status Pelaksanaan</label>
               <select id="statusSelect" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
@@ -198,8 +199,12 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Bilangan Murid Hadir</label>
-              <input type="number" id="muridInput" min="0" value="0" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Bilangan Semua Murid</label>
+              <input type="number" id="semuaMuridInput" min="0" value="0" placeholder="cth: 25" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Bilangan Murid Hadir / Menyertai</label>
+              <input type="number" id="muridInput" min="0" value="0" placeholder="cth: 20" class="w-full text-sm rounded-xl border border-slate-200 px-3.5 py-2.5 outline-none focus:border-indigo-500 bg-slate-50">
             </div>
           </div>
 
@@ -251,14 +256,13 @@
         </div>
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Jumlah Murid</p>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Jumlah Murid Hadir</p>
             <h3 id="statJumlahMurid" class="text-3xl font-extrabold text-indigo-600 mt-1">0</h3>
           </div>
           <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl"><i class="fa-solid fa-user-graduate"></i></div>
         </div>
       </div>
 
-      <!-- VISUAL STATISTIK RINGAN (BEBAS CRASH) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
           <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-2">
@@ -368,7 +372,7 @@
               <span id="sekPeratus" class="text-xl font-black text-indigo-700 block mt-0.5">0%</span>
             </div>
             <div class="p-2.5 bg-purple-50/70 border border-purple-200 rounded-lg col-span-2 sm:col-span-1">
-              <span class="text-purple-700 block text-[11px] font-semibold">Murid Terlibat</span>
+              <span class="text-purple-700 block text-[11px] font-semibold">Murid Hadir</span>
               <span id="sekMurid" class="text-xl font-black text-purple-700 block mt-0.5">0</span>
             </div>
           </div>
@@ -663,7 +667,7 @@
         </div>
         <div>
           <label class="block font-semibold mb-1">Masa Mengajar</label>
-          <input type="text" id="editSlotMasa" placeholder="cth: 9.00 - 10.30 pagi" class="w-full border rounded-xl p-2 outline-none">
+          <input type="text" id="editSlotMasa" placeholder="cth: 8.30 - 9.30 pagi" class="w-full border rounded-xl p-2 outline-none">
         </div>
         <div>
           <label class="block font-semibold mb-1">Mata Pelajaran</label>
@@ -707,7 +711,7 @@
     SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
   </footer>
 
-  <!-- JAVASCRIPT: LOGIK UTAMA & PEMBETULAN PENUH -->
+  <!-- JAVASCRIPT: LOGIK UTAMA & PEMADANAN PINTAR -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
@@ -787,7 +791,7 @@
     }
 
     function parseWaktuMY(tStr) {
-      const m = tStr.match(/^(\d{1,2})[:.](\d{2})$/);
+      const m = tStr.match(/^(\d{1,2})[:.](\d{2})/);
       if (!m) return null;
       let jam = parseInt(m[1]);
       let min = m[2];
@@ -803,6 +807,54 @@
         fasa = 'pagi';
       }
       return { jam: jam, min: min, fasa: fasa };
+    }
+
+    // ==========================================
+    // FUNGSI PEMADANAN PINTAR (KELAS, SUBJEK & MASA)
+    // ==========================================
+    function padankanKelas(kRekod, kJadual) {
+      if (!kRekod || !kJadual) return false;
+      const rNorm = String(kRekod).trim().toUpperCase().replace(/\s+/g, '');
+      const jNorm = String(kJadual).trim().toUpperCase().replace(/\s+/g, '');
+      if (rNorm === jNorm) return true;
+
+      // Pecahkan pembahagi: /, ',', '&', '+', '-'
+      const senaraiJadual = jNorm.split(/[/,&+-]/).filter(Boolean);
+      const senaraiRekod = rNorm.split(/[/,&+-]/).filter(Boolean);
+
+      // Padanan jika salah satu kelas wujud dalam senarai (cth: 5S2 dalam 5S1/5S2)
+      if (senaraiRekod.some(r => senaraiJadual.includes(r))) return true;
+      if (senaraiJadual.some(j => senaraiRekod.includes(j))) return true;
+
+      if (jNorm.includes(rNorm) || rNorm.includes(jNorm)) return true;
+      return false;
+    }
+
+    function padankanSubjek(sRekod, sJadual) {
+      if (!sRekod || !sJadual) return false;
+      const rNorm = String(sRekod).trim().toUpperCase().replace(/\s+/g, '');
+      const jNorm = String(sJadual).trim().toUpperCase().replace(/\s+/g, '');
+      if (rNorm === jNorm) return true;
+
+      const senaraiJadual = jNorm.split(/[/,&+-]/).filter(Boolean);
+      const senaraiRekod = rNorm.split(/[/,&+-]/).filter(Boolean);
+
+      if (senaraiRekod.some(r => senaraiJadual.includes(r))) return true;
+      if (senaraiJadual.some(j => senaraiRekod.includes(j))) return true;
+
+      if (jNorm.includes(rNorm) || rNorm.includes(jNorm)) return true;
+      return false;
+    }
+
+    function padankanMasa(mRekod, mJadual) {
+      if (!mRekod || !mJadual) return false;
+      const getFirstTime = (str) => {
+        const m = String(str).match(/(\d{1,2})[:.](\d{2})/);
+        return m ? `${parseInt(m[1])}.${m[2]}` : null;
+      };
+      const t1 = getFirstTime(mRekod);
+      const t2 = getFirstTime(mJadual);
+      return t1 !== null && t1 === t2;
     }
 
     // PANGKALAN DATA RASMI 26 GURU (WAKTU MALAYSIA)
@@ -999,7 +1051,7 @@
     let senaraiGambarBase64 = [];
     let selectedRecordForSah = null;
 
-    // PEMULAAN LAMAN (LIGHTWEIGHT & RESILIENT)
+    // PEMULAAN LAMAN
     window.addEventListener('DOMContentLoaded', () => {
       try {
         const fav = document.getElementById('faviconTag');
@@ -1200,6 +1252,7 @@
       document.getElementById('aktivitiInput').value = r['Aktiviti'] || '';
       document.getElementById('dapatanInput').value = r['Dapatan / Refleksi'] || '';
       document.getElementById('statusSelect').value = r['Status Pelaksanaan'] || 'Dilaksanakan';
+      document.getElementById('semuaMuridInput').value = r['Jumlah Semua Murid'] || r['bilSemuaMurid'] || 0;
       document.getElementById('muridInput').value = r['Bil Murid Hadir'] || 0;
 
       senaraiGambarBase64 = [r['Gambar 1'], r['Gambar 2'], r['Gambar 3'], r['Gambar 4']].filter(Boolean);
@@ -1216,6 +1269,8 @@
       if (btnLabel) btnLabel.textContent = "Hantar Rekod PdPR";
       document.getElementById('pdprForm').reset();
       document.getElementById('platformLainContainer').classList.add('hidden');
+      document.getElementById('semuaMuridInput').value = 0;
+      document.getElementById('muridInput').value = 0;
       senaraiGambarBase64 = [];
       renderGambarPreview();
       setTarikhHariIni();
@@ -1314,7 +1369,8 @@
         aktiviti: document.getElementById('aktivitiInput').value,
         dapatan: document.getElementById('dapatanInput').value,
         statusPelaksanaan: document.getElementById('statusSelect').value,
-        bilMurid: document.getElementById('muridInput').value,
+        bilSemuaMurid: Number(document.getElementById('semuaMuridInput').value || 0),
+        bilMurid: Number(document.getElementById('muridInput').value || 0),
         gambar1: senaraiGambarBase64[0] || '',
         gambar2: senaraiGambarBase64[1] || '',
         gambar3: senaraiGambarBase64[2] || '',
@@ -1514,13 +1570,21 @@
       const r = senaraiRekod.find(item => item['ID'] === id);
       if (!r) return;
 
+      const hadir = Number(r['Bil Murid Hadir'] || 0);
+      const semua = Number(r['Jumlah Semua Murid'] || 0);
+      let teksKehadiran = `${hadir} Orang`;
+      if (semua > 0) {
+        const pct = Math.round((hadir / semua) * 100);
+        teksKehadiran = `${hadir} / ${semua} Orang (${pct}%)`;
+      }
+
       document.getElementById('oprNama').textContent = r['Nama Guru'];
       document.getElementById('oprTarikh').textContent = `${r['Tarikh PdPR']} (${r['Hari']})`;
       document.getElementById('oprSubjek').textContent = r['Mata Pelajaran'];
       document.getElementById('oprMasa').textContent = formatMasaMalaysia(r['Masa Mengajar']);
       document.getElementById('oprKelas').textContent = r['Kelas'];
       document.getElementById('oprPlatform').textContent = r['Platform PdPR'];
-      document.getElementById('oprMurid').textContent = `${r['Bil Murid Hadir']} Orang`;
+      document.getElementById('oprMurid').textContent = teksKehadiran;
       document.getElementById('oprStatus').textContent = r['Status Pelaksanaan'];
       document.getElementById('oprTajuk').textContent = r['Tajuk / Topik'] || '-';
       document.getElementById('oprAktiviti').textContent = r['Aktiviti'] || '-';
@@ -1595,6 +1659,9 @@
       bukaModal('oprModal');
     }
 
+    // =========================================================================
+    // JANA LAPORAN SEKOLAH (DENGAN LOGIK PADANAN PINTAR 5S1/5S2 vs 5S2)
+    // =========================================================================
     function janaLaporanSekolah() {
       const tarikhPilih = formatTarikhMY(document.getElementById('lapTarikhTunggal').value);
       if (!tarikhPilih) return;
@@ -1616,14 +1683,19 @@
         const slotsGuruHariIni = (JADUAL_SIRI_6[guru] && JADUAL_SIRI_6[guru][hariPilih]) ? JADUAL_SIRI_6[guru][hariPilih] : [];
 
         slotsGuruHariIni.forEach(slot => {
+          // PADANAN PINTAR: Semak Guru, Subjek, Kelas (termasuk 5S1/5S2 vs 5S2) & Masa Mula
           const padananOpr = submittedOnDate.find(r => {
             if (usedOprIds.has(r['ID'])) return false;
             if (r['Nama Guru'].trim().toUpperCase() !== guru.trim().toUpperCase()) return false;
             
-            const matchSubjek = r['Mata Pelajaran'].trim().toLowerCase().includes(slot.subjek.trim().toLowerCase()) ||
-                                slot.subjek.trim().toLowerCase().includes(r['Mata Pelajaran'].trim().toLowerCase());
-            const matchKelas = r['Kelas'].trim().toLowerCase() === slot.kelas.trim().toLowerCase();
-            return matchSubjek && matchKelas;
+            const matchSubjek = padankanSubjek(r['Mata Pelajaran'], slot.subjek);
+            const matchKelas = padankanKelas(r['Kelas'], slot.kelas);
+            const matchMasa = padankanMasa(r['Masa Mengajar'], slot.masa);
+
+            if (matchSubjek && matchKelas) return true;
+            if (matchMasa && (matchSubjek || matchKelas)) return true;
+
+            return false;
           });
 
           if (padananOpr) {
@@ -1637,8 +1709,9 @@
               subjek: padananOpr['Mata Pelajaran'] || slot.subjek,
               platform: padananOpr['Platform PdPR'] || '-',
               tajuk: padananOpr['Tajuk / Topik'] || '-',
-              status: "Dilaksanakan",
-              murid: Number(padananOpr['Bil Murid Hadir'] || 0),
+              status: padananOpr['Status Pelaksanaan'] || 'Dilaksanakan',
+              muridHadir: Number(padananOpr['Bil Murid Hadir'] || 0),
+              muridSemua: Number(padananOpr['Jumlah Semua Murid'] || 0),
               catatan: padananOpr['Ulasan Pentadbir'] || padananOpr['Dapatan / Refleksi'] || '-',
               disahkan: padananOpr['Nama Pentadbir'] ? `${padananOpr['Nama Pentadbir']} (${padananOpr['Jawatan Pentadbir'] || ''})` : 'Menunggu Sah'
             });
@@ -1653,7 +1726,8 @@
               platform: "-",
               tajuk: "Tiada Laporan PdPR Dihantar",
               status: "Tidak Dilaksanakan",
-              murid: 0,
+              muridHadir: 0,
+              muridSemua: 0,
               catatan: "-",
               disahkan: "-"
             });
@@ -1661,6 +1735,7 @@
         });
       });
 
+      // Masukkan laporan guru yang berada di luar jadual rasmi
       submittedOnDate.forEach(r => {
         if (!usedOprIds.has(r['ID'])) {
           barisLaporan.push({
@@ -1672,8 +1747,9 @@
             subjek: r['Mata Pelajaran'],
             platform: r['Platform PdPR'],
             tajuk: r['Tajuk / Topik'],
-            status: "Dilaksanakan",
-            murid: Number(r['Bil Murid Hadir'] || 0),
+            status: r['Status Pelaksanaan'] || 'Dilaksanakan',
+            muridHadir: Number(r['Bil Murid Hadir'] || 0),
+            muridSemua: Number(r['Jumlah Semua Murid'] || 0),
             catatan: r['Ulasan Pentadbir'] || '-',
             disahkan: r['Nama Pentadbir'] || 'Menunggu Sah'
           });
@@ -1684,13 +1760,13 @@
       const totalDilaksana = barisLaporan.filter(b => b.status === 'Dilaksanakan').length;
       const totalTidak = totalSlot - totalDilaksana;
       const peratus = totalSlot > 0 ? Math.round((totalDilaksana / totalSlot) * 100) : 0;
-      const totalMurid = barisLaporan.reduce((acc, curr) => acc + curr.murid, 0);
+      const totalMuridHadir = barisLaporan.reduce((acc, curr) => acc + curr.muridHadir, 0);
 
       document.getElementById('sekJumlahSlot').textContent = totalSlot;
       document.getElementById('sekDilaksana').textContent = totalDilaksana;
       document.getElementById('sekTidak').textContent = totalTidak;
       document.getElementById('sekPeratus').textContent = `${peratus}%`;
-      document.getElementById('sekMurid').textContent = totalMurid;
+      document.getElementById('sekMurid').textContent = totalMuridHadir;
       document.getElementById('sekProgressBar').style.width = `${peratus}%`;
 
       const container = document.getElementById('sekSenaraiContainer');
@@ -1723,6 +1799,12 @@
           `;
         }
 
+        let labelKehadiran = `${b.muridHadir} Orang Terlibat`;
+        if (b.muridSemua > 0) {
+          const pctMurid = Math.round((b.muridHadir / b.muridSemua) * 100);
+          labelKehadiran = `${b.muridHadir} / ${b.muridSemua} Orang (${pctMurid}%)`;
+        }
+
         const card = document.createElement('div');
         card.className = `print-clean-card rounded-xl p-3.5 border transition ${isDilaksana ? 'bg-white border-slate-200 shadow-sm' : 'bg-rose-50/30 border-rose-100'}`;
         card.innerHTML = `
@@ -1737,7 +1819,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
             <div><span class="text-slate-500 font-semibold block text-[11px]">Waktu & Kelas:</span><span class="font-bold text-slate-800">${b.masa}</span> &bull; <span class="text-slate-700 font-semibold">${b.kelas}</span></div>
             <div><span class="text-slate-500 font-semibold block text-[11px]">Mata Pelajaran & Platform:</span><span class="font-bold text-indigo-700">${b.subjek}</span> <span class="text-slate-500">(${b.platform})</span></div>
-            <div><span class="text-slate-500 font-semibold block text-[11px]">Kehadiran Murid:</span><span class="font-bold ${b.murid > 0 ? 'text-indigo-700' : 'text-slate-400'}">${b.murid} Orang Terlibat</span></div>
+            <div><span class="text-slate-500 font-semibold block text-[11px]">Kehadiran Murid:</span><span class="font-bold ${b.muridHadir > 0 ? 'text-indigo-700' : 'text-slate-400'}">${labelKehadiran}</span></div>
           </div>
           <div class="mt-2 pt-2 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             <div><span class="text-slate-500 font-semibold text-[11px]">Tajuk / Topik:</span><span class="text-slate-800 font-medium ml-1">${b.tajuk}</span></div>
@@ -1799,12 +1881,13 @@
         alert("Tiada rekod untuk dieksport.");
         return;
       }
-      const headers = ["ID", "Tarikh", "Hari", "Guru", "Masa", "Kelas", "Subjek", "Platform", "Tajuk", "Hadir", "Status", "Pengesahan"];
+      const headers = ["ID", "Tarikh", "Hari", "Guru", "Masa", "Kelas", "Subjek", "Platform", "Tajuk", "Semua Murid", "Murid Hadir", "Status", "Pengesahan"];
       const rows = senaraiRekod.map(r => [
         `"${r['ID']}"`, `"${r['Tarikh PdPR']}"`, `"${r['Hari']}"`, `"${r['Nama Guru']}"`,
         `"${r['Masa Mengajar']}"`, `"${r['Kelas']}"`, `"${r['Mata Pelajaran']}"`,
         `"${r['Platform PdPR']}"`, `"${(r['Tajuk / Topik'] || '').replace(/"/g, '""')}"`,
-        r['Bil Murid Hadir'], `"${r['Status Pelaksanaan']}"`, `"${r['Status Pengesahan']}"`
+        Number(r['Jumlah Semua Murid'] || 0), Number(r['Bil Murid Hadir'] || 0), 
+        `"${r['Status Pelaksanaan']}"`, `"${r['Status Pengesahan']}"`
       ]);
 
       const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
