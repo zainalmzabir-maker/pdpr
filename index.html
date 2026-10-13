@@ -711,7 +711,7 @@
     SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
   </footer>
 
-  <!-- JAVASCRIPT: LOGIK UTAMA & PEMADANAN PINTAR -->
+  <!-- JAVASCRIPT: LOGIK LENGKAP -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
@@ -810,7 +810,7 @@
     }
 
     // ==========================================
-    // FUNGSI PEMADANAN PINTAR (KELAS, SUBJEK & MASA)
+    // LOGIK PEMADANAN PINTAR (5S1/5S2 vs 5S2)
     // ==========================================
     function padankanKelas(kRekod, kJadual) {
       if (!kRekod || !kJadual) return false;
@@ -818,11 +818,9 @@
       const jNorm = String(kJadual).trim().toUpperCase().replace(/\s+/g, '');
       if (rNorm === jNorm) return true;
 
-      // Pecahkan pembahagi: /, ',', '&', '+', '-'
       const senaraiJadual = jNorm.split(/[/,&+-]/).filter(Boolean);
       const senaraiRekod = rNorm.split(/[/,&+-]/).filter(Boolean);
 
-      // Padanan jika salah satu kelas wujud dalam senarai (cth: 5S2 dalam 5S1/5S2)
       if (senaraiRekod.some(r => senaraiJadual.includes(r))) return true;
       if (senaraiJadual.some(j => senaraiRekod.includes(j))) return true;
 
@@ -1050,6 +1048,7 @@
     let senaraiRekod = [];
     let senaraiGambarBase64 = [];
     let selectedRecordForSah = null;
+    let gambarTelahDiubah = false;
 
     // PEMULAAN LAMAN
     window.addEventListener('DOMContentLoaded', () => {
@@ -1256,6 +1255,7 @@
       document.getElementById('muridInput').value = r['Bil Murid Hadir'] || 0;
 
       senaraiGambarBase64 = [r['Gambar 1'], r['Gambar 2'], r['Gambar 3'], r['Gambar 4']].filter(Boolean);
+      gambarTelahDiubah = false; // Tetapkan false untuk elak hantar muatan berat jika tiada perubahan gambar
       renderGambarPreview();
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1272,6 +1272,7 @@
       document.getElementById('semuaMuridInput').value = 0;
       document.getElementById('muridInput').value = 0;
       senaraiGambarBase64 = [];
+      gambarTelahDiubah = false;
       renderGambarPreview();
       setTarikhHariIni();
     }
@@ -1286,6 +1287,7 @@
         if (senaraiGambarBase64.length >= 4) break;
         const b64 = await compressImageFile(file, 640, 0.6);
         senaraiGambarBase64.push(b64);
+        gambarTelahDiubah = true;
       }
       renderGambarPreview();
     }
@@ -1336,6 +1338,7 @@
 
     function buangGambar(idx) {
       senaraiGambarBase64.splice(idx, 1);
+      gambarTelahDiubah = true;
       renderGambarPreview();
     }
 
@@ -1371,11 +1374,15 @@
         statusPelaksanaan: document.getElementById('statusSelect').value,
         bilSemuaMurid: Number(document.getElementById('semuaMuridInput').value || 0),
         bilMurid: Number(document.getElementById('muridInput').value || 0),
-        gambar1: senaraiGambarBase64[0] || '',
-        gambar2: senaraiGambarBase64[1] || '',
-        gambar3: senaraiGambarBase64[2] || '',
-        gambar4: senaraiGambarBase64[3] || ''
+        kemaskiniGambar: isEditing ? gambarTelahDiubah : true
       };
+
+      if (!isEditing || gambarTelahDiubah) {
+        payload.gambar1 = senaraiGambarBase64[0] || '';
+        payload.gambar2 = senaraiGambarBase64[1] || '';
+        payload.gambar3 = senaraiGambarBase64[2] || '';
+        payload.gambar4 = senaraiGambarBase64[3] || '';
+      }
 
       const btn = document.getElementById('btnHantar');
       btn.disabled = true;
@@ -1384,6 +1391,9 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8' // Elak sekatan CORS preflight OPTIONS
+          },
           body: JSON.stringify(payload)
         });
         const result = await res.json();
@@ -1660,7 +1670,7 @@
     }
 
     // =========================================================================
-    // JANA LAPORAN SEKOLAH (DENGAN LOGIK PADANAN PINTAR 5S1/5S2 vs 5S2)
+    // JANA LAPORAN SEKOLAH (SMART MATCHING UNTUK MENGELAKKAN SLOT BERTINDIH)
     // =========================================================================
     function janaLaporanSekolah() {
       const tarikhPilih = formatTarikhMY(document.getElementById('lapTarikhTunggal').value);
@@ -1683,7 +1693,7 @@
         const slotsGuruHariIni = (JADUAL_SIRI_6[guru] && JADUAL_SIRI_6[guru][hariPilih]) ? JADUAL_SIRI_6[guru][hariPilih] : [];
 
         slotsGuruHariIni.forEach(slot => {
-          // PADANAN PINTAR: Semak Guru, Subjek, Kelas (termasuk 5S1/5S2 vs 5S2) & Masa Mula
+          // PADANAN PINTAR: Semak Guru, Subjek, Kelas (5S1/5S2 vs 5S2) & Masa Mula
           const padananOpr = submittedOnDate.find(r => {
             if (usedOprIds.has(r['ID'])) return false;
             if (r['Nama Guru'].trim().toUpperCase() !== guru.trim().toUpperCase()) return false;
@@ -1735,7 +1745,7 @@
         });
       });
 
-      // Masukkan laporan guru yang berada di luar jadual rasmi
+      // Masukkan slot luar jadual / tambahan jika ada
       submittedOnDate.forEach(r => {
         if (!usedOprIds.has(r['ID'])) {
           barisLaporan.push({
@@ -1998,6 +2008,9 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
           body: JSON.stringify({
             action: 'SAHKAN_PENTADBIR',
             id: selectedRecordForSah,
@@ -2271,6 +2284,9 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
           body: JSON.stringify({
             action: 'SIMPAN_TETAPAN_ADMIN',
             customJadual: JADUAL_SIRI_6,
