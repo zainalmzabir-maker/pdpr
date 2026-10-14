@@ -208,15 +208,17 @@
             </div>
           </div>
 
+          <!-- RUANG MUAT NAIK BUKTI (GAMBAR / PDF) -->
           <div class="bg-amber-50/70 p-4 rounded-xl border border-dashed border-amber-300 space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
-                <i class="fa-solid fa-camera text-amber-600"></i>
-                <span>Gambar Bukti OPR *</span>
+                <i class="fa-solid fa-file-arrow-up text-amber-600"></i>
+                <span>Gambar / Fail PDF Bukti PdPR *</span>
               </span>
-              <span id="labelGambarCount" class="text-[11px] px-2.5 py-0.5 bg-amber-200 text-amber-900 font-bold rounded-full">0 / 4 Gambar</span>
+              <span id="labelGambarCount" class="text-[11px] px-2.5 py-0.5 bg-amber-200 text-amber-900 font-bold rounded-full">0 / 4 Fail</span>
             </div>
-            <input type="file" id="gambarInput" multiple accept="image/*" onchange="prosesMuatNaikGambar(event)" class="text-xs text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-700 cursor-pointer">
+            <input type="file" id="gambarInput" multiple accept="image/*,.pdf,application/pdf" onchange="prosesMuatNaikFail(event)" class="text-xs text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-700 cursor-pointer">
+            <p class="text-[11px] text-slate-500 italic">* Anda boleh memuat naik fail imej atau PDF (maksimum 4 fail). Fail PDF akan disimpan dengan selamat ke Google Drive.</p>
             <div id="gambarPreviewContainer" class="grid grid-cols-4 gap-2 pt-2 empty:hidden"></div>
           </div>
 
@@ -306,7 +308,7 @@
                 <th class="py-3 px-3">Guru</th>
                 <th class="py-3 px-3">Subjek / Kelas</th>
                 <th class="py-3 px-3">Tarikh / Masa</th>
-                <th class="py-3 px-3 text-center">Gambar</th>
+                <th class="py-3 px-3 text-center">Bukti</th>
                 <th class="py-3 px-3 text-center">Status</th>
                 <th class="py-3 px-3 text-center">Tindakan</th>
               </tr>
@@ -469,7 +471,7 @@
         </div>
 
         <div class="flex-1 min-h-0 flex flex-col justify-center my-2">
-          <span class="font-bold text-[10px] text-slate-600 block mb-1 uppercase tracking-wide">Gambar Bukti Pelaksanaan:</span>
+          <span class="font-bold text-[10px] text-slate-600 block mb-1 uppercase tracking-wide">Gambar / Lampiran Bukti Pelaksanaan:</span>
           <div id="oprGambarContainer" class="w-full flex-1 min-h-0 overflow-hidden flex items-center justify-center"></div>
         </div>
 
@@ -711,7 +713,7 @@
     SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
   </footer>
 
-  <!-- JAVASCRIPT: LOGIK LENGKAP -->
+  <!-- JAVASCRIPT: LOGIK SOKONGAN GAMBAR & PDF -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
@@ -728,6 +730,12 @@
     window.onafterprint = function() {
       document.body.className = '';
     };
+
+    function isPdfMedia(src) {
+      if (!src) return false;
+      const s = String(src).toLowerCase();
+      return s.startsWith('data:application/pdf') || s.includes('application/pdf') || s.includes('.pdf') || s.includes('drive.google.com');
+    }
 
     function togglePlatformLain() {
       const select = document.getElementById('platformSelect');
@@ -809,9 +817,6 @@
       return { jam: jam, min: min, fasa: fasa };
     }
 
-    // ==========================================
-    // LOGIK PEMADANAN PINTAR (5S1/5S2 vs 5S2)
-    // ==========================================
     function padankanKelas(kRekod, kJadual) {
       if (!kRekod || !kJadual) return false;
       const rNorm = String(kRekod).trim().toUpperCase().replace(/\s+/g, '');
@@ -1255,7 +1260,7 @@
       document.getElementById('muridInput').value = r['Bil Murid Hadir'] || 0;
 
       senaraiGambarBase64 = [r['Gambar 1'], r['Gambar 2'], r['Gambar 3'], r['Gambar 4']].filter(Boolean);
-      gambarTelahDiubah = false; // Tetapkan false untuk elak hantar muatan berat jika tiada perubahan gambar
+      gambarTelahDiubah = false;
       renderGambarPreview();
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1277,19 +1282,40 @@
       setTarikhHariIni();
     }
 
-    async function prosesMuatNaikGambar(e) {
+    async function prosesMuatNaikFail(e) {
       const files = Array.from(e.target.files);
       if (files.length + senaraiGambarBase64.length > 4) {
-        alert("Maksimum 4 gambar dibenarkan!");
+        alert("Maksimum 4 fail (gambar atau PDF) dibenarkan!");
         return;
       }
       for (let file of files) {
         if (senaraiGambarBase64.length >= 4) break;
-        const b64 = await compressImageFile(file, 640, 0.6);
-        senaraiGambarBase64.push(b64);
-        gambarTelahDiubah = true;
+        
+        if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+          if (file.size > 5 * 1024 * 1024) {
+            alert(`Fail PDF ${file.name} melebihi had 5MB. Sila pilih fail yang lebih kecil.`);
+            continue;
+          }
+          const b64 = await readFileAsBase64(file);
+          senaraiGambarBase64.push(b64);
+          gambarTelahDiubah = true;
+        } else {
+          const b64 = await compressImageFile(file, 640, 0.6);
+          senaraiGambarBase64.push(b64);
+          gambarTelahDiubah = true;
+        }
       }
       renderGambarPreview();
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          resolve(evt.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
     }
 
     function compressImageFile(file, maxWidth, quality) {
@@ -1321,17 +1347,28 @@
       const container = document.getElementById('gambarPreviewContainer');
       const label = document.getElementById('labelGambarCount');
       container.innerHTML = '';
-      label.textContent = `${senaraiGambarBase64.length} / 4 Gambar`;
+      label.textContent = `${senaraiGambarBase64.length} / 4 Fail`;
 
       senaraiGambarBase64.forEach((b64, idx) => {
         const div = document.createElement('div');
-        div.className = 'relative group rounded-lg overflow-hidden border border-amber-300 h-16 shadow-sm';
-        div.innerHTML = `
-          <img src="${b64}" class="w-full h-full object-cover">
-          <button type="button" onclick="buangGambar(${idx})" class="absolute top-1 right-1 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        `;
+        if (isPdfMedia(b64)) {
+          div.className = 'relative group rounded-lg overflow-hidden border border-rose-300 bg-rose-50 h-16 flex flex-col items-center justify-center shadow-sm p-1';
+          div.innerHTML = `
+            <i class="fa-solid fa-file-pdf text-rose-600 text-xl"></i>
+            <span class="text-[9px] font-bold text-rose-800 truncate w-full text-center px-1">Dokumen PDF</span>
+            <button type="button" onclick="buangGambar(${idx})" class="absolute top-1 right-1 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          `;
+        } else {
+          div.className = 'relative group rounded-lg overflow-hidden border border-amber-300 h-16 shadow-sm';
+          div.innerHTML = `
+            <img src="${b64}" class="w-full h-full object-cover">
+            <button type="button" onclick="buangGambar(${idx})" class="absolute top-1 right-1 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          `;
+        }
         container.appendChild(div);
       });
     }
@@ -1345,7 +1382,7 @@
     async function hantarBorang(e) {
       e.preventDefault();
       if (senaraiGambarBase64.length === 0) {
-        alert("Sila muat naik sekurang-kurangnya 1 gambar bukti PdPR.");
+        alert("Sila muat naik sekurang-kurangnya 1 fail gambar atau PDF sebagai bukti PdPR.");
         return;
       }
 
@@ -1386,13 +1423,13 @@
 
       const btn = document.getElementById('btnHantar');
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses Fail...`;
 
       try {
         const res = await fetch(GAS_API_URL, {
           method: 'POST',
           headers: {
-            'Content-Type': 'text/plain;charset=utf-8' // Elak sekatan CORS preflight OPTIONS
+            'Content-Type': 'text/plain;charset=utf-8'
           },
           body: JSON.stringify(payload)
         });
@@ -1552,7 +1589,11 @@
 
         let thumbHtml = '-';
         if (r['Gambar 1']) {
-          thumbHtml = `<img src="${r['Gambar 1']}" class="w-8 h-8 rounded object-cover mx-auto border shadow-sm">`;
+          if (isPdfMedia(r['Gambar 1'])) {
+            thumbHtml = `<a href="${r['Gambar 1']}" target="_blank" class="w-8 h-8 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-xs mx-auto shadow-sm hover:bg-rose-100 transition" title="Buka Fail PDF"><i class="fa-solid fa-file-pdf"></i></a>`;
+          } else {
+            thumbHtml = `<img src="${r['Gambar 1']}" class="w-8 h-8 rounded-lg object-cover mx-auto border shadow-sm">`;
+          }
         }
 
         const tr = document.createElement('tr');
@@ -1574,6 +1615,28 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    function createMediaBox(src) {
+      if (isPdfMedia(src)) {
+        return `
+          <div class="h-full w-full flex flex-col items-center justify-center p-2 border-2 border-dashed border-rose-300 rounded-lg bg-rose-50/70 text-center">
+            <i class="fa-solid fa-file-pdf text-3xl text-rose-600 mb-1"></i>
+            <span class="text-[10px] font-bold text-slate-800">Lampiran Bukti PDF</span>
+            <a href="${src}" target="_blank" rel="noopener noreferrer" class="no-print mt-1 px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white text-[9px] font-bold rounded shadow-sm flex items-center space-x-1 transition">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <span>Buka Fail PDF</span>
+            </a>
+            <span class="text-[8px] text-slate-500 mt-0.5">[Fail PDF Disertakan]</span>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="h-full w-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
+            <img src="${src}" class="max-w-full max-h-full object-contain rounded">
+          </div>
+        `;
+      }
     }
 
     function paparOPR(id) {
@@ -1606,51 +1669,29 @@
       container.innerHTML = '';
 
       if (imgs.length === 1) {
-        container.innerHTML = `
-          <div class="w-full h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-            <img src="${imgs[0]}" class="max-w-full max-h-full object-contain rounded">
-          </div>
-        `;
+        container.innerHTML = `<div class="w-full h-full">${createMediaBox(imgs[0])}</div>`;
       } else if (imgs.length === 2) {
         container.innerHTML = `
           <div class="grid grid-cols-2 gap-2 w-full h-full">
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[0]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[1]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
+            ${createMediaBox(imgs[0])}
+            ${createMediaBox(imgs[1])}
           </div>
         `;
       } else if (imgs.length === 3) {
         container.innerHTML = `
           <div class="grid grid-cols-3 gap-2 w-full h-full">
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[0]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[1]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[2]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
+            ${createMediaBox(imgs[0])}
+            ${createMediaBox(imgs[1])}
+            ${createMediaBox(imgs[2])}
           </div>
         `;
       } else if (imgs.length >= 4) {
         container.innerHTML = `
           <div class="grid grid-cols-2 grid-rows-2 gap-2 w-full h-full">
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[0]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[1]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[2]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
-            <div class="h-full flex items-center justify-center p-1 border border-slate-200 rounded-lg bg-slate-50/50">
-              <img src="${imgs[3]}" class="max-w-full max-h-full object-contain rounded">
-            </div>
+            ${createMediaBox(imgs[0])}
+            ${createMediaBox(imgs[1])}
+            ${createMediaBox(imgs[2])}
+            ${createMediaBox(imgs[3])}
           </div>
         `;
       }
@@ -1669,9 +1710,7 @@
       bukaModal('oprModal');
     }
 
-    // =========================================================================
-    // JANA LAPORAN SEKOLAH (SMART MATCHING UNTUK MENGELAKKAN SLOT BERTINDIH)
-    // =========================================================================
+    // JANA LAPORAN SEKOLAH
     function janaLaporanSekolah() {
       const tarikhPilih = formatTarikhMY(document.getElementById('lapTarikhTunggal').value);
       if (!tarikhPilih) return;
@@ -1693,7 +1732,6 @@
         const slotsGuruHariIni = (JADUAL_SIRI_6[guru] && JADUAL_SIRI_6[guru][hariPilih]) ? JADUAL_SIRI_6[guru][hariPilih] : [];
 
         slotsGuruHariIni.forEach(slot => {
-          // PADANAN PINTAR: Semak Guru, Subjek, Kelas (5S1/5S2 vs 5S2) & Masa Mula
           const padananOpr = submittedOnDate.find(r => {
             if (usedOprIds.has(r['ID'])) return false;
             if (r['Nama Guru'].trim().toUpperCase() !== guru.trim().toUpperCase()) return false;
@@ -1745,7 +1783,6 @@
         });
       });
 
-      // Masukkan slot luar jadual / tambahan jika ada
       submittedOnDate.forEach(r => {
         if (!usedOprIds.has(r['ID'])) {
           barisLaporan.push({
