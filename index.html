@@ -326,15 +326,15 @@
     <!-- HALAMAN 3: LAPORAN PELAKSANAAN PDPR SEKOLAH -->
     <!-- ========================================================================= -->
     <section id="halamanLaporanSekolah" class="space-y-6 hidden">
-      <!-- PANEL KAWALAN TARIKH (TARIKH TUNGGAL / SELA MASA / SEBULAN) -->
+      <!-- PANEL KAWALAN TARIKH & PENAPIS GURU -->
       <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-100 pb-3">
           <div>
             <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
               <i class="fa-solid fa-calendar-check text-emerald-600"></i>
-              <span>Pilihan Penapis Tarikh Laporan Sekolah</span>
+              <span>Pilihan Penapis Laporan Sekolah</span>
             </h3>
-            <p class="text-xs text-slate-500">Pilih format paparan mengikut harian, julat tarikh, atau laporan bulanan.</p>
+            <p class="text-xs text-slate-500">Pilih tempoh masa dan tapis paparan mengikut guru atau status pelaksanaan.</p>
           </div>
 
           <!-- TAB MOD PAPARAN -->
@@ -351,8 +351,8 @@
           </div>
         </div>
 
-        <!-- MEDAN INPUT BERDASARKAN MOD TERPILIH -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+        <!-- MEDAN INPUT BERDASARKAN MOD TERPILIH & PENAPIS GURU -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 items-end">
           <!-- 1. Tarikh Tunggal -->
           <div id="lapContainerTunggal" class="space-y-1">
             <label class="block text-xs font-bold text-slate-700">Pilih Tarikh PdPR:</label>
@@ -384,18 +384,29 @@
             </select>
           </div>
 
-          <!-- 5. Tapis Status Paparan Kad -->
+          <!-- 5. Penapis Guru (BAHARU) -->
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-slate-700 flex items-center space-x-1">
+              <i class="fa-solid fa-chalkboard-user text-indigo-600"></i>
+              <span>Tapis Guru:</span>
+            </label>
+            <select id="lapFilterGuru" onchange="filterPaparanKadLaporan()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-indigo-600">
+              <option value="SEMUA">-- Semua Guru --</option>
+            </select>
+          </div>
+
+          <!-- 6. Tapis Status Paparan Kad -->
           <div class="space-y-1">
             <label class="block text-xs font-bold text-slate-700">Tapis Status Kad:</label>
             <select id="lapFilterStatus" onchange="filterPaparanKadLaporan()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-emerald-600">
-              <option value="SEMUA">Semua Status (Dilaksana & Tidak)</option>
+              <option value="SEMUA">Semua Status</option>
               <option value="Dilaksanakan">Dilaksanakan Sahaja</option>
               <option value="Tidak Dilaksanakan">Tidak Dilaksanakan Sahaja</option>
             </select>
           </div>
 
           <!-- Butang Pengesahan & Cetak -->
-          <div class="flex items-center space-x-2 pt-1 sm:col-span-2 lg:col-span-1">
+          <div class="flex items-center space-x-2 pt-1 sm:col-span-2 md:col-span-1 xl:col-span-2">
             <button onclick="bukaModalPengesahanSekolah()" class="flex-1 py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center space-x-1.5">
               <i class="fa-solid fa-signature"></i>
               <span>Pengesahan</span>
@@ -777,7 +788,7 @@
     SMK Kamarul Ariffin, Labis &bull; Sistem Pengurusan & Pelaporan PdPR Sekolah
   </footer>
 
-  <!-- JAVASCRIPT: LOGIK SOKONGAN TARIKH TUNGGAL / SELA MASA / BULAN -->
+  <!-- JAVASCRIPT: LOGIK SOKONGAN TARIKH, PDF & PENAPIS GURU -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyy0BFu2X_daacELx7EOHoSy-Igv1-Hf5fVIOE4aN2lMFF3Nh9ZmRw9jrfNMDRYhbXg/exec";
 
@@ -1127,6 +1138,7 @@
     // Pembolehubah Pengurusan Laporan Sekolah
     let lapMode = 'TUNGGAL'; // 'TUNGGAL', 'JULAT', 'BULAN'
     let currentBarisLaporan = [];
+    let currentTajukTempoh = '';
 
     // PEMULAAN LAMAN
     window.addEventListener('DOMContentLoaded', () => {
@@ -1239,16 +1251,35 @@
 
     function muatDropdownGuru() {
       const select = document.getElementById('guruSelect');
+      const filterGuruSelect = document.getElementById('lapFilterGuru');
+      
       const currentVal = select.value;
+      const currentFilterVal = filterGuruSelect ? filterGuruSelect.value : 'SEMUA';
+
       select.innerHTML = '<option value="">-- Pilih Guru --</option>';
+      if (filterGuruSelect) {
+        filterGuruSelect.innerHTML = '<option value="SEMUA">-- Semua Guru --</option>';
+      }
+
       Object.keys(JADUAL_SIRI_6).sort().forEach(guru => {
         const opt = document.createElement('option');
         opt.value = guru;
         opt.textContent = guru;
         select.appendChild(opt);
+
+        if (filterGuruSelect) {
+          const optFilter = document.createElement('option');
+          optFilter.value = guru;
+          optFilter.textContent = guru;
+          filterGuruSelect.appendChild(optFilter);
+        }
       });
+
       if (currentVal && JADUAL_SIRI_6[currentVal]) {
         select.value = currentVal;
+      }
+      if (filterGuruSelect && currentFilterVal && (currentFilterVal === 'SEMUA' || JADUAL_SIRI_6[currentFilterVal])) {
+        filterGuruSelect.value = currentFilterVal;
       }
     }
 
@@ -1891,16 +1922,15 @@
         }
       }
 
+      currentTajukTempoh = tajukTempoh;
       document.getElementById('laporanSekolahTempohText').textContent = tajukTempoh;
 
-      // Tapis hari persekolahan untuk Julat & Sebulan
       const skopHari = (lapMode === 'TUNGGAL') ? 'SEMUA_HARI' : document.getElementById('lapSkopHari').value;
 
       if (skopHari === 'HARI_REKOD') {
         const activeDatesWithRecords = new Set(senaraiRekod.map(r => r['Tarikh PdPR']));
         dateList = dateList.filter(dStr => activeDatesWithRecords.has(dStr));
       } else {
-        // Tapis hari Sabtu (6) dan Ahad (0) kerana jadual rasmi PdPR sekolah adalah Isnin - Jumaat
         dateList = dateList.filter(dStr => {
           const p = dStr.split('-');
           const dayIdx = new Date(p[0], parseInt(p[1]) - 1, p[2]).getDay();
@@ -1923,7 +1953,6 @@
           const slotsGuruHariIni = (JADUAL_SIRI_6[guru] && JADUAL_SIRI_6[guru][hariItem]) ? JADUAL_SIRI_6[guru][hariItem] : [];
 
           slotsGuruHariIni.forEach(slot => {
-            // Padanan pintar: Guru, Subjek, Kelas (cth 5S1/5S2 vs 5S2) & Masa Mula
             const padananOpr = submittedOnDate.find(r => {
               if (usedOprIds.has(r['ID'])) return false;
               if (r['Nama Guru'].trim().toUpperCase() !== guru.trim().toUpperCase()) return false;
@@ -1977,7 +2006,6 @@
           });
         });
 
-        // Slot tambahan / luar jadual pada tarikh berkenaan
         submittedOnDate.forEach(r => {
           if (!usedOprIds.has(r['ID'])) {
             barisLaporan.push({
@@ -2001,24 +2029,12 @@
       });
 
       currentBarisLaporan = barisLaporan;
-
-      // Pengiraan Statistik Keseluruhan bagi Tempoh Dipilih
-      const totalSlot = barisLaporan.length;
-      const totalDilaksana = barisLaporan.filter(b => b.status === 'Dilaksanakan').length;
-      const totalTidak = totalSlot - totalDilaksana;
-      const peratus = totalSlot > 0 ? Math.round((totalDilaksana / totalSlot) * 100) : 0;
-      const totalMuridHadir = barisLaporan.reduce((acc, curr) => acc + curr.muridHadir, 0);
-
-      document.getElementById('sekJumlahSlot').textContent = totalSlot;
-      document.getElementById('sekDilaksana').textContent = totalDilaksana;
-      document.getElementById('sekTidak').textContent = totalTidak;
-      document.getElementById('sekPeratus').textContent = `${peratus}%`;
-      document.getElementById('sekMurid').textContent = totalMuridHadir;
-      document.getElementById('sekProgressBar').style.width = `${peratus}%`;
-
       filterPaparanKadLaporan();
     }
 
+    // =========================================================================
+    // TAPIS PAPARAN KAD & PENGIRAAN STATISTIK (MENGIKUT GURU & STATUS)
+    // =========================================================================
     function filterPaparanKadLaporan() {
       const container = document.getElementById('sekSenaraiContainer');
       container.innerHTML = '';
@@ -2028,14 +2044,44 @@
         return;
       }
 
+      const fGuru = document.getElementById('lapFilterGuru') ? document.getElementById('lapFilterGuru').value : 'SEMUA';
       const fStatus = document.getElementById('lapFilterStatus').value;
-      const senaraiDipaparkan = currentBarisLaporan.filter(b => {
+
+      // Kemaskini tajuk tempoh laporan jika guru tertentu dipilih
+      if (fGuru !== 'SEMUA') {
+        document.getElementById('laporanSekolahTempohText').textContent = `${currentTajukTempoh} • Guru: ${fGuru}`;
+      } else {
+        document.getElementById('laporanSekolahTempohText').textContent = currentTajukTempoh;
+      }
+
+      // Tapis mengikut Guru terlebih dahulu
+      let senaraiGuru = currentBarisLaporan;
+      if (fGuru !== 'SEMUA') {
+        senaraiGuru = senaraiGuru.filter(b => b.guru.trim().toUpperCase() === fGuru.trim().toUpperCase());
+      }
+
+      // Pengiraan Statistik mengikut Guru yang dipilih (atau Semua Guru)
+      const totalSlot = senaraiGuru.length;
+      const totalDilaksana = senaraiGuru.filter(b => b.status === 'Dilaksanakan').length;
+      const totalTidak = totalSlot - totalDilaksana;
+      const peratus = totalSlot > 0 ? Math.round((totalDilaksana / totalSlot) * 100) : 0;
+      const totalMuridHadir = senaraiGuru.reduce((acc, curr) => acc + curr.muridHadir, 0);
+
+      document.getElementById('sekJumlahSlot').textContent = totalSlot;
+      document.getElementById('sekDilaksana').textContent = totalDilaksana;
+      document.getElementById('sekTidak').textContent = totalTidak;
+      document.getElementById('sekPeratus').textContent = `${peratus}%`;
+      document.getElementById('sekMurid').textContent = totalMuridHadir;
+      document.getElementById('sekProgressBar').style.width = `${peratus}%`;
+
+      // Seterusnya tapis mengikut Status (Dilaksanakan / Tidak)
+      const senaraiDipaparkan = senaraiGuru.filter(b => {
         if (fStatus === 'SEMUA') return true;
         return b.status === fStatus;
       });
 
       if (senaraiDipaparkan.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-slate-400 italic bg-slate-50 rounded-xl border">Tiada rekod dengan status "${fStatus}" bagi tempoh ini.</div>`;
+        container.innerHTML = `<div class="text-center py-8 text-slate-400 italic bg-slate-50 rounded-xl border">Tiada rekod sepadan dengan penapis Guru "${fGuru}" dan Status "${fStatus}".</div>`;
         return;
       }
 
@@ -2045,7 +2091,7 @@
         // Pemisah Tarikh jika paparan melibatkan lebih daripada 1 hari
         if (lapMode !== 'TUNGGAL' && b.tarikh !== tarikhSemasa) {
           tarikhSemasa = b.tarikh;
-          const slotHariIni = currentBarisLaporan.filter(x => x.tarikh === b.tarikh);
+          const slotHariIni = senaraiGuru.filter(x => x.tarikh === b.tarikh);
           const dilaksanaHariIni = slotHariIni.filter(x => x.status === 'Dilaksanakan').length;
           const peratusHariIni = slotHariIni.length > 0 ? Math.round((dilaksanaHariIni / slotHariIni.length) * 100) : 0;
 
