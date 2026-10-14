@@ -221,7 +221,7 @@
               <span id="labelGambarCount" class="text-[11px] px-2.5 py-0.5 bg-amber-200 text-amber-900 font-bold rounded-full">0 / 4 Fail</span>
             </div>
             <input type="file" id="gambarInput" multiple accept="image/*,.pdf,application/pdf" onchange="prosesMuatNaikFail(event)" class="text-xs text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-700 cursor-pointer">
-            <p class="text-[11px] text-slate-500 italic">* Anda boleh memuat naik gambar atau dokumen PDF (maksimum 4 fail).</p>
+            <p class="text-[11px] text-slate-500 italic">* Anda boleh memuat naik gambar atau dokumen PDF (maksimum 4 fail). PDF disimpan selamat ke Google Drive.</p>
             <div id="gambarPreviewContainer" class="grid grid-cols-4 gap-2 pt-2 empty:hidden"></div>
           </div>
 
@@ -351,15 +351,13 @@
           </div>
         </div>
 
-        <!-- MEDAN INPUT BERDASARKAN MOD TERPILIH & PENAPIS GURU -->
+        <!-- MEDAN INPUT -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 items-end">
-          <!-- 1. Tarikh Tunggal -->
           <div id="lapContainerTunggal" class="space-y-1">
             <label class="block text-xs font-bold text-slate-700">Pilih Tarikh PdPR:</label>
             <input type="date" id="lapTarikhTunggal" onchange="janaLaporanSekolah()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-emerald-600">
           </div>
 
-          <!-- 2. Sela Masa (Dari - Hingga) -->
           <div id="lapContainerMula" class="space-y-1 hidden">
             <label class="block text-xs font-bold text-slate-700">Tarikh Mula:</label>
             <input type="date" id="lapTarikhMula" onchange="janaLaporanSekolah()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-emerald-600">
@@ -369,13 +367,11 @@
             <input type="date" id="lapTarikhAkhir" onchange="janaLaporanSekolah()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-emerald-600">
           </div>
 
-          <!-- 3. Sebulan (Month Input) -->
           <div id="lapContainerBulan" class="space-y-1 hidden">
             <label class="block text-xs font-bold text-slate-700">Pilih Bulan & Tahun:</label>
             <input type="month" id="lapBulan" onchange="janaLaporanSekolah()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-emerald-600">
           </div>
 
-          <!-- 4. Skop Hari (Julat & Sebulan Sahaja) -->
           <div id="lapContainerSkop" class="space-y-1 hidden">
             <label class="block text-xs font-bold text-slate-700">Skop Semakan Hari:</label>
             <select id="lapSkopHari" onchange="janaLaporanSekolah()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-emerald-600">
@@ -384,7 +380,6 @@
             </select>
           </div>
 
-          <!-- 5. Penapis Guru (BAHARU) -->
           <div class="space-y-1">
             <label class="block text-xs font-bold text-slate-700 flex items-center space-x-1">
               <i class="fa-solid fa-chalkboard-user text-indigo-600"></i>
@@ -395,7 +390,6 @@
             </select>
           </div>
 
-          <!-- 6. Tapis Status Paparan Kad -->
           <div class="space-y-1">
             <label class="block text-xs font-bold text-slate-700">Tapis Status Kad:</label>
             <select id="lapFilterStatus" onchange="filterPaparanKadLaporan()" class="w-full text-xs font-semibold border border-slate-300 rounded-xl px-3 py-2 bg-slate-50 outline-none focus:border-emerald-600">
@@ -405,7 +399,6 @@
             </select>
           </div>
 
-          <!-- Butang Pengesahan & Cetak -->
           <div class="flex items-center space-x-2 pt-1 sm:col-span-2 md:col-span-1 xl:col-span-2">
             <button onclick="bukaModalPengesahanSekolah()" class="flex-1 py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center space-x-1.5">
               <i class="fa-solid fa-signature"></i>
@@ -487,9 +480,7 @@
 
   </main>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: ONE PAGE REPORT (OPR) MANDATORI 1 HALAMAN A4 -->
-  <!-- ========================================================================= -->
+  <!-- MODAL: ONE PAGE REPORT (OPR) -->
   <div id="oprModal" class="modal-popup fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl max-h-[96vh] flex flex-col overflow-hidden">
       <div class="p-3 sm:p-4 bg-indigo-700 text-white flex justify-between items-center no-print">
@@ -940,7 +931,7 @@
       return t1 !== null && t1 === t2;
     }
 
-    // PANGKALAN DATA RASMI 26 GURU (WAKTU MALAYSIA)
+    // PANGKALAN DATA RASMI 26 GURU
     let JADUAL_SIRI_6 = {
       "ABD HADI BIN ADMAN": {
         "Isnin": [{ masa: "10.30 - 11.30 pagi", subjek: "PSV", kelas: "3S2" }, { masa: "12.30 tengah hari - 1.30 petang", subjek: "ASK/RBT", kelas: "1S1/1S2" }],
@@ -1133,14 +1124,11 @@
     let senaraiRekod = [];
     let senaraiGambarBase64 = [];
     let selectedRecordForSah = null;
-    let gambarTelahDiubah = false;
 
-    // Pembolehubah Pengurusan Laporan Sekolah
-    let lapMode = 'TUNGGAL'; // 'TUNGGAL', 'JULAT', 'BULAN'
+    let lapMode = 'TUNGGAL';
     let currentBarisLaporan = [];
     let currentTajukTempoh = '';
 
-    // PEMULAAN LAMAN
     window.addEventListener('DOMContentLoaded', () => {
       try {
         const fav = document.getElementById('faviconTag');
@@ -1275,9 +1263,7 @@
         }
       });
 
-      if (currentVal && JADUAL_SIRI_6[currentVal]) {
-        select.value = currentVal;
-      }
+      if (currentVal && JADUAL_SIRI_6[currentVal]) select.value = currentVal;
       if (filterGuruSelect && currentFilterVal && (currentFilterVal === 'SEMUA' || JADUAL_SIRI_6[currentFilterVal])) {
         filterGuruSelect.value = currentFilterVal;
       }
@@ -1410,8 +1396,8 @@
       document.getElementById('semuaMuridInput').value = r['Jumlah Semua Murid'] || r['bilSemuaMurid'] || 0;
       document.getElementById('muridInput').value = r['Bil Murid Hadir'] || 0;
 
+      // Muatkan imej/PDF sedia ada (Pautan Drive atau Base64)
       senaraiGambarBase64 = [r['Gambar 1'], r['Gambar 2'], r['Gambar 3'], r['Gambar 4']].filter(Boolean);
-      gambarTelahDiubah = false;
       renderGambarPreview();
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1428,7 +1414,6 @@
       document.getElementById('semuaMuridInput').value = 0;
       document.getElementById('muridInput').value = 0;
       senaraiGambarBase64 = [];
-      gambarTelahDiubah = false;
       renderGambarPreview();
       setTarikhHariIni();
     }
@@ -1449,11 +1434,10 @@
           }
           const b64 = await readFileAsBase64(file);
           senaraiGambarBase64.push(b64);
-          gambarTelahDiubah = true;
         } else {
-          const b64 = await compressImageFile(file, 640, 0.6);
+          // Mampat imej secara optimum (500px, kualiti 0.5) supaya muat dalam sel dan pantas
+          const b64 = await compressImageFile(file, 500, 0.5);
           senaraiGambarBase64.push(b64);
-          gambarTelahDiubah = true;
         }
       }
       renderGambarPreview();
@@ -1500,9 +1484,9 @@
       container.innerHTML = '';
       label.textContent = `${senaraiGambarBase64.length} / 4 Fail`;
 
-      senaraiGambarBase64.forEach((b64, idx) => {
+      senaraiGambarBase64.forEach((src, idx) => {
         const div = document.createElement('div');
-        if (isPdfMedia(b64)) {
+        if (isPdfMedia(src)) {
           div.className = 'relative group rounded-lg overflow-hidden border border-rose-300 bg-rose-50 h-16 flex flex-col items-center justify-center shadow-sm p-1';
           div.innerHTML = `
             <i class="fa-solid fa-file-pdf text-rose-600 text-xl"></i>
@@ -1514,7 +1498,7 @@
         } else {
           div.className = 'relative group rounded-lg overflow-hidden border border-amber-300 h-16 shadow-sm';
           div.innerHTML = `
-            <img src="${b64}" class="w-full h-full object-cover">
+            <img src="${src}" class="w-full h-full object-cover">
             <button type="button" onclick="buangGambar(${idx})" class="absolute top-1 right-1 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -1526,7 +1510,6 @@
 
     function buangGambar(idx) {
       senaraiGambarBase64.splice(idx, 1);
-      gambarTelahDiubah = true;
       renderGambarPreview();
     }
 
@@ -1546,6 +1529,7 @@
         platformFinal = customPlatform ? customPlatform : 'Lain-lain';
       }
 
+      // Pastikan semua imej/PDF dihantar secara teratur sama ada mod baharu atau kemaskini
       const payload = {
         action: isEditing ? 'KEMASKINI_REKOD' : 'SIMPAN_REKOD',
         id: editId || '',
@@ -1562,15 +1546,11 @@
         statusPelaksanaan: document.getElementById('statusSelect').value,
         bilSemuaMurid: Number(document.getElementById('semuaMuridInput').value || 0),
         bilMurid: Number(document.getElementById('muridInput').value || 0),
-        kemaskiniGambar: isEditing ? gambarTelahDiubah : true
+        gambar1: senaraiGambarBase64[0] || '',
+        gambar2: senaraiGambarBase64[1] || '',
+        gambar3: senaraiGambarBase64[2] || '',
+        gambar4: senaraiGambarBase64[3] || ''
       };
-
-      if (!isEditing || gambarTelahDiubah) {
-        payload.gambar1 = senaraiGambarBase64[0] || '';
-        payload.gambar2 = senaraiGambarBase64[1] || '';
-        payload.gambar3 = senaraiGambarBase64[2] || '';
-        payload.gambar4 = senaraiGambarBase64[3] || '';
-      }
 
       const btn = document.getElementById('btnHantar');
       btn.disabled = true;
@@ -1579,9 +1559,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
         const result = await res.json();
@@ -1861,9 +1839,7 @@
       bukaModal('oprModal');
     }
 
-    // =========================================================================
-    // JANA LAPORAN SEKOLAH (IKUT TARIKH / SELA MASA / SEBULAN)
-    // =========================================================================
+    // JANA LAPORAN SEKOLAH
     function janaLaporanSekolah() {
       let dateList = [];
       let tajukTempoh = '';
@@ -2032,9 +2008,6 @@
       filterPaparanKadLaporan();
     }
 
-    // =========================================================================
-    // TAPIS PAPARAN KAD & PENGIRAAN STATISTIK (MENGIKUT GURU & STATUS)
-    // =========================================================================
     function filterPaparanKadLaporan() {
       const container = document.getElementById('sekSenaraiContainer');
       container.innerHTML = '';
@@ -2047,20 +2020,17 @@
       const fGuru = document.getElementById('lapFilterGuru') ? document.getElementById('lapFilterGuru').value : 'SEMUA';
       const fStatus = document.getElementById('lapFilterStatus').value;
 
-      // Kemaskini tajuk tempoh laporan jika guru tertentu dipilih
       if (fGuru !== 'SEMUA') {
         document.getElementById('laporanSekolahTempohText').textContent = `${currentTajukTempoh} • Guru: ${fGuru}`;
       } else {
         document.getElementById('laporanSekolahTempohText').textContent = currentTajukTempoh;
       }
 
-      // Tapis mengikut Guru terlebih dahulu
       let senaraiGuru = currentBarisLaporan;
       if (fGuru !== 'SEMUA') {
         senaraiGuru = senaraiGuru.filter(b => b.guru.trim().toUpperCase() === fGuru.trim().toUpperCase());
       }
 
-      // Pengiraan Statistik mengikut Guru yang dipilih (atau Semua Guru)
       const totalSlot = senaraiGuru.length;
       const totalDilaksana = senaraiGuru.filter(b => b.status === 'Dilaksanakan').length;
       const totalTidak = totalSlot - totalDilaksana;
@@ -2074,7 +2044,6 @@
       document.getElementById('sekMurid').textContent = totalMuridHadir;
       document.getElementById('sekProgressBar').style.width = `${peratus}%`;
 
-      // Seterusnya tapis mengikut Status (Dilaksanakan / Tidak)
       const senaraiDipaparkan = senaraiGuru.filter(b => {
         if (fStatus === 'SEMUA') return true;
         return b.status === fStatus;
@@ -2088,7 +2057,6 @@
       let tarikhSemasa = '';
 
       senaraiDipaparkan.forEach((b, idx) => {
-        // Pemisah Tarikh jika paparan melibatkan lebih daripada 1 hari
         if (lapMode !== 'TUNGGAL' && b.tarikh !== tarikhSemasa) {
           tarikhSemasa = b.tarikh;
           const slotHariIni = senaraiGuru.filter(x => x.tarikh === b.tarikh);
